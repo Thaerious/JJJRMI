@@ -1,0 +1,18 @@
+package ca.frar.jjjrmi.jsbuilder.code;
+import spoon.reflect.code.CtFieldRead;
+import spoon.reflect.reference.CtFieldReference;
+
+public class JSFieldRead implements JSCodeElement {
+    private final CtFieldReference variable;
+    private final JSCodeElement target;
+
+    public JSFieldRead(CtFieldRead ctFieldRead) {
+        variable = ctFieldRead.getVariable();
+        target = CodeFactory.generate(ctFieldRead.getTarget());
+    }
+
+    @Override
+    public String toString(){
+        return target.toString() + "." + variable.getSimpleName();
+    }
+}
