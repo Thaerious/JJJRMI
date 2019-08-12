@@ -1,6 +1,5 @@
 package ca.frar.jjjrmi.socket.message;
 import ca.frar.jjjrmi.annotations.JJJ;
-import ca.frar.jjjrmi.annotations.JJJOptions;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import static ca.frar.jjjrmi.socket.message.JJJMessageType.READY;
 
@@ -10,8 +9,7 @@ import static ca.frar.jjjrmi.socket.message.JJJMessageType.READY;
  * @param <T> 
  */
 
-@JJJ()
-@JJJOptions(retain=false)
+@JJJ(retain=false)
 public class ReadyMessage <T> extends JJJMessage{
     private T root;
     

@@ -1,7 +1,7 @@
 package ca.frar.jjjrmi.jsbuilder.code;
 import spoon.reflect.code.CtInvocation;
 
-public class JSSuperConstructor implements JSCodeElement {
+public class JSSuperConstructor extends AbstractJSCodeElement {
     private final JSElementList arguments;
 
     public JSSuperConstructor(CtInvocation <?> ctInvocation) {

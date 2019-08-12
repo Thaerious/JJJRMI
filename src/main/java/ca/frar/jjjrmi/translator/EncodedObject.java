@@ -37,12 +37,6 @@ class EncodedObject extends EncodedJSON implements EncodeHandler{
     void encode() throws IllegalArgumentException, IllegalAccessException, EncoderException {
         Class<?> aClass = object.getClass();
 
-        JJJOptionsHandler jjjOptions = new JJJOptionsHandler(aClass);
-        if (!jjjOptions.hasJJJ()){
-            String message = String.format("Attempt to encode base class '%s' without @JJJ annotation", aClass.getSimpleName());
-            throw new EncoderException(message, object);
-        }
-
         while (new JJJOptionsHandler(aClass).hasJJJ()) {
             Field[] declaredFields = aClass.getDeclaredFields();
 

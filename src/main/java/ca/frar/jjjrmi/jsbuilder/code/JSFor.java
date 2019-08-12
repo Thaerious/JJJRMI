@@ -1,7 +1,7 @@
 package ca.frar.jjjrmi.jsbuilder.code;
 import spoon.reflect.code.CtFor;
 
-public class JSFor implements JSCodeElement {
+public class JSFor extends AbstractJSCodeElement {
     private final JSElementList forInit;
     private final JSElementList forUpdate;
     private final JSCodeElement forExpression;

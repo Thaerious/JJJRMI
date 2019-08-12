@@ -1,17 +1,14 @@
 package ca.frar.jjjrmi.socket.message;
 import ca.frar.jjjrmi.annotations.JJJ;
-import ca.frar.jjjrmi.annotations.JJJOptions;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.annotations.ProcessLevel;
-import static ca.frar.jjjrmi.socket.message.JJJMessageType.FORGET;
 import static ca.frar.jjjrmi.socket.message.JJJMessageType.LOCAL;
 
 /**
  * Message from server to client to send a response to MethodRequest.
  * @author Ed Armstrong
  */
-@JJJ()
-@JJJOptions(retain=false, processLevel=ProcessLevel.ALL)
+@JJJ(retain=false, processLevel=ProcessLevel.ALL)
 public final class MethodResponse extends JJJMessage{
 
     private String uid;

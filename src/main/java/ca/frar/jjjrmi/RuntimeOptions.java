@@ -5,13 +5,13 @@ import java.util.ArrayList;
 @SuppressWarnings("PackageVisibleField")
 public class RuntimeOptions {
     final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(RuntimeOptions.class);
-    private String inputDirectory = "src";
-    private String outputDirectory = "gen";
+    private String inputDirectory = "src/main/java";
+    private String outputDirectory = "target/gen";
     private String packageName = "package";
     private String version = "0.0.0";
-    private int verbosity = 1;
     private boolean generateJSON = true;
-    private boolean generatePackage = true;
+    private boolean generatePackage = true;    
+    private int verbosity = 1;
     private ArrayList<String> classpath = new ArrayList<>();
 
     @SuppressWarnings("OverridableMethodCallInConstructor")
@@ -74,18 +74,34 @@ public class RuntimeOptions {
         }
     }
 
+    /**
+     * Set to generate package.json file.
+     * @param value 
+     */
     public final void setGenerateJSON(Boolean value) {
         this.generateJSON = value;
     }
 
+    /**
+     * Poll whether to generate package.json file.
+     * @return 
+     */
     public final boolean isGenerateJSON() {
         return this.generateJSON;
     }
 
+    /**
+     * Set to generate packageFile.js file.
+     * @param value 
+     */
     public boolean isGeneratePackage() {
         return generatePackage;
     }
 
+    /**
+     * Poll whether to generate packageFile.js file.
+     * @return 
+     */    
     public void setGeneratePackage(boolean generatePackage) {
         this.generatePackage = generatePackage;
     }

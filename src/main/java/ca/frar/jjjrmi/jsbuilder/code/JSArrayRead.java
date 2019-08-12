@@ -1,7 +1,7 @@
 package ca.frar.jjjrmi.jsbuilder.code;
 import spoon.reflect.code.CtArrayRead;
 
-public class JSArrayRead implements JSCodeElement {
+public class JSArrayRead extends AbstractJSCodeElement {
 
     private final JSCodeElement target;
     private final JSCodeElement index;

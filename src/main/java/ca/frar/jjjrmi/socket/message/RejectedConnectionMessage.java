@@ -1,6 +1,5 @@
 package ca.frar.jjjrmi.socket.message;
 import ca.frar.jjjrmi.annotations.JJJ;
-import ca.frar.jjjrmi.annotations.JJJOptions;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import static ca.frar.jjjrmi.socket.message.JJJMessageType.REJECTED_CONNECTION;
 
@@ -9,8 +8,7 @@ import static ca.frar.jjjrmi.socket.message.JJJMessageType.REJECTED_CONNECTION;
  * rejected.
  * @author Ed Armstrong
  */
-@JJJ()
-@JJJOptions(retain=false)
+@JJJ(retain=false)
 public class RejectedConnectionMessage extends JJJMessage{
 
     @NativeJS

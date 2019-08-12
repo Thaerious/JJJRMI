@@ -3,7 +3,7 @@ import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtFieldReference;
 
-public class JSFieldDeclaration implements JSCodeElement{
+public class JSFieldDeclaration extends AbstractJSCodeElement{
     private final CtFieldReference<?> reference;
     private final JSCodeElement rhs;
     private boolean isStatic = false;

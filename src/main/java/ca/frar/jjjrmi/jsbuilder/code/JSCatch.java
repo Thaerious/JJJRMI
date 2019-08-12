@@ -2,7 +2,7 @@ package ca.frar.jjjrmi.jsbuilder.code;
 
 import spoon.reflect.code.CtCatch;
 
-public class JSCatch implements JSCodeElement {
+public class JSCatch extends AbstractJSCodeElement {
 
     private final JSBlock body;
     private final String param;

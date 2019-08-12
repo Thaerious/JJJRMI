@@ -2,7 +2,7 @@ package ca.frar.jjjrmi.jsbuilder.code;
 
 import spoon.reflect.code.CtTry;
 
-public class JSTry implements JSCodeElement {
+public class JSTry extends AbstractJSCodeElement {
     private final JSCodeElement body;
     private final JSElementList catchers;
     private final JSCodeElement finalizer;

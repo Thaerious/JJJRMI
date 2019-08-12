@@ -2,7 +2,7 @@ package ca.frar.jjjrmi.jsbuilder.code;
 
 import spoon.reflect.code.CtCase;
 
-public class JSCase implements JSCodeElement {
+public class JSCase extends AbstractJSCodeElement {
 
     private final JSCodeElement expression;
     private final JSElementList body;

@@ -1,12 +1,9 @@
 package ca.frar.jjjrmi.jsbuilder.code;
-import ca.frar.jjjrmi.jsbuilder.JSClassBuilder;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import spoon.reflect.code.*;
 import spoon.support.reflect.code.CtReturnImpl;
 
 public class CodeFactory {
-    final static Logger LOGGER = LogManager.getLogger(JSClassBuilder.class);
+    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(CodeFactory.class);
 
     private CodeFactory() {}
 

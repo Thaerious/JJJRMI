@@ -1,7 +1,7 @@
 package ca.frar.jjjrmi.jsbuilder.code;
 import spoon.reflect.code.CtForEach;
 
-public class JSForEach implements JSCodeElement {
+public class JSForEach extends AbstractJSCodeElement {
 
     private final JSCodeElement body;
     private final JSCodeElement expression;

@@ -1,7 +1,7 @@
 package ca.frar.jjjrmi.jsbuilder.code;
 import spoon.reflect.code.CtBlock;
 
-public class JSBlock implements JSCodeElement {
+public class JSBlock extends AbstractJSCodeElement {
 
     private final JSElementList body;
 

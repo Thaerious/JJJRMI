@@ -1,6 +1,5 @@
 package ca.frar.jjjrmi.socket.message;
 import ca.frar.jjjrmi.annotations.JJJ;
-import ca.frar.jjjrmi.annotations.JJJOptions;
 import ca.frar.jjjrmi.annotations.ProcessLevel;
 import ca.frar.jjjrmi.annotations.SkipJS;
 import static ca.frar.jjjrmi.socket.message.ClientMessageType.METHOD_REQUEST;
@@ -12,8 +11,7 @@ import java.lang.reflect.Parameter;
  * @author Ed Armstrong
  */
 @SuppressWarnings("PublicField")
-@JJJ()
-@JJJOptions(retain=false, processLevel=ProcessLevel.ALL)
+@JJJ(retain=false, processLevel=ProcessLevel.ALL)
 public class MethodRequest extends ClientMessage{
     public String uid;
     public String objectPTR;

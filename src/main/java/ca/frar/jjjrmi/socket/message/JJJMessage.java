@@ -1,11 +1,9 @@
 package ca.frar.jjjrmi.socket.message;
 import ca.frar.jjjrmi.annotations.JJJ;
-import ca.frar.jjjrmi.annotations.JJJOptions;
-import ca.frar.jjjrmi.translator.DataObject;
+import ca.frar.jjjrmi.socket.JJJTransientObject;
 
-@JJJ()
-@JJJOptions(retain=false)
-public abstract class JJJMessage implements DataObject{
+@JJJ(retain=false)
+public abstract class JJJMessage implements JJJTransientObject{
     protected JJJMessageType type;
     protected JJJMessage(){}
 

@@ -9,12 +9,12 @@ import ca.frar.jjjrmi.socket.observer.events.JJJReceiveEvent;
 import ca.frar.jjjrmi.socket.observer.events.JJJSentEvent;
 
 public interface JJJObserver {
-    default void socketOpen(JJJOpenEvent event) {}
-    default void socketReceive(JJJReceiveEvent event) {}
-    default void socketSend(JJJSendEvent<?> event) {}
-    default void clientMethodInvocation(JJJMethodInvocationEvent event) {}
-    default void socketException(JJJExceptionEvent event) {}
-    default void serverMethodRequest(JJJMethodRequestEvent event) {}
-    default void socketClose(JJJCloseEvent event) {}
-    default void socketSent(JJJSentEvent<?> event) {}
+     void socketOpen(JJJOpenEvent event);
+     void socketReceive(JJJReceiveEvent event);
+     void socketSend(JJJSendEvent<?> event);
+     void clientMethodInvocation(JJJMethodInvocationEvent event);
+     void socketException(JJJExceptionEvent event);
+     void serverMethodRequest(JJJMethodRequestEvent event);
+     void socketClose(JJJCloseEvent event);
+     void socketSent(JJJSentEvent<?> event);
 }

@@ -2,7 +2,7 @@ package ca.frar.jjjrmi.jsbuilder.code;
 import ca.frar.jjjrmi.utility.JJJOptionsHandler;
 import spoon.reflect.code.CtConstructorCall;
 
-public class JSConstructorCall implements JSCodeElement {
+public class JSConstructorCall extends AbstractJSCodeElement {
     private final JSElementList arguments;
     private final String name;
     private final CtConstructorCall ctConstructorCall;
@@ -19,7 +19,7 @@ public class JSConstructorCall implements JSCodeElement {
                 
         StringBuilder builder = new StringBuilder();
         builder.append("new ");
-        if (jjjOptionsHandler.hasJJJ() && !jjjOptionsHandler.getClass().isEnum()){
+        if (!jjjOptionsHandler.getClass().isEnum()){
             builder.append(jjjOptionsHandler.getName());
         } else {        
             builder.append(name);

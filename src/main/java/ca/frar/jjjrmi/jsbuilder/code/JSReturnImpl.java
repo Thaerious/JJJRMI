@@ -3,7 +3,7 @@ package ca.frar.jjjrmi.jsbuilder.code;
 import spoon.reflect.code.CtExpression;
 import spoon.support.reflect.code.CtReturnImpl;
 
-public class JSReturnImpl implements JSCodeElement {
+public class JSReturnImpl extends AbstractJSCodeElement {
     private final JSCodeElement ex;
 
     public JSReturnImpl(CtReturnImpl ctReturnImpl) {

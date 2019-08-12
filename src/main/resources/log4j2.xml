@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration package="log4j.test" status="WARN">
+    <CustomLevels>
+        <CustomLevel name="VERBOSE" intLevel="450" />
+        <CustomLevel name="VERY-VERBOSE" intLevel="475" />
+    </CustomLevels>
+        
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss} %-5level %c{2}:%L - %msg%n"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Root level="DEBUG">
+            <AppenderRef ref="Console"/>
+        </Root>    
+<!--        <Logger name="ca.sharcnet.dh.scriber.encoder.servicemodules.EncoderNER" level="DEBUG" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>                   -->
+<!--        <Logger name="ca.sharcnet.nerve.services.ServiceBase" level="DEBUG" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>                             -->
+    </Loggers>
+</Configuration>

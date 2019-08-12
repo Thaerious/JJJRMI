@@ -4,8 +4,6 @@ import ca.frar.jjjrmi.jsbuilder.code.JSFieldDeclaration;
 import ca.frar.jjjrmi.jsbuilder.code.JSSuperConstructor;
 import java.util.Collection;
 import java.util.List;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
@@ -16,7 +14,7 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.support.reflect.code.CtInvocationImpl;
 
 public class JSConstructorGenerator {
-    final static Logger LOGGER = LogManager.getLogger(JSClassBuilder.class);
+    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(JSConstructorGenerator.class);
     private final CtClass<?> ctClass;
     private final CtExecutable<?> ctMethod;
     private final JSClassBuilder<?> jsClassBuilder;

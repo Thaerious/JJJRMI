@@ -1,16 +1,14 @@
 package ca.frar.jjjrmi.socket.message;
 import ca.frar.jjjrmi.annotations.JJJ;
-import ca.frar.jjjrmi.annotations.JJJOptions;
 import ca.frar.jjjrmi.annotations.SkipJS;
-import ca.frar.jjjrmi.translator.DataObject;
+import ca.frar.jjjrmi.socket.JJJTransientObject;
 
 /**
  * Parent class for messages sent from client to server.
  * @author Ed Armstrong
  */
-@JJJ()
-@JJJOptions(retain=false)
-public class ClientMessage implements DataObject{
+@JJJ(retain=false)
+public class ClientMessage implements JJJTransientObject{
     private ClientMessageType type;
 
     @SkipJS

@@ -2,7 +2,7 @@ package ca.frar.jjjrmi.jsbuilder.code;
 
 import spoon.reflect.code.CtContinue;
 
-public class JSContinue implements JSCodeElement {
+public class JSContinue extends AbstractJSCodeElement {
 
     public JSContinue(CtContinue ctContinue) {
     }

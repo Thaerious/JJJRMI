@@ -1,5 +1,8 @@
-package ca.frar.jjjrmi.jsbuilder;
+package ca.frar.jjjrmi;
 import ca.frar.jjjrmi.RuntimeOptions;
+import ca.frar.jjjrmi.jsbuilder.JSBuilderException;
+import ca.frar.jjjrmi.jsbuilder.JSClassBuilder;
+import ca.frar.jjjrmi.jsbuilder.JSParser;
 import ca.frar.stream.TemplateVariableReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -12,9 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Properties;
-import java.util.logging.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Level;
 import spoon.Launcher;
 import spoon.SpoonModelBuilder;
 import spoon.compiler.Environment;
@@ -26,7 +27,7 @@ import spoon.support.StandardEnvironment;
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
 
 public class Main implements Runnable {
-    final static Logger LOGGER = LogManager.getLogger(JSClassBuilder.class);
+    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(Main.class);
     private final FactoryImpl factory;
     private final List<Processor<? extends CtElement>> processors = new ArrayList<>();
     private final JSParser jsParser;
@@ -40,8 +41,7 @@ public class Main implements Runnable {
             Launcher.LOGGER.setLevel(org.apache.log4j.Level.OFF);
             new Main(args).run();
         } catch (Exception ex) {
-            System.out.println("Exception caught in main");
-            ex.printStackTrace();
+            LOGGER.catching(ex);
         }
     }
 
@@ -80,22 +80,21 @@ public class Main implements Runnable {
 
             this.outputClasses();
             if (this.runtimeOptions.isGeneratePackage()) {
-                LOGGER.info("Creating package js file.");
+                LOGGER.info("Creating packageFile.js file.");
                 this.buildPackageJS();
             } else {
-                LOGGER.info("Skipping package js file.");
+                LOGGER.log(Level.forName("VERY-VERBOSE", 475), "Skipping package js file.");
             }
 
             LOGGER.info(this.runtimeOptions.isGenerateJSON() + " this.runtimeOptions.isGenerateJSON()");
             
             if (this.runtimeOptions.isGenerateJSON()) {
-                LOGGER.info("Creating package json file.");
+                LOGGER.info("Creating package.json file.");
                 this.copyPackageJSON();
             } else {
-                LOGGER.info("Skipping package json file.");
+                LOGGER.log(Level.forName("VERY-VERBOSE", 475), "Skipping package json file.");
             }
         } catch (IOException | JSBuilderException ex) {
-            LOGGER.info("Exception caught in run");
             LOGGER.catching(ex);
         }
     }
@@ -113,9 +112,7 @@ public class Main implements Runnable {
         versionProperties.load(this.getClass().getClassLoader().getResourceAsStream("version.properties"));
 
         LOGGER.info("+===============================================+");
-        LOGGER.info(headerline(45, "JJJ Javascript Code Generator v" + versionProperties.getProperty("build.version")));
-        LOGGER.info(headerline(45, "Build #" + versionProperties.getProperty("build.number")));
-        LOGGER.info(headerline(45, "Built on " + versionProperties.getProperty("build.timestamp")));
+        LOGGER.info(headerline(45, "JJJ Javascript Code Generator"));
         LOGGER.info("+===============================================+");
     }
 
@@ -186,7 +183,6 @@ public class Main implements Runnable {
 
         String packageJsonPath = String.format("%s/%s/package.json", runtimeOptions.getOutputDirectory(), runtimeOptions.getPackageName());
         File file = new File(packageJsonPath);
-        LOGGER.debug(packageJsonPath);
         
         FileWriter fileWriter = new FileWriter(file);
 

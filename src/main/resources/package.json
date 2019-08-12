@@ -1,0 +1,5 @@
+{
+    "name": "${packageName}",
+    "main": "${packageFileName}",
+    "version": "${version}"
+}

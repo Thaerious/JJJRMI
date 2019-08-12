@@ -1,6 +1,5 @@
 package ca.frar.jjjrmi.socket.message;
 import ca.frar.jjjrmi.annotations.JJJ;
-import ca.frar.jjjrmi.annotations.JJJOptions;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import static ca.frar.jjjrmi.socket.message.JJJMessageType.EXCEPTION;
 
@@ -8,8 +7,7 @@ import static ca.frar.jjjrmi.socket.message.JJJMessageType.EXCEPTION;
  * Message from server to client to indicate an uncaught exception has occurred.
  * @author Ed Armstrong
  */
-@JJJ()
-@JJJOptions(retain=false)
+@JJJ(retain=false)
 public final class ServerSideExceptionMessage extends JJJMessage{
     final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(ServerSideExceptionMessage.class);
     private String exception;

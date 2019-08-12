@@ -1,7 +1,7 @@
 package ca.frar.jjjrmi.jsbuilder.code;
 import spoon.reflect.code.CtLocalVariable;
 
-public class JSLocalVariable implements JSCodeElement{
+public class JSLocalVariable extends AbstractJSCodeElement{
     private final CtLocalVariable ctLocalVariable;
     private final JSLocalVariableReference lhs;
     private final JSCodeElement rhs;

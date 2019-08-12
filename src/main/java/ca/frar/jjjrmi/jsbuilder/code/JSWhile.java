@@ -1,7 +1,7 @@
 package ca.frar.jjjrmi.jsbuilder.code;
 import spoon.reflect.code.CtWhile;
 
-public class JSWhile implements JSCodeElement {
+public class JSWhile extends AbstractJSCodeElement {
     private final JSCodeElement expression;
     private final JSCodeElement body;
 

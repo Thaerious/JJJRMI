@@ -1,6 +1,6 @@
 package ca.frar.jjjrmi.jsbuilder.code;
 
-public class JSCodeSnippet implements JSCodeElement{
+public class JSCodeSnippet extends AbstractJSCodeElement{
     private final String string;
 
     public JSCodeSnippet(String string){

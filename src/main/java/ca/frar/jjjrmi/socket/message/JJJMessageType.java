@@ -1,9 +1,7 @@
 package ca.frar.jjjrmi.socket.message;
 import ca.frar.jjjrmi.annotations.JJJ;
-import ca.frar.jjjrmi.annotations.JJJOptions;
 
-@JJJ()
-@JJJOptions(retain=false)
+@JJJ(retain=false)
 public enum JJJMessageType {
     LOCAL,
     REMOTE,

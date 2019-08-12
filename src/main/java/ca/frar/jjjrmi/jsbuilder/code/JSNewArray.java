@@ -5,7 +5,7 @@ import java.util.List;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtNewArray;
 
-public class JSNewArray implements JSCodeElement {
+public class JSNewArray extends AbstractJSCodeElement {
 
     private CtExpression<Integer> arraySize;
 

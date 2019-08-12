@@ -1,6 +1,5 @@
 package ca.frar.jjjrmi.socket.message;
 import ca.frar.jjjrmi.annotations.JJJ;
-import ca.frar.jjjrmi.annotations.JJJOptions;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import static ca.frar.jjjrmi.socket.message.JJJMessageType.FORGET;
 
@@ -9,8 +8,7 @@ import static ca.frar.jjjrmi.socket.message.JJJMessageType.FORGET;
  * @author Ed Armstrong
  */
 
-@JJJ()
-@JJJOptions(retain=false)
+@JJJ(retain=false)
 public final class ForgetMessage extends JJJMessage{
     private String key;
 

@@ -2,7 +2,7 @@ package ca.frar.jjjrmi.jsbuilder.code;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtThrow;
 
-public class JSThrow implements JSCodeElement {
+public class JSThrow extends AbstractJSCodeElement {
 
     private final CtExpression<? extends Throwable> thrownExpression;
 

@@ -2,7 +2,7 @@ package ca.frar.jjjrmi.jsbuilder.code;
 
 import spoon.reflect.code.CtArrayWrite;
 
-public class JSArrayWrite implements JSCodeElement {
+public class JSArrayWrite extends AbstractJSCodeElement {
 
     private final JSCodeElement target;
     private final JSCodeElement index;

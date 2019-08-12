@@ -2,7 +2,7 @@ package ca.frar.jjjrmi.jsbuilder.code;
 
 import spoon.reflect.code.CtDo;
 
-public class JSDo implements JSCodeElement {
+public class JSDo extends AbstractJSCodeElement {
     private final JSCodeElement expression;
     private final JSBlock body;
 

@@ -2,7 +2,7 @@ package ca.frar.jjjrmi.jsbuilder.code;
 
 import spoon.reflect.code.CtSwitch;
 
-public class JSSwitch implements JSCodeElement {
+public class JSSwitch extends AbstractJSCodeElement {
 
     private final JSCodeElement selector;
     private final JSElementList cases;

@@ -1,7 +1,7 @@
 package ca.frar.jjjrmi.jsbuilder.code;
 import spoon.reflect.code.CtIf;
 
-public class JSIf implements JSCodeElement {
+public class JSIf extends AbstractJSCodeElement {
 
     private final JSCodeElement condition;
     private final JSCodeElement thenStatement;

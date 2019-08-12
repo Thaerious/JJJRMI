@@ -2,7 +2,7 @@ package ca.frar.jjjrmi.jsbuilder.code;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.reference.CtFieldReference;
 
-public class JSFieldRead implements JSCodeElement {
+public class JSFieldRead extends AbstractJSCodeElement {
     private final CtFieldReference variable;
     private final JSCodeElement target;
 

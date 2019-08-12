@@ -1,15 +1,11 @@
 package ca.frar.jjjrmi.socket.message;
 import ca.frar.jjjrmi.annotations.JJJ;
-import ca.frar.jjjrmi.annotations.JJJOptions;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.annotations.ProcessLevel;
-import static ca.frar.jjjrmi.annotations.ProcessLevel.NONE;
-import static ca.frar.jjjrmi.socket.message.JJJMessageType.READY;
 import static ca.frar.jjjrmi.socket.message.JJJMessageType.REMOTE;
 import java.util.Arrays;
 
-@JJJ()
-@JJJOptions(retain=false, processLevel=ProcessLevel.ALL)
+@JJJ(retain=false, processLevel=ProcessLevel.ALL)
 public class ClientRequestMessage extends JJJMessage{
     private String ptr;
     private String methodName;

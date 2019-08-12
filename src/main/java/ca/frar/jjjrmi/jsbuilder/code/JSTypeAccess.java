@@ -3,7 +3,7 @@ import ca.frar.jjjrmi.annotations.NativeJS;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.reference.CtTypeReference;
 
-public class JSTypeAccess implements JSCodeElement {
+public class JSTypeAccess extends AbstractJSCodeElement {
     private final CtTypeReference<?> accessedType;
     private String literal = null;
 

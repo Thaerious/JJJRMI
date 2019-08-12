@@ -1,7 +1,7 @@
 package ca.frar.jjjrmi.jsbuilder.code;
 import spoon.reflect.code.CtLiteral;
 
-public class JSLiteral implements JSCodeElement {
+public class JSLiteral extends AbstractJSCodeElement {
     private final CtLiteral ctLiteral;
 
     public JSLiteral(CtLiteral<?> ctLiteral) {

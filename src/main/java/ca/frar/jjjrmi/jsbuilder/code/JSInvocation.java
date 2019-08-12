@@ -7,7 +7,7 @@ import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtTypeReference;
 
-public class JSInvocation implements JSCodeElement {
+public class JSInvocation extends AbstractJSCodeElement {
     private final JSElementList arguments;
     private final String name;
     private final JSCodeElement target;

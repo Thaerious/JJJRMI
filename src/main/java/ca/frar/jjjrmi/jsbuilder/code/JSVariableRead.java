@@ -2,7 +2,7 @@ package ca.frar.jjjrmi.jsbuilder.code;
 import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.reference.CtVariableReference;
 
-public class JSVariableRead implements JSCodeElement {
+public class JSVariableRead extends AbstractJSCodeElement {
 
     private final CtVariableReference variable;
 

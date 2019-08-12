@@ -2,7 +2,7 @@ package ca.frar.jjjrmi.jsbuilder.code;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.UnaryOperatorKind;
 
-public class JSUnaryOperator implements JSCodeElement {
+public class JSUnaryOperator extends AbstractJSCodeElement {
 
     private final JSCodeElement operand;
     private final UnaryOperatorKind kind;

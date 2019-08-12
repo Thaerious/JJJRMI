@@ -1,6 +1,6 @@
 package ca.frar.jjjrmi.jsbuilder.code;
 
-public class JSEmptyElement implements JSCodeElement {
+public class JSEmptyElement extends AbstractJSCodeElement {
 
     @Override
     public String toString() {

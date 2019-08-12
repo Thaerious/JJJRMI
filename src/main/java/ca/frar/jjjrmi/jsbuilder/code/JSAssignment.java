@@ -2,7 +2,7 @@ package ca.frar.jjjrmi.jsbuilder.code;
 
 import spoon.reflect.code.CtAssignment;
 
-public class JSAssignment implements JSCodeElement {
+public class JSAssignment extends AbstractJSCodeElement {
 
     private final JSCodeElement rhs;
     private final JSCodeElement lhs;

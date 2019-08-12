@@ -2,7 +2,7 @@ package ca.frar.jjjrmi.jsbuilder.code;
 
 import spoon.reflect.code.CtComment;
 
-public class JSComment implements JSCodeElement {
+public class JSComment extends AbstractJSCodeElement {
 
     private String outputString;
 

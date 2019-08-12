@@ -2,7 +2,7 @@ package ca.frar.jjjrmi.jsbuilder.code;
 
 import spoon.reflect.code.CtConditional;
 
-public class JSConditional implements JSCodeElement {
+public class JSConditional extends AbstractJSCodeElement {
 
     private final JSCodeElement condition;
     private final JSCodeElement elseEx;

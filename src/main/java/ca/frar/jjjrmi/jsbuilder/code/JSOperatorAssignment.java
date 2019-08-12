@@ -4,7 +4,7 @@ import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtOperatorAssignment;
 
-public class JSOperatorAssignment implements JSCodeElement {
+public class JSOperatorAssignment extends AbstractJSCodeElement {
 
     private final BinaryOperatorKind kind;
     private final JSCodeElement rhs;

@@ -2,7 +2,7 @@ package ca.frar.jjjrmi.jsbuilder.code;
 
 import spoon.reflect.code.CtSuperAccess;
 
-public class JSSuperAccess implements JSCodeElement {
+public class JSSuperAccess extends AbstractJSCodeElement {
 
     public JSSuperAccess(CtSuperAccess ctSuperAccess) {
     }
