@@ -12,7 +12,7 @@ public class JJJRMIMojo extends AbstractMojo {
     private final Log LOGGER = super.getLog();
     
     @Parameter private String source = "src/main/java";
-    @Parameter private String destination = "target/gen";
+    @Parameter private String destination = "target/jjjrmi";
     @Parameter private String packageName = "package";
     @Parameter private String version = "0.0.0";
     @Parameter private boolean generateJSON = true;

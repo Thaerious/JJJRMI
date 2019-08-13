@@ -6,7 +6,7 @@ import java.util.ArrayList;
 public class RuntimeOptions {
     final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(RuntimeOptions.class);
     private String inputDirectory = "src/main/java";
-    private String outputDirectory = "target/gen";
+    private String outputDirectory = "target/jjjrmi";
     private String packageName = "package";
     private String version = "0.0.0";
     private boolean generateJSON = true;
