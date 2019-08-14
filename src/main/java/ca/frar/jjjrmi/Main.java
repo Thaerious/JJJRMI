@@ -134,8 +134,6 @@ public class Main implements Runnable {
             PrintWriter pw = new PrintWriter(fos);
 
             pw.print(jsClassBuilder.fullString());
-
-            pw.print(String.format("\nif (typeof module !== \"undefined\") module.exports = %s;", jsClassBuilder.getSimpleName()));
             pw.close();
         }
 

@@ -1,1 +1,11 @@
+"use strict";
+const JJJRMISocket = require("./JJJRMISocket");
 
+class ${socketName} extends JJJRMISocket{
+
+    constructor(address = "${socketName}"){
+        super(address);
+    }
+}
+
+module.exports = ${socketName};

@@ -6,8 +6,9 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 
-@Mojo(name="generate-js")
+@Mojo(name="generate-js", requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME)
 public class JJJRMIMojo extends AbstractMojo {
     private final Log LOGGER = super.getLog();
     
@@ -17,6 +18,7 @@ public class JJJRMIMojo extends AbstractMojo {
     @Parameter private String version = "0.0.0";
     @Parameter private boolean generateJSON = true;
     @Parameter private boolean generatePackage = true;    
+    @Parameter private boolean generateSocket = true; 
     
     public void execute() throws MojoExecutionException{
         RuntimeOptions runtimeOptions = new RuntimeOptions();
@@ -26,6 +28,7 @@ public class JJJRMIMojo extends AbstractMojo {
         runtimeOptions.setVersion(version);
         runtimeOptions.setGenerateJSON(generateJSON);
         runtimeOptions.setGeneratePackage(generatePackage);
+        runtimeOptions.setGenerateSocket(generateSocket);
         
         Main main = new Main(runtimeOptions);
         main.run();

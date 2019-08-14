@@ -293,6 +293,10 @@ public class JSClassBuilder<T> {
             builder.append(this.jjjOptions.getName()).append(".").append(nestedClassBuilder.getSimpleName()).append(" = ").append(nestedClassBuilder.getSimpleName()).append(";");
         }
 
+        builder.append("\nif (typeof module !== \"undefined\") module.exports = ");
+        builder.append(this.ctClass.getSimpleName());
+        builder.append(";");
+        
         return builder.toString();
     }
 

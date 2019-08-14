@@ -1,8 +1,7 @@
 "use strict";
-let Translator = require("./Translator");
-let jjjserver = require("jjjrmi");
-let ArrayList = require("./java-equiv/ArrayList");
-let HashMap = require("./java-equiv/HashMap");
+const Translator = require("./Translator");
+const MethodRequest = require("./MethodRequest");
+const JJJMessageType = require("./JJJMessageType");
 
 class JJJRMISocket {
     constructor(socketName) {
@@ -86,7 +85,7 @@ class JJJRMISocket {
                 resolve: resolve,
                 reject: reject
             };
-            let packet = new jjjserver.MethodRequest(uid, ptr, methodName, argsArray);
+            let packet = new MethodRequest(uid, ptr, methodName, argsArray);
             let encodedPacket = this.translator.encode(packet);
             if (this.flags.SENT) console.log(encodedPacket);
             let encodedString = JSON.stringify(encodedPacket, null, 4);
@@ -113,18 +112,18 @@ class JJJRMISocket {
         if (this.flags.RECEIVED) console.log(rmiMessage);
 
         switch (rmiMessage.type) {
-            case jjjserver.JJJMessageType.FORGET:{
+            case JJJMessageType.FORGET:{
                 if (this.flags.ONMESSAGE) console.log(this.jjjSocketName + " FORGET");
                 this.translator.removeByKey(rmiMessage.key);
                 break;
             }
-            case jjjserver.JJJMessageType.READY:{
+            case JJJMessageType.READY:{
                 if (this.flags.CONNECT || this.flags.ONMESSAGE) console.log(this.jjjSocketName + " READY");
                 this.onready(rmiMessage.getRoot());
                 break;
             }
             /* client originated request */
-            case jjjserver.JJJMessageType.LOCAL:{
+            case JJJMessageType.LOCAL:{
                 if (this.flags.ONMESSAGE) console.log(`Response to client side request: ${this.jjjSocketName} ${rmiMessage.methodName}`);
                 let callback = this.callback[rmiMessage.uid];
                 delete(this.callback[rmiMessage.uid]);
@@ -132,7 +131,7 @@ class JJJRMISocket {
                 break;
             }
             /* server originated request */
-            case jjjserver.JJJMessageType.REMOTE:{
+            case JJJMessageType.REMOTE:{
             if (this.flags.ONMESSAGE) console.log(`Server side originated request: ${this.jjjSocketName} ${rmiMessage.methodName}`);
                 let target = this.translator.getReferredObject(rmiMessage.ptr);
                 this.remoteMethodCallback(target, rmiMessage.methodName, rmiMessage.args);
@@ -145,7 +144,7 @@ class JJJRMISocket {
 //                else console.warn(`Socket "${this.socketName}" not connected.`);
                 break;
             }
-            case jjjserver.JJJMessageType.EXCEPTION:{
+            case JJJMessageType.EXCEPTION:{
                 if (!this.flags.SILENT) console.log(this.jjjSocketName + " EXCEPTION " + rmiMessage.methodName);
                 if (!this.flags.SILENT) console.warn(rmiMessage);
                 let callback = this.callback[rmiMessage.uid];
@@ -153,7 +152,7 @@ class JJJRMISocket {
                 callback.reject(rmiMessage);
                 break;
             }
-            case jjjserver.JJJMessageType.REJECTED_CONNECTION:{
+            case JJJMessageType.REJECTED_CONNECTION:{
                 if (this.flags.CONNECT || this.flags.ONMESSAGE) console.log(this.jjjSocketName + " REJECTED_CONNECTION");
                 this.onreject();
                 break;
@@ -219,13 +218,19 @@ JJJRMISocket.registerPackage = function(packageFile){
 };
 
 /* register the classes required for JJJRMISocket */
-JJJRMISocket.registerPackage(jjjserver);
-JJJRMISocket.registerClass(ArrayList);
-JJJRMISocket.registerClass(HashMap);
+JJJRMISocket.registerClass(require("./ClientMessage"));
+JJJRMISocket.registerClass(require("./ClientMessageType"));
+JJJRMISocket.registerClass(require("./ClientRequestMessage"));
+JJJRMISocket.registerClass(require("./ForgetMessage"));
+JJJRMISocket.registerClass(require("./JJJMessage"));
+JJJRMISocket.registerClass(require("./JJJMessageType"));
+JJJRMISocket.registerClass(require("./MethodRequest"));
+JJJRMISocket.registerClass(require("./MethodResponse"));
+JJJRMISocket.registerClass(require("./ReadyMessage"));
+JJJRMISocket.registerClass(require("./RejectedConnectionMessage"));
+JJJRMISocket.registerClass(require("./ServerSideExceptionMessage"));
+JJJRMISocket.registerClass(require("./java-equiv/HashMap"));
+JJJRMISocket.registerClass(require("./java-equiv/ArrayList"));
 
-let jjjrmisocket = {};
-jjjrmisocket.JJJRMISocket = JJJRMISocket;
-jjjrmisocket.Translator = Translator;
-jjjrmisocket.ArrayList = ArrayList;
-jjjrmisocket.HashMap = HashMap;
-module.exports = jjjrmisocket;
+JJJRMISocket.Translator = Translator;
+module.exports = JJJRMISocket;

@@ -3,11 +3,9 @@ import ca.frar.jjjrmi.annotations.Generated;
 import ca.frar.jjjrmi.annotations.JJJ;
 import ca.frar.jjjrmi.annotations.ProcessLevel;
 import static ca.frar.jjjrmi.annotations.ProcessLevel.ANNOTATED;
-import ca.frar.jjjrmi.annotations.Scope;
-import ca.frar.jjjrmi.socket.JJJObject;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.reference.CtTypeReference;
+import ca.frar.jjjrmi.annotations.IsSocket;
 
 public class JJJOptionsHandler {
     private String jsExtends = "";
@@ -18,23 +16,27 @@ public class JJJOptionsHandler {
     private boolean generateJS = true;
     private boolean hasJJJ = true;
     private boolean generated = false;
+    private boolean isSocket = false;
     
     public JJJOptionsHandler(Object object) {
-        JJJ jjj = object.getClass().getAnnotation(JJJ.class);
+        JJJ jjj = object.getClass().getAnnotation(JJJ.class);        
         this.generated = object.getClass().getAnnotation(Generated.class) != null;
         setup(object.getClass().getSimpleName(), jjj);
+        if (object.getClass().getAnnotation(IsSocket.class) != null) this.isSocket = true;
     }
 
     public JJJOptionsHandler(Class<?> aClass) {
         JJJ jjj = aClass.getAnnotation(JJJ.class);
         this.generated = aClass.getAnnotation(Generated.class) != null;
         setup(aClass.getSimpleName(), jjj);
+        if (aClass.getAnnotation(IsSocket.class) != null) this.isSocket = true;
     }
 
     public JJJOptionsHandler(CtType<?> CtType) {
         JJJ jjj = CtType.getAnnotation(JJJ.class);
         this.generated = CtType.getAnnotation(Generated.class) != null;
-        setup(CtType.getSimpleName(), jjj);
+        setup(CtType.getSimpleName(), jjj);        
+        if (CtType.getAnnotation(IsSocket.class) != null) this.isSocket = true;
     }
     
     private void setup(String name, JJJ jjj) {
@@ -102,6 +104,10 @@ public class JJJOptionsHandler {
         return this.hasJJJ;
     }
 
+    public boolean isSocket(){
+        return this.isSocket;
+    }
+    
     public String toString(){
         StringBuilder builder = new StringBuilder();
         builder.append("@JJJ(");

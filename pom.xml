@@ -124,6 +124,7 @@
                 <version>0.6-snapshot</version>
                 <configuration>
                     <packageName>jjjrmi</packageName>
+                    <generatePackage>false</generatePackage>
                     <version>0.6.0</version>
                 </configuration>                
                 <executions>

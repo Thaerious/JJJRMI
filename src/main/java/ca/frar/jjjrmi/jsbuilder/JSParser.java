@@ -1,5 +1,5 @@
 package ca.frar.jjjrmi.jsbuilder;
-import ca.frar.jjjrmi.socket.JJJObject;
+import ca.frar.jjjrmi.socket.JJJSocket;
 import ca.frar.jjjrmi.translator.HasWebsockets;
 import ca.frar.jjjrmi.utility.JJJOptionsHandler;
 import org.apache.logging.log4j.Level;
@@ -10,7 +10,6 @@ import spoon.reflect.reference.CtTypeReference;
 
 /**
  * Will process all classes that implement the HasWebsockets interface.
- *
  * @author edward
  */
 @SuppressWarnings("unchecked")
@@ -36,6 +35,13 @@ public class JSParser extends AbstractProcessor<CtClass<?>> {
             jsClassBuilders.addClass(jsClassBuilder);
             return;
         }    
+        
+        /* socket class */
+        if (jjjOptions.isSocket()){
+            LOGGER.log(Level.forName("VERY-VERBOSE", 475), "(+) Building jjjrmi socket: " + ctClass.getQualifiedName());  
+            JSClassBuilder jsSocketBuilder = new JSSocketBuilder(ctClass).build();
+            jsClassBuilders.addClass(jsSocketBuilder);
+        }
         
         /* POJO class */
         if (!isSubtype){
