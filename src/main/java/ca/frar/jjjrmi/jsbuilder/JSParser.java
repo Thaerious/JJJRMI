@@ -29,10 +29,19 @@ public class JSParser extends AbstractProcessor<CtClass<?>> {
         CtTypeReference<Object> jjjObjectType = ctClass.getFactory().Type().get(HasWebsockets.class).getReference();        
         boolean isSubtype = ctClass.isSubtypeOf(jjjObjectType);
         
+        /* enum class */
+        if (ctClass.isEnum() && jjjOptions.hasJJJ()) {
+            LOGGER.log(Level.forName("VERY-VERBOSE", 475), "(+) Building javascript enumeration class: " + ctClass.getQualifiedName());
+            JSClassBuilder<?> jsClassBuilder = new JSEnumBuilder<>((CtEnum<?>) ctClass).build();
+            jsClassBuilders.addClass(jsClassBuilder);
+            return;
+        }    
+        
+        /* POJO class */
         if (!isSubtype){
             LOGGER.log(Level.forName("VERY-VERBOSE", 475), "(-)" + ctClass.getQualifiedName() + " is not subtype of JJJObject");
             return;
-        }        
+        }
         if (!jjjOptions.generateJS()){
             LOGGER.log(Level.forName("VERY-VERBOSE", 475), "(-)" + ctClass.getQualifiedName() + " has option generateJS=false");
             return;
@@ -54,16 +63,9 @@ public class JSParser extends AbstractProcessor<CtClass<?>> {
         
         JSClassBuilder<?> jsClassBuilder;
 
-        if (ctClass.isEnum()) {
-            LOGGER.log(Level.forName("VERY-VERBOSE", 475), "Building javascript enumeration class");
-            jsClassBuilder = new JSEnumBuilder<>((CtEnum<?>) ctClass).build();
-            jsClassBuilders.addClass(jsClassBuilder);
-        }        
-        else {
-            LOGGER.log(Level.forName("VERY-VERBOSE", 475), "Building javascript object class");
-            jsClassBuilder = new JSClassBuilder<>(ctClass).build();            
-            jsClassBuilders.addClass(jsClassBuilder);
-        }
+        LOGGER.log(Level.forName("VERY-VERBOSE", 475), "Building javascript object class");
+        jsClassBuilder = new JSClassBuilder<>(ctClass).build();            
+        jsClassBuilders.addClass(jsClassBuilder);
     }
 
     public Iterable<JSClassBuilder<?>> jsClassBuilders() {

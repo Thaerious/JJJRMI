@@ -90,19 +90,51 @@
                 </executions>
             </plugin>
             
+            <!-- copy jjjrmi javascript files 
+                 see: https://stackoverflow.com/questions/586202/best-practices-for-copying-files-with-maven
+            -->
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>copy-resource-one</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+
+                        <configuration>
+                            <outputDirectory>${basedir}/target/jjjrmi/jjjrmi</outputDirectory>
+                            <resources>          
+                                <resource>
+                                    <directory>/src/main/js</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>              
+                        </configuration>  
+                    </execution>
+                </executions>
+            </plugin>            
+            
+            <!-- generate jjjrmi javascript files -->
             <plugin>
                 <groupId>ca.frar</groupId>
                 <artifactId>jjjrmi-maven-plugin</artifactId>
                 <version>0.6-snapshot</version>
-<!--                <executions>
+                <configuration>
+                    <packageName>jjjrmi</packageName>
+                    <version>0.6.0</version>
+                </configuration>                
+                <executions>
                     <execution>
                         <phase>compile</phase>
                         <goals>
                             <goal>generate-js</goal>
                         </goals>
                     </execution>
-                </executions>-->
+                </executions>
             </plugin>
-         </plugins>
+        </plugins>
     </build>    
 </project>
