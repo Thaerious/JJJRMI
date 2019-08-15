@@ -8,7 +8,6 @@ import ca.frar.jjjrmi.jsbuilder.code.JSFieldDeclaration;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.annotations.ServerSide;
 import ca.frar.jjjrmi.annotations.SkipJS;
-import static ca.frar.jjjrmi.jsbuilder.JSParser.LOGGER;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashMap;

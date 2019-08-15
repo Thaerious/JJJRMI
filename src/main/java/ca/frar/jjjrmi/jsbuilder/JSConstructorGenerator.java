@@ -1,4 +1,5 @@
 package ca.frar.jjjrmi.jsbuilder;
+
 import ca.frar.jjjrmi.jsbuilder.code.JSElementList;
 import ca.frar.jjjrmi.jsbuilder.code.JSFieldDeclaration;
 import ca.frar.jjjrmi.jsbuilder.code.JSSuperConstructor;
@@ -12,71 +13,57 @@ import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.support.reflect.code.CtInvocationImpl;
+import spoon.support.reflect.declaration.CtConstructorImpl;
 
 public class JSConstructorGenerator {
+
     final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(JSConstructorGenerator.class);
     private final CtClass<?> ctClass;
-    private final CtExecutable<?> ctMethod;
+    private final CtExecutable<?> ctConstructor;
     private final JSClassBuilder<?> jsClassBuilder;
     private final JSMethodBuilder jsMethodBuilder;
 
     public JSConstructorGenerator(CtClass<?> ctClass, JSClassBuilder<?> jsClassBuilder) {
         this.ctClass = ctClass;
-        this.ctMethod = null;
+        this.ctConstructor = null;
         this.jsClassBuilder = jsClassBuilder;
         this.jsMethodBuilder = new JSMethodBuilder();
         jsMethodBuilder.setName("constructor");
     }
 
-    public JSConstructorGenerator(CtClass<?> ctClass, CtConstructor<?> ctMethod, JSClassBuilder<?> jsClassBuilder) {
+    public JSConstructorGenerator(CtClass<?> ctClass, CtConstructor<?> ctConstructor, JSClassBuilder<?> jsClassBuilder) {
         this.ctClass = ctClass;
-        this.ctMethod = ctMethod;
+        this.ctConstructor = ctConstructor;
         this.jsClassBuilder = jsClassBuilder;
         this.jsMethodBuilder = new JSMethodBuilder();
         jsMethodBuilder.setName("constructor");
     }
 
     public void run() {
-        if (ctMethod != null) {
+        if (ctConstructor != null) {
             processArguments();
             processBody();
         } else {
             processEmptyBody();
         }
-        
+
         jsClassBuilder.addMethod(jsMethodBuilder);
     }
 
     private void processArguments() {
-        List<CtParameter<?>> parameters = ctMethod.getParameters();
-        if (!parameters.isEmpty()){
+        List<CtParameter<?>> parameters = ctConstructor.getParameters();
+        if (!parameters.isEmpty()) {
             LOGGER.warn("Constructor for class '" + ctClass.getQualifiedName() + "' has a non-empty parameter list.");
         }
-        
+
         for (CtParameter<?> parameter : parameters) {
             jsMethodBuilder.addParameter(parameter.getSimpleName());
         }
     }
 
-    private void processEmptyBody(){
-        CtBlock<Object> body = this.ctClass.getFactory().createBlock();
+    private JSElementList constructFields() {
         JSElementList jsElementList = new JSElementList();
-        boolean hasExtend = this.jsClassBuilder.getHeader().hasExtend();
-        if (hasExtend) jsElementList.add(0, new JSSuperConstructor());
-        jsMethodBuilder.setBody(jsElementList.unscoped());
-    }
-    
-    private void processBody() {
-        CtBlock<?> body;
-        if (this.ctMethod == null) {
-            body = this.ctClass.getFactory().createBlock();
-        } else {
-            body = ctMethod.getBody();
-        }
-
-        List<CtStatement> ctStatements = body.getStatements();
-        JSElementList jsElementList = new JSElementList();
-
+        
         /* add fields to js constructor */
         Collection<CtFieldReference<?>> allFields = ctClass.getAllFields();
         for (CtFieldReference<?> ctField : allFields) {
@@ -92,7 +79,28 @@ public class JSConstructorGenerator {
                 }
             }
         }
+        
+        return jsElementList;
+    }
 
+    private void processEmptyBody() {
+        JSElementList jsElementList = this.constructFields();
+        boolean hasExtend = this.jsClassBuilder.getHeader().hasExtend();
+        if (hasExtend) jsElementList.add(0, new JSSuperConstructor());
+        jsMethodBuilder.setBody(jsElementList.unscoped());
+    }
+
+    private void processBody() {
+        CtBlock<?> body;
+        if (this.ctConstructor == null) {
+            body = this.ctClass.getFactory().createBlock();
+        } else {
+            body = ctConstructor.getBody();
+        }
+
+        List<CtStatement> ctStatements = body.getStatements();
+        JSElementList jsElementList = this.constructFields();
+        
         CtInvocationImpl<?> superInvoke = null;
 
         for (CtStatement statement : ctStatements) {
@@ -106,11 +114,10 @@ public class JSConstructorGenerator {
 
             jsElementList.addCtCodeElement(statement);
         }
-        
+
         if (superInvoke != null && this.jsClassBuilder.getHeader().hasExtend()) {
             jsElementList.add(0, new JSSuperConstructor(superInvoke));
         }
-        
 
         jsMethodBuilder.setBody(jsElementList.unscoped());
     }

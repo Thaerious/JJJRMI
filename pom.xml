@@ -125,6 +125,7 @@
                 <configuration>
                     <packageName>jjjrmi</packageName>
                     <generatePackage>false</generatePackage>
+                    <generateJSON>false</generateJSON>
                     <version>0.6.0</version>
                 </configuration>                
                 <executions>
