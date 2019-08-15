@@ -7,6 +7,7 @@ public class RuntimeOptions {
     final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(RuntimeOptions.class);
     private String inputDirectory = "src/main/java";
     private String outputDirectory = "target/jjjrmi";
+    private String packageFileName = "packageFile";
     private String packageName = "package";
     private String version = "0.0.0";
     private boolean generateJSON = true;
@@ -169,4 +170,18 @@ public class RuntimeOptions {
     public boolean getGenerateSocket() {
         return this.generateSocket;
     }
+    
+    /**
+     * @return the packageFileName
+     */
+    public String getPackageFileName() {
+        return packageFileName;
+    }
+
+    /**
+     * @param packageFileName the packageFileName to set
+     */
+    public void setPackageFileName(String packageFileName) {
+        this.packageFileName = packageFileName;
+    }    
 }

@@ -1,4 +1,5 @@
 package ca.frar.jjjrmi.jsbuilder;
+import ca.frar.jjjrmi.RuntimeOptions;
 import ca.frar.jjjrmi.socket.JJJSocket;
 import ca.frar.jjjrmi.translator.HasWebsockets;
 import ca.frar.jjjrmi.utility.JJJOptionsHandler;
@@ -16,9 +17,11 @@ import spoon.reflect.reference.CtTypeReference;
 public class JSParser extends AbstractProcessor<CtClass<?>> {
     final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(JSParser.class);
     private final JSClassContainer jsClassBuilders = new JSClassContainer();
+    private final RuntimeOptions runtimeOptions;
 
-    public JSParser() {
+    public JSParser(RuntimeOptions runtimeOptions) {
         super();
+        this.runtimeOptions = runtimeOptions;
     }
 
     @Override
@@ -39,7 +42,7 @@ public class JSParser extends AbstractProcessor<CtClass<?>> {
         /* socket class */
         if (jjjOptions.isSocket()){
             LOGGER.log(Level.forName("VERY-VERBOSE", 475), "(+) Building jjjrmi socket: " + ctClass.getQualifiedName());  
-            JSClassBuilder jsSocketBuilder = new JSSocketBuilder(ctClass).build();
+            JSClassBuilder jsSocketBuilder = new JSSocketBuilder(ctClass, this.runtimeOptions.getPackageFileName()).build();
             jsClassBuilders.addClass(jsSocketBuilder);
         }
         

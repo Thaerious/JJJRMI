@@ -5,6 +5,7 @@ class ${socketName} extends JJJRMISocket{
 
     constructor(address = "${socketName}"){
         super(address);
+        JJJRMISocket.registerPackage(require("./${packageName}"));
     }
 }
 

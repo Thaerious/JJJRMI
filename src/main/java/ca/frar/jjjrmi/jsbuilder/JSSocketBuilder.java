@@ -7,12 +7,9 @@ package ca.frar.jjjrmi.jsbuilder;
 
 import ca.frar.stream.TemplateVariableReader;
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import spoon.reflect.declaration.CtClass;
 
 /**
@@ -20,9 +17,16 @@ import spoon.reflect.declaration.CtClass;
  * @author Ed Armstrong
  */
 public class JSSocketBuilder extends JSClassBuilder {
+    private final String packageName;
 
-    public JSSocketBuilder(CtClass ctClass) {
+    /**
+     *
+     * @param ctClass
+     * @param packageName
+     */
+    public JSSocketBuilder(CtClass ctClass, String packageName) {
         super(ctClass);
+        this.packageName = packageName;
     }
 
     public String fullString() {
@@ -35,6 +39,7 @@ public class JSSocketBuilder extends JSClassBuilder {
             
             /* set variables to be copied into package.json template */
             templateVariableReader.set("socketName", this.getSimpleName());
+            templateVariableReader.set("packageName", packageName);
             
             StringBuilder builder = new StringBuilder();
             BufferedReader reader = new BufferedReader(templateVariableReader);

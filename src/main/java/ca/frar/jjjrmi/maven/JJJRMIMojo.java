@@ -19,6 +19,7 @@ public class JJJRMIMojo extends AbstractMojo {
     @Parameter private boolean generateJSON = true;
     @Parameter private boolean generatePackage = true;    
     @Parameter private boolean generateSocket = true; 
+    @Parameter private String packageFileName = "packageFile";
     
     public void execute() throws MojoExecutionException{
         RuntimeOptions runtimeOptions = new RuntimeOptions();
@@ -29,6 +30,7 @@ public class JJJRMIMojo extends AbstractMojo {
         runtimeOptions.setGenerateJSON(generateJSON);
         runtimeOptions.setGeneratePackage(generatePackage);
         runtimeOptions.setGenerateSocket(generateSocket);
+        runtimeOptions.setPackageFileName(packageFileName);
         
         Main main = new Main(runtimeOptions);
         main.run();

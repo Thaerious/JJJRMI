@@ -1,5 +1,4 @@
 package ca.frar.jjjrmi;
-import ca.frar.jjjrmi.RuntimeOptions;
 import ca.frar.jjjrmi.jsbuilder.JSBuilderException;
 import ca.frar.jjjrmi.jsbuilder.JSClassBuilder;
 import ca.frar.jjjrmi.jsbuilder.JSParser;
@@ -51,7 +50,7 @@ public class Main implements Runnable {
 
     public Main(RuntimeOptions runtimeOptions) {
         Launcher.LOGGER.setLevel(org.apache.log4j.Level.OFF);
-        jsParser = new JSParser();
+        jsParser = new JSParser(runtimeOptions);
         this.factory = new FactoryImpl(new DefaultCoreFactory(), new StandardEnvironment());
         this.runtimeOptions = runtimeOptions;
     }
