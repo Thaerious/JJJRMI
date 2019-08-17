@@ -1,22 +1,29 @@
 package ca.frar.jjjrmi.jsbuilder;
 
+import ca.frar.jjjrmi.annotations.Transient;
 import ca.frar.jjjrmi.jsbuilder.code.JSElementList;
 import ca.frar.jjjrmi.jsbuilder.code.JSFieldDeclaration;
 import ca.frar.jjjrmi.jsbuilder.code.JSSuperConstructor;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.Member;
+import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import org.apache.logging.log4j.Level;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtStatement;
+import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtExecutable;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.support.reflect.code.CtInvocationImpl;
-import spoon.support.reflect.declaration.CtConstructorImpl;
 
 public class JSConstructorGenerator {
-
     final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(JSConstructorGenerator.class);
     private final CtClass<?> ctClass;
     private final CtExecutable<?> ctConstructor;
@@ -66,15 +73,29 @@ public class JSConstructorGenerator {
         
         /* add fields to js constructor */
         Collection<CtFieldReference<?>> allFields = ctClass.getAllFields();
-        for (CtFieldReference<?> ctField : allFields) {
-            if (ctField.getDeclaration() == null) {
+        
+        for (CtFieldReference<?> ctFieldRef : allFields) {
+            CtField<?> ctField = ctFieldRef.getFieldDeclaration();
+//            ctClass.getField(ctFieldRef.getSimpleName());
+            
+            if (ctField == null) {
+                LOGGER.log(Level.forName("VERY-VERBOSE", 475), "ctField.getDeclaration() == null");
                 continue;
             }
-            JSFieldDeclaration jsFieldDeclaration = new JSFieldDeclaration(ctField.getDeclaration());
+                        
+            if (ctField.getAnnotation(Transient.class) != null){
+                LOGGER.log(Level.forName("VERY-VERBOSE", 475), "transient field: " + ctField.getSimpleName());
+                continue;
+            }
+            
+            if (ctFieldRef.getDeclaration() == null) continue;
+            JSFieldDeclaration jsFieldDeclaration = new JSFieldDeclaration(ctFieldRef.getDeclaration());
             if (jsFieldDeclaration.hasAssignment()) {
                 if (jsFieldDeclaration.isStatic()) {
+                    LOGGER.log(Level.forName("VERBOSE", 450), "static field: " + ctField.getSimpleName());
                     jsClassBuilder.addStaticField(jsFieldDeclaration);
                 } else {
+                    LOGGER.log(Level.forName("VERBOSE", 450), "local field: " + ctField.getSimpleName());
                     jsElementList.add(jsFieldDeclaration);
                 }
             }

@@ -29,7 +29,6 @@ public class JJJRMIMojo extends AbstractMojo {
         runtimeOptions.setVersion(version);
         runtimeOptions.setGenerateJSON(generateJSON);
         runtimeOptions.setGeneratePackage(generatePackage);
-        runtimeOptions.setGenerateSocket(generateSocket);
         runtimeOptions.setPackageFileName(packageFileName);
         
         Main main = new Main(runtimeOptions);

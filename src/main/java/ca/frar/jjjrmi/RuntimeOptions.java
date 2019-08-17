@@ -14,7 +14,6 @@ public class RuntimeOptions {
     private boolean generatePackage = true;    
     private int verbosity = 1;
     private ArrayList<String> classpath = new ArrayList<>();
-    private boolean generateSocket = true;
 
     @SuppressWarnings("OverridableMethodCallInConstructor")
     public RuntimeOptions(String... args) {
@@ -161,14 +160,6 @@ public class RuntimeOptions {
         String[] classPathArray = new String[classpath.size()];
         classpath.toArray(classPathArray);
         return classPathArray;
-    }
-
-    public void setGenerateSocket(boolean value) {
-        this.generateSocket = value;
-    }
-    
-    public boolean getGenerateSocket() {
-        return this.generateSocket;
     }
     
     /**

@@ -3,6 +3,7 @@ import ca.frar.jjjrmi.RuntimeOptions;
 import ca.frar.jjjrmi.socket.JJJSocket;
 import ca.frar.jjjrmi.translator.HasWebsockets;
 import ca.frar.jjjrmi.utility.JJJOptionsHandler;
+import java.util.ArrayList;
 import org.apache.logging.log4j.Level;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.declaration.CtClass;
@@ -18,15 +19,21 @@ public class JSParser extends AbstractProcessor<CtClass<?>> {
     final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(JSParser.class);
     private final JSClassContainer jsClassBuilders = new JSClassContainer();
     private final RuntimeOptions runtimeOptions;
-
+    private ArrayList<CtClass<?>> sourceClasses = new ArrayList<>();
+    
     public JSParser(RuntimeOptions runtimeOptions) {
         super();
         this.runtimeOptions = runtimeOptions;
     }
 
+    public ArrayList<CtClass<?>> getSourceClasses(){
+        return (ArrayList<CtClass<?>>) sourceClasses.clone();
+    }
+    
     @Override
     public void process(CtClass<?> ctClass) {
         JJJOptionsHandler jjjOptions = new JJJOptionsHandler(ctClass);
+        this.sourceClasses.add(ctClass);
                         
         CtTypeReference<Object> jjjObjectType = ctClass.getFactory().Type().get(HasWebsockets.class).getReference();        
         boolean isSubtype = ctClass.isSubtypeOf(jjjObjectType);

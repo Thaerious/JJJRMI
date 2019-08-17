@@ -81,16 +81,16 @@ public class JSClassBuilder<T> {
         }
         
         if (this.jjjOptions.hasExtends()) {
-            LOGGER.log(Level.forName("VERBOSE", 455), "Setting superclass based on jjj options: " + jjjOptions.getExtends());
+            LOGGER.log(Level.forName("VERBOSE", 450), "Setting superclass based on jjj options: " + jjjOptions.getExtends());
             this.getHeader().setExtend(jjjOptions.getExtends());
         } else if (supertype == null) {
-            LOGGER.log(Level.forName("VERY-VERBOSE", 455), "No superclass found.");
+            LOGGER.log(Level.forName("VERY-VERBOSE", 475), "No superclass found.");
         } else if (supertype.hasAnnotation(JJJ.class)) {
-            LOGGER.log(Level.forName("VERBOSE", 455), "Setting superclass based on java class: " + supertype.getSimpleName());
+            LOGGER.log(Level.forName("VERBOSE", 450), "Setting superclass based on java class: " + supertype.getSimpleName());
             this.getHeader().setExtend(supertype.getSimpleName());
             requires.put(supertype.getSimpleName(), supertype);
         } else {
-            LOGGER.log(Level.forName("VERY-VERBOSE", 455), "Direct superclass does not have @JJJ annotation: " + supertype.getSimpleName());
+            LOGGER.log(Level.forName("VERY-VERBOSE", 475), "Direct superclass does not have @JJJ annotation: " + supertype.getSimpleName());
         }
 
         /* add to require list each constructor call (new) of a top level type with @JJJ */
@@ -102,7 +102,7 @@ public class JSClassBuilder<T> {
             .<CtType>forEach((CtType ele) ->{
                 JJJOptionsHandler options = new JJJOptionsHandler(ele);
                 if (options.getName().equals(ctClass.getSimpleName()) == false){
-                    LOGGER.log(Level.forName("VERBOSE", 455), "Required class detected: " + options.getName());
+                    LOGGER.log(Level.forName("VERBOSE", 450), "Required class detected: " + options.getName());
                     requires.put(options.getName(), ele);
                 }
             });
@@ -119,7 +119,7 @@ public class JSClassBuilder<T> {
             .<CtType>select(new AnnotationFilter<>(JJJ.class))
             .<CtType>forEach((CtType ele) ->{
                 JJJOptionsHandler options = new JJJOptionsHandler(ele);
-                LOGGER.log(Level.forName("VERBOSE", 455), "Required class detected: " + options.getName());
+                LOGGER.log(Level.forName("VERBOSE", 450), "Required class detected: " + options.getName());
                 requires.put(options.getName(), ele);
             });
 
@@ -139,10 +139,10 @@ public class JSClassBuilder<T> {
         }
 
         if (vettedConstructors.isEmpty()) {
-            LOGGER.log(Level.forName("VERBOSE", 455), "No constructor found, generating default.");
+            LOGGER.log(Level.forName("VERBOSE", 450), "No constructor found, generating default.");
             new JSConstructorGenerator(ctClass, this).run();
         } else {
-            LOGGER.log(Level.forName("VERBOSE", 455), "Constructors found, generating js constructors.");
+            LOGGER.log(Level.forName("VERBOSE", 450), "Constructors found, generating js constructors.");
             for (CtConstructor<?> ctConstructor : vettedConstructors) {
                 new JSConstructorGenerator(ctClass, ctConstructor, this).run();
             }
@@ -152,9 +152,6 @@ public class JSClassBuilder<T> {
         Set<CtMethod<?>> allMethods = ctClass.getMethods();
         for (CtMethod<?> ctMethod : allMethods) {
             if (testGenerateMethod(ctClass, ctMethod)) {
-//                if (ctMethod.getAnnotation(ServerSide.class) != null && !ctMethod.hasModifier(ModifierKind.PUBLIC)) {
-//                    LOGGER.warn("@ServerSide annotated method '" + ctMethod.getSimpleName() + "' of class '" + ctClass.getQualifiedName() + "' is not public.");
-//                }
                 new JSMethodGenerator(ctMethod, this).run();
             }
         }
@@ -163,11 +160,11 @@ public class JSClassBuilder<T> {
         Set<CtType<?>> nestedTypes = ctClass.getNestedTypes();
         for (CtType ctType : nestedTypes) {
             if (!ctType.isEnum()) {
-                LOGGER.log(Level.forName("VERY-VERBOSE", 455), "(--)" + ctClass.getSimpleName() + "." + ctType.getSimpleName() + " not an enumeration");
+                LOGGER.log(Level.forName("VERY-VERBOSE", 475), "(--)" + ctClass.getSimpleName() + "." + ctType.getSimpleName() + " not an enumeration");
             } else if (ctClass.getAnnotation(JJJ.class) == null) {
-                LOGGER.log(Level.forName("VERY-VERBOSE", 455), "(--)" + ctClass.getSimpleName() + "." + ctType.getSimpleName() + " class missing @JJJ");
+                LOGGER.log(Level.forName("VERY-VERBOSE", 475), "(--)" + ctClass.getSimpleName() + "." + ctType.getSimpleName() + " class missing @JJJ");
             } else {
-                LOGGER.log(Level.forName("VERBOSE", 455), "(++)" + ctClass.getSimpleName() + "." + ctType.getSimpleName());
+                LOGGER.log(Level.forName("VERBOSE", 450), "(++)" + ctClass.getSimpleName() + "." + ctType.getSimpleName());
                 JSEnumBuilder<? extends Enum<?>> jsEnumBuilder = new JSEnumBuilder<>((CtEnum<?>) ctType).build();
                 this.nested.add(jsEnumBuilder);
             }
@@ -300,7 +297,7 @@ public class JSClassBuilder<T> {
     }
 
     private void appendRequire(StringBuilder builder, JSRequire jsRequire) {
-        LOGGER.log(Level.forName("VERBOSE", 455), "@JSRequire: " + jsRequire.name());
+        LOGGER.log(Level.forName("VERBOSE", 450), "@JSRequire: " + jsRequire.name());
         builder.append("const ");
         builder.append(jsRequire.name());
         builder.append(" = require(\"");
@@ -309,7 +306,7 @@ public class JSClassBuilder<T> {
     }
     
     private void appendPrequel(StringBuilder builder, JSPrequel jsPrequel){
-        LOGGER.log(Level.forName("VERBOSE", 455), "@JSPrequel: " + jsPrequel.value());        
+        LOGGER.log(Level.forName("VERBOSE", 450), "@JSPrequel: " + jsPrequel.value());        
         builder.append(jsPrequel.value());
         builder.append("\n");        
     }

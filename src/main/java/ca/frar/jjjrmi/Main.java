@@ -55,6 +55,10 @@ public class Main implements Runnable {
         this.runtimeOptions = runtimeOptions;
     }
 
+    public JSParser getParser(){
+        return this.jsParser;
+    }
+    
     public void run() {
         try {
             LOGGER.info("Javascript Code Generator: Parsing files");

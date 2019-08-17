@@ -1,5 +1,5 @@
 "use strict";
-const JJJRMISocket = require("./JJJRMISocket");
+const JJJRMISocket = require("jjjrmi").JJJRMISocket;
 
 class ${socketName} extends JJJRMISocket{
 

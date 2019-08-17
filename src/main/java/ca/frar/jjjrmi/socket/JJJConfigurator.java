@@ -15,18 +15,19 @@ public class JJJConfigurator extends ServerEndpointConfig.Configurator {
     private JJJSocket <?> instance;
     private final Class<? extends JJJSocket <?>> rmiClass;
 
-    JJJConfigurator(Class<? extends JJJSocket <?>> rmiClass) {
-        LOGGER.debug("Loading JJJ Class Configurator for " + rmiClass.getCanonicalName());
-        this.rmiClass = rmiClass;
+    JJJConfigurator(Class<? extends JJJSocket <?>> jjjSocket) {
+        LOGGER.trace("Loading JJJ Class Configurator for " + jjjSocket.getCanonicalName());
+        this.rmiClass = jjjSocket;
     }
 
     /**
     Store 'socket' in the 'httpSession' under the classes canonical name.  If the class has previously been registered
-    it wil be over written.
+    it will be over written.
     @param httpSession
     @param socket
     */
     public static void addSocket(HttpSession httpSession, JJJSocket<?> socket) {
+        LOGGER.trace("JJJConfigurator.addSocket(httpSession, %s", socket.getClass().getSimpleName());
         httpSession.setAttribute(socket.getClass().getCanonicalName(), socket);
         ServletContext servletContext = httpSession.getServletContext();
         socket.setContext(servletContext);

@@ -1,15 +1,21 @@
 package ca.frar.jjjrmi.jsbuilder;
+
 import ca.frar.jjjrmi.annotations.InvokeSuper;
 import ca.frar.jjjrmi.jsbuilder.code.JSElementList;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.annotations.ServerSide;
+import static ca.frar.jjjrmi.jsbuilder.JSConstructorGenerator.LOGGER;
+import java.lang.annotation.Annotation;
+import java.util.Iterator;
 import java.util.List;
 import spoon.reflect.code.CtBlock;
+import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.ModifierKind;
 
 public class JSMethodGenerator {
+
     private final CtMethod<?> ctMethod;
     private final JSClassBuilder<?> jsClassBuilder;
     private final JSMethodBuilder jsMethodBuilder;
@@ -23,17 +29,23 @@ public class JSMethodGenerator {
     }
 
     /**
-    @return true if processing took place.
+     * @return true if processing took place.
      */
     public void run() {
         jsMethodBuilder.setName(ctMethod.getSimpleName());
-        
+
         if (nativeJSAnno != null) {
             if (!nativeJSAnno.value().isEmpty()) jsMethodBuilder.setName(nativeJSAnno.value());
             if (nativeJSAnno.isAsync()) jsMethodBuilder.setAsync(true);
             if (nativeJSAnno.isStatic()) jsMethodBuilder.setStatic(true);
         }
-        
+
+        LOGGER.debug(ctMethod.toString());
+        for (Iterator<CtAnnotation<? extends Annotation>> it = ctMethod.getAnnotations().iterator(); it.hasNext();) {
+            CtAnnotation<? extends Annotation> annotation = it.next();
+            LOGGER.debug(annotation);
+        }
+
         if (ctMethod.hasModifier(ModifierKind.STATIC)) jsMethodBuilder.setStatic(true);
         processArguments();
 
@@ -42,11 +54,11 @@ public class JSMethodGenerator {
         } else {
             processBody();
         }
-        
+
         if (ctMethod.getAnnotation(InvokeSuper.class) != null) {
             jsMethodBuilder.setInvokeSuper(true);
         }
-        
+
         jsClassBuilder.addMethod(jsMethodBuilder);
     }
 

@@ -194,9 +194,10 @@ JJJRMISocket.registerClass = function(aClass){
         console.log(aClass);
         throw new Error(`paramater 'class' of method 'registerClass' is '${typeof aClass}', expected 'function'`);
     }
-    if (typeof aClass.__getClass !== "function"){
-        throw new Error(`in Class ${aClass.constructor.name} method __getClass of type ${typeof aClass.__getClass}`);
-    }
+    
+    if (typeof aClass.__getClass !== "function") return;
+    if (typeof aClass.__isEnum !== "function") return;
+    if (typeof aClass.__isTransient !== "function") return;
     
     if (JJJRMISocket.flags.ONREGISTER) console.log(`Register ${aClass.__getClass()}`);
     
