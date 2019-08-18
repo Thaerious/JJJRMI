@@ -33,7 +33,7 @@ public class MethodRequest extends ClientMessage{
 
     /**
     This method is called after the method request is decoded to fit the received parameter values into the expected
-    parameter types.
+    parameter types.  The method parameter types are not known when the message is first decoded.
     @param parameters
     */
     @SkipJS

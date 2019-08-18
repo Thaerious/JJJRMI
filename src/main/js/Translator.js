@@ -56,8 +56,7 @@ class ClassMap {
         this.classmap = new Map();
     }
     registerPackage(pkg) {
-        for (let aClass in pkg)
-            this.registerClass(pkg[aClass]);
+        for (let aClass in pkg) this.registerClass(pkg[aClass]);
     }
 
     registerClass(aClass) {

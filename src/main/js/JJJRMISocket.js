@@ -4,7 +4,7 @@ const MethodRequest = require("./MethodRequest");
 const JJJMessageType = require("./JJJMessageType");
 
 class JJJRMISocket {
-    constructor(socketName) {
+    constructor(socketName) {        
         this.jjjSocketName = socketName;
         this.translator = new Translator();
         this.callback = {};
@@ -12,8 +12,8 @@ class JJJRMISocket {
         this.socket = null;
         this.translator.copyFrom(JJJRMISocket.classes);
 
-        this.translator.addDecodeListener(obj=>obj.__jjjWebsocket = this);
-        this.translator.addEncodeListener(obj=>obj.__jjjWebsocket = this);
+        this.translator.addDecodeListener(obj => obj.__jjjWebsocket = this);
+        this.translator.addEncodeListener(obj => obj.__jjjWebsocket = this);
         this.jjjEncode = null;
     }
 
@@ -48,7 +48,7 @@ class JJJRMISocket {
         return new Promise(cb);
     }
 
-    getAddress(){
+    getAddress() {
         let prequel = "ws://";
         if (window.location.protocol === "https:") prequel = "wss://";
         let pathname = window.location.pathname.substr(1);
@@ -56,7 +56,7 @@ class JJJRMISocket {
         return `${prequel}${window.location.host}/${pathname}/${this.jjjSocketName}`;
     }
 
-    reset(){
+    reset() {
         this.translator.clear();
     }
 
@@ -69,7 +69,7 @@ class JJJRMISocket {
      * @returns {undefined}
      */
     methodRequest(src, methodName, args) {
-        if (!this.translator.hasReferredObject(src)){
+        if (!this.translator.hasReferredObject(src)) {
             console.warn("see window.debug for source");
             window.debug = src;
             throw new Error(`Attempting to call server side method on non-received object: ${src.constructor.name}.${methodName}`);
@@ -104,7 +104,7 @@ class JJJRMISocket {
      * @returns {undefined}
      */
     onMessage(evt) {
-        if (this.flags.RECEIVED && this.flags.VERBOSE){
+        if (this.flags.RECEIVED && this.flags.VERBOSE) {
             let json = JSON.parse(evt.data);
             console.log(JSON.stringify(json, null, 2));
         }
@@ -112,18 +112,21 @@ class JJJRMISocket {
         if (this.flags.RECEIVED) console.log(rmiMessage);
 
         switch (rmiMessage.type) {
-            case JJJMessageType.FORGET:{
+            case JJJMessageType.FORGET:
+            {
                 if (this.flags.ONMESSAGE) console.log(this.jjjSocketName + " FORGET");
                 this.translator.removeByKey(rmiMessage.key);
                 break;
             }
-            case JJJMessageType.READY:{
+            case JJJMessageType.READY:
+            {
                 if (this.flags.CONNECT || this.flags.ONMESSAGE) console.log(this.jjjSocketName + " READY");
                 this.onready(rmiMessage.getRoot());
                 break;
             }
             /* client originated request */
-            case JJJMessageType.LOCAL:{
+            case JJJMessageType.LOCAL:
+            {
                 if (this.flags.ONMESSAGE) console.log(`Response to client side request: ${this.jjjSocketName} ${rmiMessage.methodName}`);
                 let callback = this.callback[rmiMessage.uid];
                 delete(this.callback[rmiMessage.uid]);
@@ -131,8 +134,9 @@ class JJJRMISocket {
                 break;
             }
             /* server originated request */
-            case JJJMessageType.REMOTE:{
-            if (this.flags.ONMESSAGE) console.log(`Server side originated request: ${this.jjjSocketName} ${rmiMessage.methodName}`);
+            case JJJMessageType.REMOTE:
+            {
+                if (this.flags.ONMESSAGE) console.log(`Server side originated request: ${this.jjjSocketName} ${rmiMessage.methodName}`);
                 let target = this.translator.getReferredObject(rmiMessage.ptr);
                 this.remoteMethodCallback(target, rmiMessage.methodName, rmiMessage.args);
 //                let response = new InvocationResponse(rmiMessage.uid, InvocationResponseCode.SUCCESS);
@@ -144,7 +148,8 @@ class JJJRMISocket {
 //                else console.warn(`Socket "${this.socketName}" not connected.`);
                 break;
             }
-            case JJJMessageType.EXCEPTION:{
+            case JJJMessageType.EXCEPTION:
+            {
                 if (!this.flags.SILENT) console.log(this.jjjSocketName + " EXCEPTION " + rmiMessage.methodName);
                 if (!this.flags.SILENT) console.warn(rmiMessage);
                 let callback = this.callback[rmiMessage.uid];
@@ -152,7 +157,8 @@ class JJJRMISocket {
                 callback.reject(rmiMessage);
                 break;
             }
-            case JJJMessageType.REJECTED_CONNECTION:{
+            case JJJMessageType.REJECTED_CONNECTION:
+            {
                 if (this.flags.CONNECT || this.flags.ONMESSAGE) console.log(this.jjjSocketName + " REJECTED_CONNECTION");
                 this.onreject();
                 break;
@@ -175,45 +181,86 @@ class JJJRMISocket {
             return target[methodName].apply(target, args);
         }
     }
-};
+
+    /**
+     * Performs checks on class before registering it with translator.
+     * @param {type} aClass
+     * @returns {undefined}
+     */
+    registerClass(aClass) {
+        if (typeof aClass !== "function") {
+            console.log(aClass);
+            throw new Error(`paramater 'class' of method 'registerClass' is '${typeof aClass}', expected 'function'`);
+        }
+
+        if (typeof aClass.__getClass !== "function") return;
+        if (typeof aClass.__isEnum !== "function") return;
+        if (typeof aClass.__isTransient !== "function") return;
+
+        if (JJJRMISocket.flags.ONREGISTER) console.log(`Register ${aClass.__getClass()}`);
+
+        this.translator.registerClass(aClass);
+
+        for (let field in aClass) {
+            if (JJJRMISocket.flags.ONREGISTER && JJJRMISocket.flags.VERBOSE) console.log(`considering ${aClass.__getClass()}.${field}`);
+            if (typeof aClass[field] === "function" && typeof aClass[field].__getClass === "function") {
+                this.registerClass(aClass[field]);
+            }
+        }
+    }
+    
+    /* for registering all classes returned from generated JS */
+    registerPackage(packageFile) {
+        for (let aClass in packageFile) {
+            this.registerClass(packageFile[aClass]);
+        }
+    }
+}
+;
 
 JJJRMISocket.flags = {
-        SILENT: false, /* do not print exceptions to console */
-        CONNECT: false, /* show the subset of ONMESSAGE that deals with the initial connection */
-        ONMESSAGE: false, /* describe the action taken when a message is received */
-        SENT: false, /* show the send object, versbose shows the json text as well */
-        RECEIVED: false, /* show the received server object, verbose shows the json text as well */
-        VERBOSE: false, /* print raw text for SENT / RECEIVED */
-        ONREGISTER: false /* report classes as they are registered */
+    SILENT: false, /* do not print exceptions to console */
+    CONNECT: false, /* show the subset of ONMESSAGE that deals with the initial connection */
+    ONMESSAGE: false, /* describe the action taken when a message is received */
+    SENT: false, /* show the send object, versbose shows the json text as well */
+    RECEIVED: false, /* show the received server object, verbose shows the json text as well */
+    VERBOSE: false, /* print raw text for SENT / RECEIVED */
+    ONREGISTER: false /* report classes as they are registered */
 };
 
 JJJRMISocket.classes = new Map();
 
-JJJRMISocket.registerClass = function(aClass){
-    if (typeof aClass !== "function"){
+JJJRMISocket.registerClass = function (aClass) {
+    if (typeof aClass !== "function") {
         console.log(aClass);
         throw new Error(`paramater 'class' of method 'registerClass' is '${typeof aClass}', expected 'function'`);
     }
-    
+
+    if (JJJRMISocket.flags.ONREGISTER && JJJRMISocket.flags.VERBOSE) {
+        if (typeof aClass.__getClass !== "function") console.log(`__getClass not of type function`);
+        if (typeof aClass.__isEnum !== "function") console.log(`__isEnum not of type function`);
+        if (typeof aClass.__isTransient !== "function") console.log(`__isTransient not of type function`);
+    }
+
     if (typeof aClass.__getClass !== "function") return;
     if (typeof aClass.__isEnum !== "function") return;
     if (typeof aClass.__isTransient !== "function") return;
-    
+
     if (JJJRMISocket.flags.ONREGISTER) console.log(`Register ${aClass.__getClass()}`);
-    
+
     JJJRMISocket.classes.set(aClass.__getClass(), aClass);
-    
-    for (let field in aClass){     
+
+    for (let field in aClass) {
         if (JJJRMISocket.flags.ONREGISTER && JJJRMISocket.flags.VERBOSE) console.log(`considering ${aClass.__getClass()}.${field}`);
-        if (typeof aClass[field] === "function" && typeof aClass[field].__getClass === "function"){
+        if (typeof aClass[field] === "function" && typeof aClass[field].__getClass === "function") {
             JJJRMISocket.registerClass(aClass[field]);
         }
     }
 };
 
 /* for registering all classes returned from generated JS */
-JJJRMISocket.registerPackage = function(packageFile){
-    for (let aClass in packageFile){
+JJJRMISocket.registerPackage = function (packageFile) {
+    for (let aClass in packageFile) {
         JJJRMISocket.registerClass(packageFile[aClass]);
     }
 };
