@@ -1,11 +1,8 @@
 package ca.frar.jjjrmi.socket;
-
-import ca.frar.jjjrmi.translator.Translator;
+import ca.frar.jjjrmi.translator.*;
 import ca.frar.jjjrmi.socket.observer.events.*;
 import ca.frar.jjjrmi.socket.observer.*;
 import ca.frar.jjjrmi.socket.message.*;
-import ca.frar.jjjrmi.translator.EncodedJSON;
-import ca.frar.jjjrmi.translator.EncoderException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
