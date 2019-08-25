@@ -53,4 +53,11 @@ final class JJJObserverCollection extends ArrayList<JJJObserver>{
             if (event.isPropgationStopped()) break;
         }
     }
+    void handshake(JJJHandshakeEvent event){
+        for (JJJObserver o : this){
+            o.handshake(event);
+            if (event.isPropgationStopped()) break;
+        }
+        
+    }
 }

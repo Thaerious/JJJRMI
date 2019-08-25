@@ -27,12 +27,11 @@ import org.json.JSONException;
  * @author edward
  */
 public abstract class JJJSocket<T extends HasWebsockets> extends Endpoint implements InvokesMethods, ServerApplicationConfig {
-
     final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(JJJSocket.class);
     private int nextUID = 0;
     private final MethodBank methodBank = new MethodBank();
     private final HashMap<Session, Translator> sessionTranslators = new HashMap<>();
-    private final JJJObserverCollection observers = new JJJObserverCollection();
+    final JJJObserverCollection observers = new JJJObserverCollection();
     private ServletContext context;
 
     void setContext(ServletContext servletContext) {
@@ -408,7 +407,7 @@ public abstract class JJJSocket<T extends HasWebsockets> extends Endpoint implem
             });
         }
     }
-
+    
     @Override
     @SuppressWarnings("unchecked")
     public final Set<ServerEndpointConfig> getEndpointConfigs(Set<Class<? extends Endpoint>> set) {

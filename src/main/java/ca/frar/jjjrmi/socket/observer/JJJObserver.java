@@ -3,6 +3,7 @@ import ca.frar.jjjrmi.socket.observer.events.JJJSendEvent;
 import ca.frar.jjjrmi.socket.observer.events.JJJOpenEvent;
 import ca.frar.jjjrmi.socket.observer.events.JJJCloseEvent;
 import ca.frar.jjjrmi.socket.observer.events.JJJExceptionEvent;
+import ca.frar.jjjrmi.socket.observer.events.JJJHandshakeEvent;
 import ca.frar.jjjrmi.socket.observer.events.JJJMethodInvocationEvent;
 import ca.frar.jjjrmi.socket.observer.events.JJJMethodRequestEvent;
 import ca.frar.jjjrmi.socket.observer.events.JJJReceiveEvent;
@@ -17,4 +18,5 @@ public interface JJJObserver {
      void serverMethodRequest(JJJMethodRequestEvent event);
      void socketClose(JJJCloseEvent event);
      void socketSent(JJJSentEvent<?> event);
+     void handshake(JJJHandshakeEvent event);
 }

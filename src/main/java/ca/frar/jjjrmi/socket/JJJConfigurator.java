@@ -1,7 +1,9 @@
 package ca.frar.jjjrmi.socket;
-
+import ca.frar.jjjrmi.socket.observer.events.JJJHandshakeEvent;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletContext;
@@ -95,7 +97,8 @@ public class JJJConfigurator extends ServerEndpointConfig.Configurator {
         LOGGER.trace("JJJConfigurator.modifyHandshake()");
         HttpSession httpSession = (HttpSession) request.getHttpSession();
         this.instance = (JJJSocket<?>) createInstance(httpSession);
-        JJJConfigurator.addSocket(httpSession, this.instance);
+        JJJConfigurator.addSocket(httpSession, this.instance);       
+        this.instance.observers.handshake(new JJJHandshakeEvent(request, response));
     }
 
     @Override

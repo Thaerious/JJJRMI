@@ -6,18 +6,29 @@ import java.util.Date;
 import java.util.TimeZone;
 
 public class JJJCookie extends javax.servlet.http.Cookie{
+    private static final long serialVersionUID = 1L;
+    private String expires; /* todo add to toString */
+
+    @SuppressWarnings("PublicInnerClass")
     public enum SameSitePolicy {Strict, Lax, None};
     private SameSitePolicy sameSitePolicy = None;
-    private String expires = null;
 
     public JJJCookie(String name, Object value) {
         super(name, value.toString());
     }
 
     @Override
+    @SuppressWarnings("CloneDoesntCallSuperClone")
+    public Object clone() {
+        JJJCookie clone = new JJJCookie(this.getName(), this.getValue());
+        clone.setSameSitePolicy(this.sameSitePolicy);
+        clone.setMaxAge(this.getMaxAge());
+        return clone;
+    }    
+    
+    @Override
     public String toString(){
         StringBuilder builder = new StringBuilder();
-//        builder.append("Set-Cookie: ");
         builder.append(this.getName()).append("=").append(this.getValue());
         if (this.getDomain() != null) builder.append(" ;Domain=").append(this.getDomain());
         if (this.getPath() != null) builder.append(" ;Path=").append(this.getPath());
@@ -25,7 +36,6 @@ public class JJJCookie extends javax.servlet.http.Cookie{
         if (this.isHttpOnly()) builder.append(" ;HttpOnly");
         if (this.getSameSitePolicy() != None) builder.append(" ;SameSite=").append(sameSitePolicy);
         if (this.getMaxAge() != -1) builder.append(" ;Max-Age=").append(this.getMaxAge());
-
         return builder.toString();
     }
 
