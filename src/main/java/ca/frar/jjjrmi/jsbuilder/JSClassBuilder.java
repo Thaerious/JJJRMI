@@ -8,6 +8,7 @@ import ca.frar.jjjrmi.jsbuilder.code.JSFieldDeclaration;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.annotations.ServerSide;
 import ca.frar.jjjrmi.annotations.SkipJS;
+import ca.frar.jjjrmi.socket.JJJObject;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -68,7 +69,7 @@ public class JSClassBuilder<T> {
     }
 
     JSClassBuilder<T> build() {
-        LOGGER.debug("JSClassBuilder.build()");
+        LOGGER.trace("JSClassBuilder.build()");
         addJJJMethods();
         setHeader(new JSHeaderBuilder().setName(jjjOptions.getName()));
 
@@ -85,13 +86,13 @@ public class JSClassBuilder<T> {
             this.getHeader().setExtend(jjjOptions.getExtends());
         } else if (supertype == null) {
             LOGGER.log(Level.forName("VERY-VERBOSE", 475), "No superclass found.");
-        } else if (supertype.hasAnnotation(JJJ.class)) {
+        } else if (supertype.getSimpleName().equals(JJJObject.class.getSimpleName())){
+            LOGGER.log(Level.forName("VERY-VERBOSE", 475), "Direct superclass is of type JJJObject: " + supertype.getSimpleName());
+        } else {
             LOGGER.log(Level.forName("VERBOSE", 450), "Setting superclass based on java class: " + supertype.getSimpleName());
             this.getHeader().setExtend(supertype.getSimpleName());
             requires.put(supertype.getSimpleName(), supertype);
-        } else {
-            LOGGER.log(Level.forName("VERY-VERBOSE", 475), "Direct superclass does not have @JJJ annotation: " + supertype.getSimpleName());
-        }
+        } 
 
         /* add to require list each constructor call (new) of a top level type with @JJJ */
         ctClass
@@ -138,6 +139,7 @@ public class JSClassBuilder<T> {
             LOGGER.warn("Multiple constructors found: " + ctClass.getQualifiedName());
         }
 
+        /* Create constructor, if none found create default */
         if (vettedConstructors.isEmpty()) {
             LOGGER.log(Level.forName("VERBOSE", 450), "No constructor found, generating default.");
             new JSConstructorGenerator(ctClass, this).run();

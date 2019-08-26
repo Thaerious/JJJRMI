@@ -71,16 +71,14 @@ public class JSParser extends AbstractProcessor<CtClass<?>> {
             return;
         }        
         if (!jjjOptions.hasJJJ()) {
-            LOGGER.log(Level.forName("VERY-VERBOSE", 475), "(+)" + ctClass.getQualifiedName() + " no @JJJ, using defaults");
+            LOGGER.log(Level.forName("VERBOSE", 475), "(+)" + ctClass.getQualifiedName() + " no @JJJ, using defaults");
+        } else {
+            LOGGER.log(Level.forName("VERBOSE", 475), "(+)" + ctClass.getQualifiedName());
         }
-        
-        LOGGER.log(Level.forName("VERBOSE", 475), "(+)" + ctClass.getQualifiedName());
+                
         if (ctClass.getDeclaringType() != null) LOGGER.log(Level.forName("VERBOSE", 450), "declaring " + ctClass.getDeclaringType().getSimpleName());
         
-        JSClassBuilder<?> jsClassBuilder;
-
-        LOGGER.log(Level.forName("VERY-VERBOSE", 475), "Building javascript object class");
-        jsClassBuilder = new JSClassBuilder<>(ctClass).build();            
+        JSClassBuilder<?> jsClassBuilder = new JSClassBuilder<>(ctClass).build(); 
         jsClassBuilders.addClass(jsClassBuilder);
     }
 

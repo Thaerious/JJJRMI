@@ -15,7 +15,7 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.ModifierKind;
 
 public class JSMethodGenerator {
-
+    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(JSMethodGenerator.class);
     private final CtMethod<?> ctMethod;
     private final JSClassBuilder<?> jsClassBuilder;
     private final JSMethodBuilder jsMethodBuilder;
@@ -40,10 +40,8 @@ public class JSMethodGenerator {
             if (nativeJSAnno.isStatic()) jsMethodBuilder.setStatic(true);
         }
 
-        LOGGER.debug(ctMethod.toString());
         for (Iterator<CtAnnotation<? extends Annotation>> it = ctMethod.getAnnotations().iterator(); it.hasNext();) {
             CtAnnotation<? extends Annotation> annotation = it.next();
-            LOGGER.debug(annotation);
         }
 
         if (ctMethod.hasModifier(ModifierKind.STATIC)) jsMethodBuilder.setStatic(true);
