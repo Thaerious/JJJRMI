@@ -114,19 +114,27 @@ class Translator extends ClassMap {
         }
         this.tempReferences.clear();
     }
+    
+    /**
+     * Decode JSON to JS.
+     * @param {type} json
+     * @returns {r|Translator.decode.rvalue}
+     */
     decode(json) {
         if (json === null) throw new Error("JSON object is null.");
         if (typeof json === "undefined") throw new Error("JSON object is undefined.");
         if (typeof json === "string") json = JSON.parse(json);
 
         let rvalue = null;
-        let eson = new EncodedJSON(json);
-        new Decoder(eson, this, null).decode(r => {
+        let encodedJSON = new EncodedJSON(json);
+        
+        new Decoder(encodedJSON, this, null).decode(r => {
             while (!this.deferred.isEmpty())
                 this.deferred.remove(0).resume();
             this.clearTempReferences();
             rvalue = r;
         });
+        
         return rvalue;
     }
     deferDecoding(decoder) {
@@ -142,13 +150,13 @@ class Translator extends ClassMap {
         return new ArrayList(values);
     }
     getHandler(aClass) {
-        return this.handlers.get(aClass.__getClass());
+        return this.handlers.get(aClass.jjjGetClass());
     }
     hasHandler(aClass) {
-        return this.handlers.has(aClass.__getClass());
+        return this.handlers.has(aClass.jjjGetClass());
     }
     setHandler(aClass, handler) {
-        this.handlers.set(aClass.__getClass(), handler);
+        this.handlers.set(aClass.jjjGetClass(), handler);
     }
     getReference(object) {
         return this.objectMap.getKey(object);

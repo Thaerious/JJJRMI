@@ -1,5 +1,5 @@
 "use strict";
-let HashMap = class HashMap {
+class HashMap {
     constructor() {
         this.map = new Map();
     }

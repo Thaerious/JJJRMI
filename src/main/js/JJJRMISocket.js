@@ -69,22 +69,26 @@ class JJJRMISocket {
      * @returns {undefined}
      */
     methodRequest(src, methodName, args) {
+        /* method requests come after an object has been sent, this is a sanity check */
         if (!this.translator.hasReferredObject(src)) {
             console.warn("see window.debug for source");
             window.debug = src;
             throw new Error(`Attempting to call server side method on non-received object: ${src.constructor.name}.${methodName}`);
         }
+        
         let uid = this.nextUID++;
         let ptr = this.translator.getReference(src);
 
         let argsArray = [];
         for (let i in args) argsArray.push(args[i]);
 
+        /* promise function */
         let f = function (resolve, reject) {
             this.callback[uid] = {
                 resolve: resolve,
                 reject: reject
             };
+            
             let packet = new MethodRequest(uid, ptr, methodName, argsArray);
             let encodedPacket = this.translator.encode(packet);
             if (this.flags.SENT) console.log(encodedPacket);
@@ -108,6 +112,8 @@ class JJJRMISocket {
             let json = JSON.parse(evt.data);
             console.log(JSON.stringify(json, null, 2));
         }
+        
+        /* the main translation from json to js is triggered here */
         let rmiMessage = this.translator.decode(evt.data);
         if (this.flags.RECEIVED) console.log(rmiMessage);
 
@@ -139,13 +145,6 @@ class JJJRMISocket {
                 if (this.flags.ONMESSAGE) console.log(`Server side originated request: ${this.jjjSocketName} ${rmiMessage.methodName}`);
                 let target = this.translator.getReferredObject(rmiMessage.ptr);
                 this.remoteMethodCallback(target, rmiMessage.methodName, rmiMessage.args);
-//                let response = new InvocationResponse(rmiMessage.uid, InvocationResponseCode.SUCCESS);
-//                let encodedResponse = this.translator.encode(response);
-//                let encodedString = JSON.stringify(encodedResponse, null, 4);
-//
-//                if (this.flags.ONMESSAGE) console.log(`Server side request: ${this.jjjSocketName} ${target.constructor.name}.${rmiMessage.methodName}`);
-//                if (socket !== null) this.socket.send(encodedString);
-//                else console.warn(`Socket "${this.socketName}" not connected.`);
                 break;
             }
             case JJJMessageType.EXCEPTION:

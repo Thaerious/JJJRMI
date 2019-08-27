@@ -1,9 +1,11 @@
 "use strict";
 
 let JJJRMI = {
+    handlers : {
+        HashMap : require("./handlers/HashMap")
+    },
     javaEquivalent : {
-        ArrayList : require("./java-equiv/ArrayList"),
-        HashMap : require("./java-equiv/HashMap")
+        ArrayList : require("./java-equiv/ArrayList")        
     },
     JJJRMISocket : require("./JJJRMISocket")
 };
