@@ -5,12 +5,13 @@ import org.json.JSONObject;
 import ca.frar.jjjrmi.annotations.Transient;
 import ca.frar.jjjrmi.utility.JJJOptionsHandler;
 
-class EncodedObject extends EncodedJSON implements EncodeHandler{
+class EncodedObject extends EncodedJSON implements EncodeHandler{    
+    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(EncodeHandler.class);
     private final Object object;
     private final JSONObject fields;
     private final Translator translator;
 
-    EncodedObject(Object object, Translator translator) throws IllegalArgumentException, IllegalAccessException, EncoderException {
+    EncodedObject(Object object, Translator translator) throws IllegalArgumentException, IllegalAccessException, EncoderException {        
         super(translator);
         this.object = object;
         this.fields = new JSONObject();
@@ -40,7 +41,10 @@ class EncodedObject extends EncodedJSON implements EncodeHandler{
         while (new JJJOptionsHandler(aClass).hasJJJ()) {
             Field[] declaredFields = aClass.getDeclaredFields();
 
-            for (Field field : declaredFields) {
+            for (Field field : declaredFields) {    
+                LOGGER.debug("declared field : " + field.getName());
+                LOGGER.debug(field.getAnnotation(Transient.class) != null);
+                LOGGER.debug(Modifier.isStatic(field.getModifiers()));
                 field.setAccessible(true);
                 if (field.getAnnotation(Transient.class) != null) continue;
                 if (Modifier.isStatic(field.getModifiers())) continue;

@@ -150,13 +150,13 @@ class Translator extends ClassMap {
         return new ArrayList(values);
     }
     getHandler(aClass) {
-        return this.handlers.get(aClass.jjjGetClass());
+        return this.handlers.get(aClass.__getClass());
     }
     hasHandler(aClass) {
-        return this.handlers.has(aClass.jjjGetClass());
+        return this.handlers.has(aClass.__getClass());
     }
     setHandler(aClass, handler) {
-        this.handlers.set(aClass.jjjGetClass(), handler);
+        this.handlers.set(aClass.__getClass(), handler);
     }
     getReference(object) {
         return this.objectMap.getKey(object);

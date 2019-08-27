@@ -1,0 +1,4 @@
+<project name="DemoProject" default="default" basedir=".">
+    <description>Builds JJJRMI</description>
+    <import file="nbproject/build-impl.xml"/>
+</project>
