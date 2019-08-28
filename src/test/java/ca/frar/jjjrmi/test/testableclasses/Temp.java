@@ -1,8 +1,8 @@
 package ca.frar.jjjrmi.test.testableclasses;
+import ca.frar.jjjrmi.annotations.JJJ;
 import ca.frar.jjjrmi.socket.JJJObject;
 
-public class Simple extends JJJObject{
+@JJJ(retain = false)
+public class Temp{
     int x = 5;
-    int y = 7;
-    Shapes shape = Shapes.CIRCLE;
 }

@@ -3,16 +3,19 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import org.json.JSONObject;
 import ca.frar.jjjrmi.annotations.Transient;
+import ca.frar.jjjrmi.socket.JJJObject;
+import static ca.frar.jjjrmi.translator.Encoder.LOGGER;
 import ca.frar.jjjrmi.utility.JJJOptionsHandler;
 
 class EncodedObject extends EncodedJSON implements EncodeHandler{    
-    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(EncodeHandler.class);
+    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(Translator.class);
     private final Object object;
     private final JSONObject fields;
     private final Translator translator;
 
     EncodedObject(Object object, Translator translator) throws IllegalArgumentException, IllegalAccessException, EncoderException {        
         super(translator);
+        LOGGER.trace("new EncodedObject(" + object.getClass().getSimpleName() + ", translator)");
         this.object = object;
         this.fields = new JSONObject();
         this.translator = translator;
@@ -36,15 +39,13 @@ class EncodedObject extends EncodedJSON implements EncodeHandler{
     @throws IllegalAccessException
     */
     void encode() throws IllegalArgumentException, IllegalAccessException, EncoderException {
+        LOGGER.trace("EncodedObject.encode() : " + this.object.getClass().getSimpleName());
         Class<?> aClass = object.getClass();
 
-        while (new JJJOptionsHandler(aClass).hasJJJ()) {
+        while(aClass != JJJObject.class && aClass != Object.class){
             Field[] declaredFields = aClass.getDeclaredFields();
 
-            for (Field field : declaredFields) {    
-                LOGGER.debug("declared field : " + field.getName());
-                LOGGER.debug(field.getAnnotation(Transient.class) != null);
-                LOGGER.debug(Modifier.isStatic(field.getModifiers()));
+            for (Field field : declaredFields) {
                 field.setAccessible(true);
                 if (field.getAnnotation(Transient.class) != null) continue;
                 if (Modifier.isStatic(field.getModifiers())) continue;

@@ -12,14 +12,18 @@ import java.util.function.Consumer;
 import org.json.JSONObject;
 
 /**
-* Class for encoding and decoding RMI classes.
-* Classes added to the encoder will be tracked.  These objects will be assigned
-* a reference string which can be used to retrieve the object.  All reference 
-* strings assigned by the Translator will start with the 'S' character (stands for
-* Sever side).  
-* @author edward
-*/
-public final class Translator implements HasKeys, HasTranslateListeners <Object>{
+ * Class for encoding and decoding RMI classes. Classes added to the encoder
+ * will be tracked. These objects will be assigned a reference string which can
+ * be used to retrieve the object. All reference strings assigned by the
+ * Translator will start with the 'S' character (stands for Sever side).<br>
+ * A Translator does not have to work on a JJJObject.  To control the behaviour
+ * of the translator on an object use the @JJJ annotation.
+ *
+ * @author edward
+ */
+public final class Translator implements HasKeys {
+    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(Translator.class);
+    
     private HashMap<String, Handler> handlers = new HashMap<>();
     private ArrayList<Consumer<Object>> encodeListeners = new ArrayList<>();
     private ArrayList<Consumer<Object>> decodeListeners = new ArrayList<>();
@@ -32,18 +36,21 @@ public final class Translator implements HasKeys, HasTranslateListeners <Object>
         this.setHandler(ArrayList.class, new ArrayListHandler());
         this.setHandler(HashMap.class, new HashMapHandler());
     }
-    
+
     /**
-     * Defer action on the decoder.  This is used when decoding a reference for
+     * Defer action on the decoder. This is used when decoding a reference for
      * which the object has not yet been encountered.
-     * @param decoder 
+     *
+     * @param decoder
      */
     void deferDecoding(Decoder decoder) {
         this.deferred.add(decoder);
     }
 
     public boolean removeByValue(Object obj) {
-        if (!objectMap.containsValue(obj)) return false;
+        if (!objectMap.containsValue(obj)) {
+            return false;
+        }
         this.objectMap.remove(objectMap.getKey(obj));
         return true;
     }
@@ -64,12 +71,14 @@ public final class Translator implements HasKeys, HasTranslateListeners <Object>
     }
 
     /**
-     * Add a reference that will be removed when this round of encoding/decoding.<br>
+     * Add a reference that will be removed when this round of
+     * encoding/decoding.<br>
      * See: {@link ca.frar.jjjrmi.annotations.JJJ#retain @JJJ.retain()}
-     * 
+     *
      * is complete.
+     *
      * @param reference
-     * @param object 
+     * @param object
      */
     void addTempReference(String reference, Object object) {
         this.objectMap.put(reference, object);
@@ -77,7 +86,7 @@ public final class Translator implements HasKeys, HasTranslateListeners <Object>
     }
 
     /**
-     * Remove all temporary references from this translator.  They will get
+     * Remove all temporary references from this translator. They will get
      * re-encoded when next encountered.
      */
     void clearTempReferences() {
@@ -89,8 +98,9 @@ public final class Translator implements HasKeys, HasTranslateListeners <Object>
 
     /**
      * Add a reference to the this translator.
+     *
      * @param reference
-     * @param object 
+     * @param object
      */
     void addReference(String reference, Object object) {
         this.objectMap.put(reference, object);
@@ -98,8 +108,9 @@ public final class Translator implements HasKeys, HasTranslateListeners <Object>
 
     /**
      * Determine if the JSON Encoded Reference is valid.
+     *
      * @param reference
-     * @return 
+     * @return
      */
     public boolean hasReference(String reference) {
         return objectMap.containsKey(reference);
@@ -107,8 +118,9 @@ public final class Translator implements HasKeys, HasTranslateListeners <Object>
 
     /**
      * Determine if an object has been encoded (and saved) by this translator.
+     *
      * @param object
-     * @return 
+     * @return
      */
     public boolean hasReferredObject(Object object) {
         return objectMap.containsValue(object);
@@ -116,16 +128,18 @@ public final class Translator implements HasKeys, HasTranslateListeners <Object>
 
     /**
      * Retrieve an object from a JSON encoded reference.
+     *
      * @param reference
-     * @return 
+     * @return
      */
     public Object getReferredObject(String reference) {
         return objectMap.get(reference);
     }
 
     /**
-     * Return a JSON encoded reference to the given object.
-     * The reference is only valid for this translator.
+     * Return a JSON encoded reference to the given object. The reference is
+     * only valid for this translator.
+     *
      * @param object
      * @return A JSON encoded reference
      */
@@ -135,7 +149,8 @@ public final class Translator implements HasKeys, HasTranslateListeners <Object>
 
     /**
      * Return a collection of all objects tracked by this Translator.
-     * @return 
+     *
+     * @return
      */
     public Collection<Object> getAllReferredObjects() {
         Collection<Object> values = this.objectMap.values();
@@ -143,9 +158,11 @@ public final class Translator implements HasKeys, HasTranslateListeners <Object>
     }
 
     /**
-    Clear all memory of sent objects.  Use if the client of a websocket refreshes the browser before resending objects.
-    Does not reset the nextKey variable in case the client hasn't cleared it's map.
-    @return All objects previously in memory.
+     * Clear all memory of sent objects. Use if the client of a websocket
+     * refreshes the browser before resending objects. Does not reset the
+     * nextKey variable in case the client hasn't cleared it's map.
+     *
+     * @return All objects previously in memory.
      */
     public final Object[] clear() {
         Object[] values = objectMap.values().toArray();
@@ -155,21 +172,25 @@ public final class Translator implements HasKeys, HasTranslateListeners <Object>
     }
 
     /**
-    * Translate a POJO to a JSON encoded object, storing the reference.  
-    * If this object has been previously sent an encoded reference is sent instead.
-    * @param object
-    * @return
-    */
+     * Translate a POJO to a JSON encoded object, storing the reference. If this
+     * object has been previously sent an encoded reference is sent instead.
+     *
+     * @param object
+     * @return
+     */
     public final EncodedJSON encode(Object object) throws IllegalArgumentException, IllegalAccessException, EncoderException {
+        LOGGER.trace("Translator.encode(" + object.getClass().getSimpleName() + ")");
         EncodedJSON toJSON = new Encoder(object, this).encode();
         this.clearTempReferences();
         return toJSON;
     }
 
     /**
-    Translate a JSON encoded object to a POJO, returning the reference if it has previously been stored.
-    @param json
-    @return
+     * Translate a JSON encoded object to a POJO, returning the reference if it
+     * has previously been stored.
+     *
+     * @param json
+     * @return
      * @throws java.lang.ClassNotFoundException
      * @throws java.lang.InstantiationException
      * @throws java.lang.IllegalAccessException
@@ -182,7 +203,9 @@ public final class Translator implements HasKeys, HasTranslateListeners <Object>
 
         new Decoder(json, this, null).decode(
             obj -> {
-                while (!this.deferred.isEmpty()) this.deferred.remove(0).resume();
+                while (!this.deferred.isEmpty()) {
+                    this.deferred.remove(0).resume();
+                }
                 this.clearTempReferences();
                 wrapper.object = obj;
             }
@@ -192,10 +215,11 @@ public final class Translator implements HasKeys, HasTranslateListeners <Object>
     }
 
     /**
-    Translate a string into a JSON encoded object then to a POJO, returning the reference if it has previously
-    been stored.
-    @param json
-    @return
+     * Translate a string into a JSON encoded object then to a POJO, returning
+     * the reference if it has previously been stored.
+     *
+     * @param json
+     * @return
      * @throws java.lang.ClassNotFoundException
      * @throws java.lang.InstantiationException
      * @throws java.lang.IllegalAccessException
@@ -209,29 +233,52 @@ public final class Translator implements HasKeys, HasTranslateListeners <Object>
     }
 
     /**
-    Returns the next available key.
-    @return
-    */
+     * Returns the next available key.
+     *
+     * @return
+     */
     @Override
     public final synchronized String allocNextKey() {
         return "S" + (nextKey++);
     }
 
+    /**
+     * Add an encode listener.
+     *
+     * @param lst
+     */
     public void addEncodeListener(Consumer<Object> lst) {
         this.encodeListeners.add(lst);
     }
 
+    /**
+     * Add a decode listener.
+     *
+     * @param lst
+     */
     public void addDecodeListener(Consumer<Object> lst) {
         this.decodeListeners.add(lst);
     }
 
-    @Override
-    public void notifyEncode(Object object) {
-        for (Consumer<Object> encodeListener : this.encodeListeners) encodeListener.accept(object);
+    /**
+     * Notify all encode listeners an encode has taken place.
+     *
+     * @param object
+     */
+    void notifyEncode(Object object) {
+        for (Consumer<Object> encodeListener : this.encodeListeners) {
+            encodeListener.accept(object);
+        }
     }
 
-    @Override
-    public void notifyDecode(Object object) {
-        for (Consumer<Object> decodeListener : this.decodeListeners) decodeListener.accept(object);
+    /**
+     * Notify all decode listeners an decode has taken place.
+     *
+     * @param object
+     */
+    void notifyDecode(Object object) {
+        for (Consumer<Object> decodeListener : this.decodeListeners) {
+            decodeListener.accept(object);
+        }
     }
 }

@@ -1,0 +1,38 @@
+{
+  "type": "ca.frar.jjjrmi.test.testableclasses.Simple",
+  "fields": {},
+  "key": "S0"
+}
+
+The object will encode each parent class until either JJJObject or Object is encountered.
+All encoded objects are JSON compliant.
+
+Object:
+The root record represents an encoded object.
+An object has the following records:
+ - type
+ - fields
+ - key
+
+The type record contains the canonical class name. 
+
+The fields record can have any number of named records, each of which represents
+a field in the encoded object.  Each named record can be an object, an enum, 
+a primitive, an array, or a reference.
+
+The key record is the reference value to store this object under.  All values
+starting with 'S' are reserved for the translator.
+
+Primitive:
+A primitive record contains the following records:
+ - primitive : the primative type {number, boolean, string}
+ - value : contained value
+
+Enum:
+An enum record contains two records:
+ - value : contained value
+ - enum : canonical class name
+
+Array:
+An array contains one record:
+ - elements : a JSON array of the arrays contents (encoded objects).
