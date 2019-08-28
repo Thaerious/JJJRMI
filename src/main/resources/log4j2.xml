@@ -3,8 +3,7 @@
     <CustomLevels>
         <CustomLevel name="VERBOSE" intLevel="450" />
         <CustomLevel name="VERY-VERBOSE" intLevel="475" />
-    </CustomLevels>
-        
+    </CustomLevels>        
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout pattern="%d{HH:mm:ss} : %msg (%C{1}:%L)%n"/>

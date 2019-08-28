@@ -1,4 +1,4 @@
-package ca.frar.jjjrmi.test.testableclasses;
+package ca.frar.jjjrmi.test.testable;
 
 public enum Shapes {
     CIRCLE,

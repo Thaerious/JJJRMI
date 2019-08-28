@@ -1,4 +1,4 @@
-package ca.frar.jjjrmi.test.testableclasses;
+package ca.frar.jjjrmi.test.testable;
 import ca.frar.jjjrmi.socket.JJJObject;
 
 public class Simple extends JJJObject{

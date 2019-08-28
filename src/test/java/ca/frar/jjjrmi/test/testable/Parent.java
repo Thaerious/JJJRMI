@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ca.frar.jjjrmi.test.testableclasses;
+package ca.frar.jjjrmi.test.testable;
 
 /**
  *
@@ -14,5 +14,6 @@ public class Parent {
     int[] array = {1, 2, 3};
     Simple other = this.simple;
     int[] otherArray = array;
-    Temp temp = new Temp();
+    NoRetain temp = new NoRetain();
+    Object object = null;
 }

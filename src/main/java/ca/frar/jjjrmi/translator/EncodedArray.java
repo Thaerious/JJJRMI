@@ -10,6 +10,9 @@ public class EncodedArray extends EncodedJSON{
         super(translator);
         this.object = object;
         this.elements = new JSONArray();
+        this.put(Constants.KeyParam, translator.allocNextKey());
+        this.put(Constants.RetainParam, false);
+        translator.addTempReference(this.get(Constants.KeyParam).toString(), object);
         this.put(Constants.ElementsParam, elements);
         encode();
     }

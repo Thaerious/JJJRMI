@@ -160,14 +160,6 @@ public abstract class JJJSocket<T extends HasWebsockets> extends Endpoint implem
 
             if (rmiOpenEvent.isDefaultPrevented()) return;
 
-            translator.addDecodeListener((obj) -> {
-                if (obj instanceof HasWebsockets) ((HasWebsockets) obj).addWebsocket(this);
-            });
-
-            translator.addEncodeListener((obj) -> {
-                if (obj instanceof HasWebsockets) ((HasWebsockets) obj).addWebsocket(this);
-            });
-
             session.addMessageHandler(new MsgHandler(this, session));
 
             try {

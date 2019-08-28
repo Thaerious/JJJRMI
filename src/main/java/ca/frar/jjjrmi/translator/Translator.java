@@ -198,7 +198,7 @@ public final class Translator implements HasKeys {
      * @throws java.lang.NoSuchMethodException
      * @throws java.lang.reflect.InvocationTargetException
      */
-    public final Object decode(JSONObject json) throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchFieldException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException {
+    final Object decode(JSONObject json) throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchFieldException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException {
         ObjectWrapper wrapper = new ObjectWrapper();
 
         new Decoder(json, this, null).decode(
@@ -240,45 +240,5 @@ public final class Translator implements HasKeys {
     @Override
     public final synchronized String allocNextKey() {
         return "S" + (nextKey++);
-    }
-
-    /**
-     * Add an encode listener.
-     *
-     * @param lst
-     */
-    public void addEncodeListener(Consumer<Object> lst) {
-        this.encodeListeners.add(lst);
-    }
-
-    /**
-     * Add a decode listener.
-     *
-     * @param lst
-     */
-    public void addDecodeListener(Consumer<Object> lst) {
-        this.decodeListeners.add(lst);
-    }
-
-    /**
-     * Notify all encode listeners an encode has taken place.
-     *
-     * @param object
-     */
-    void notifyEncode(Object object) {
-        for (Consumer<Object> encodeListener : this.encodeListeners) {
-            encodeListener.accept(object);
-        }
-    }
-
-    /**
-     * Notify all decode listeners an decode has taken place.
-     *
-     * @param object
-     */
-    void notifyDecode(Object object) {
-        for (Consumer<Object> decodeListener : this.decodeListeners) {
-            decodeListener.accept(object);
-        }
     }
 }

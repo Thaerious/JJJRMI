@@ -17,7 +17,8 @@ class Encoder {
     }
 
     EncodedJSON encode() throws IllegalArgumentException, IllegalAccessException, EncoderException {
-        LOGGER.trace("Encoder.encode() : " + this.object.getClass().getSimpleName());
+        if (this.object != null) LOGGER.trace("Encoder.encode() : " + this.object.getClass().getSimpleName());
+        else LOGGER.trace("Encoder.encode() : null");
         
         if (object == null){
             LOGGER.trace(" -- null");

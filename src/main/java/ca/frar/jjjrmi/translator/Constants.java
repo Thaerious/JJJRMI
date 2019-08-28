@@ -18,6 +18,7 @@ public class Constants {
     public final static String PrimativeTypeString = "string";
     public final static String PrimativeTypeNumber = "number";
     public final static String PrimativeTypeBoolean = "boolean";
+    public final static String RetainParam = "retain";
 
     private Constants(){};
 }

@@ -75,7 +75,6 @@ public class RestoredObject implements IsRestorable, RestoreHandler {
             }
         }
 
-        this.translator.notifyDecode(newInstance);
         return newInstance;
     }
 

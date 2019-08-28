@@ -25,8 +25,10 @@ class EncodedObject extends EncodedJSON implements EncodeHandler{
         this.put(Constants.KeyParam, translator.allocNextKey());
         if (jjjOptions.retain()){
             translator.addReference(this.get(Constants.KeyParam).toString(), object);
+            this.put(Constants.RetainParam, true);
         } else {
             translator.addTempReference(this.get(Constants.KeyParam).toString(), object);
+            this.put(Constants.RetainParam, false);
         }
 
         this.put(Constants.TypeParam, object.getClass().getName());
@@ -53,8 +55,6 @@ class EncodedObject extends EncodedJSON implements EncodeHandler{
             }
             aClass = aClass.getSuperclass();
         }
-
-        translator.notifyEncode(object);
     }
 
     @Override
