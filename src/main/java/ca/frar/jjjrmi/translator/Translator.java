@@ -12,9 +12,13 @@ import java.util.function.Consumer;
 import org.json.JSONObject;
 
 /**
-Class for encoding and decoding RMI classes.
-@author edward
- */
+* Class for encoding and decoding RMI classes.
+* Classes added to the encoder will be tracked.  These objects will be assigned
+* a reference string which can be used to retrieve the object.  All reference 
+* strings assigned by the Translator will start with the 'S' character (stands for
+* Sever side).  
+* @author edward
+*/
 public final class Translator implements HasKeys, HasTranslateListeners <Object>{
     private HashMap<String, Handler> handlers = new HashMap<>();
     private ArrayList<Consumer<Object>> encodeListeners = new ArrayList<>();
@@ -28,19 +32,14 @@ public final class Translator implements HasKeys, HasTranslateListeners <Object>
         this.setHandler(ArrayList.class, new ArrayListHandler());
         this.setHandler(HashMap.class, new HashMapHandler());
     }
-
-    public Set<String> keySet(){
-        return objectMap.keySet();
-    }
     
+    /**
+     * Defer action on the decoder.  This is used when decoding a reference for
+     * which the object has not yet been encountered.
+     * @param decoder 
+     */
     void deferDecoding(Decoder decoder) {
         this.deferred.add(decoder);
-    }
-
-    public boolean removeByKey(String key) {
-        if (!objectMap.containsKey(key)) return false;
-        this.objectMap.remove(key);
-        return true;
     }
 
     public boolean removeByValue(Object obj) {
@@ -49,50 +48,95 @@ public final class Translator implements HasKeys, HasTranslateListeners <Object>
         return true;
     }
 
+    @Deprecated
     public void setHandler(Class<?> aClass, Handler<?> handler) {
         this.handlers.put(aClass.getCanonicalName(), handler);
     }
 
+    @Deprecated
     public boolean hasHandler(Class<?> aClass) {
         return this.handlers.containsKey(aClass.getCanonicalName());
     }
 
+    @Deprecated
     Handler<?> getHandler(Class<?> aClass) {
         return this.handlers.get(aClass.getCanonicalName());
     }
 
+    /**
+     * Add a reference that will be removed when this round of encoding/decoding.<br>
+     * See: {@link ca.frar.jjjrmi.annotations.JJJ#retain @JJJ.retain()}
+     * 
+     * is complete.
+     * @param reference
+     * @param object 
+     */
     void addTempReference(String reference, Object object) {
         this.objectMap.put(reference, object);
         this.tempReferences.add(reference);
     }
 
+    /**
+     * Remove all temporary references from this translator.  They will get
+     * re-encoded when next encountered.
+     */
     void clearTempReferences() {
         for (String ref : this.tempReferences) {
-            this.removeByKey(ref);
+            this.objectMap.remove(ref);
         }
         this.tempReferences.clear();
     }
 
+    /**
+     * Add a reference to the this translator.
+     * @param reference
+     * @param object 
+     */
     void addReference(String reference, Object object) {
         this.objectMap.put(reference, object);
     }
 
+    /**
+     * Determine if the JSON Encoded Reference is valid.
+     * @param reference
+     * @return 
+     */
     public boolean hasReference(String reference) {
         return objectMap.containsKey(reference);
     }
 
+    /**
+     * Determine if an object has been encoded (and saved) by this translator.
+     * @param object
+     * @return 
+     */
     public boolean hasReferredObject(Object object) {
         return objectMap.containsValue(object);
     }
 
+    /**
+     * Retrieve an object from a JSON encoded reference.
+     * @param reference
+     * @return 
+     */
     public Object getReferredObject(String reference) {
         return objectMap.get(reference);
     }
 
+    /**
+     * Return a JSON encoded reference to the given object.
+     * The reference is only valid for this translator.
+     * @param object
+     * @return A JSON encoded reference
+     */
     public String getReference(Object object) {
         return objectMap.getKey(object);
     }
 
+    /**
+     * Return a collection of all objects tracked by this Translator.
+     * @return 
+     */
     public Collection<Object> getAllReferredObjects() {
         Collection<Object> values = this.objectMap.values();
         return new ArrayList<>(values);
@@ -111,11 +155,11 @@ public final class Translator implements HasKeys, HasTranslateListeners <Object>
     }
 
     /**
-    Translate a POJO to a JSON encoded object, storing the reference.  If this object has been previously sent an
-    encoded reference is sent instead.
-    @param object
-    @return
-     */
+    * Translate a POJO to a JSON encoded object, storing the reference.  
+    * If this object has been previously sent an encoded reference is sent instead.
+    * @param object
+    * @return
+    */
     public final EncodedJSON encode(Object object) throws IllegalArgumentException, IllegalAccessException, EncoderException {
         EncodedJSON toJSON = new Encoder(object, this).encode();
         this.clearTempReferences();
@@ -167,7 +211,7 @@ public final class Translator implements HasKeys, HasTranslateListeners <Object>
     /**
     Returns the next available key.
     @return
-     */
+    */
     @Override
     public final synchronized String allocNextKey() {
         return "S" + (nextKey++);

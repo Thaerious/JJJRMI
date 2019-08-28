@@ -1,3 +1,5 @@
+package ca.frar.jjjrmi.test;
+
 
 import ca.frar.jjjrmi.Main;
 import ca.frar.jjjrmi.RuntimeOptions;
