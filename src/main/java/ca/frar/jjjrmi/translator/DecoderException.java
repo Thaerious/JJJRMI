@@ -5,12 +5,12 @@
  */
 package ca.frar.jjjrmi.translator;
 
-import java.lang.reflect.InvocationTargetException;
-
 /**
  *
  * @author edward
  */
-interface IsRestorable {
-    Object decode() throws DecoderException;
+public class DecoderException extends Exception{
+    DecoderException(Exception ex) {
+        super(ex);
+    }   
 }

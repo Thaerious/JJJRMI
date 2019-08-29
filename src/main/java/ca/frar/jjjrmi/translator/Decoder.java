@@ -1,6 +1,8 @@
 package ca.frar.jjjrmi.translator;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.json.JSONObject;
 import static spoon.Launcher.LOGGER;
 
@@ -17,11 +19,11 @@ class Decoder {
         this.expectedType = expectedType;
     }
 
-    public void resume()  throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchFieldException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException {
+    public void resume()  throws DecoderException {
         this.decode(consumer);
     }
 
-    public void decode(DecodeConsumer consumer) throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchFieldException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException {
+    public void decode(DecodeConsumer consumer) throws DecoderException {
         this.consumer = consumer;
 
         if (json.has(Constants.TypeParam) && json.getString(Constants.TypeParam).equals(Constants.NullValue)) {
@@ -33,7 +35,12 @@ class Decoder {
             Object referredObject = translator.getReferredObject(json.get(Constants.PointerParam).toString());
             consumer.accept(referredObject);
         } else if (json.has(Constants.EnumParam)) {
-            Class<? extends Enum> aClass = (Class<? extends Enum>) this.getClass().getClassLoader().loadClass((String) json.get(Constants.EnumParam));
+            Class<? extends Enum> aClass;
+            try {
+                aClass = (Class<? extends Enum>) this.getClass().getClassLoader().loadClass((String) json.get(Constants.EnumParam));
+            } catch (ClassNotFoundException ex) {
+                throw new DecoderException(ex);
+            }
             String value = json.get(Constants.ValueParam).toString();
             Enum valueOf = Enum.valueOf(aClass, value);
             consumer.accept(valueOf);

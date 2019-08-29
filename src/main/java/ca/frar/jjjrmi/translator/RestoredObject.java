@@ -4,6 +4,8 @@ import ca.frar.jjjrmi.utility.JJJOptionsHandler;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.json.JSONObject;
 
 public class RestoredObject implements IsRestorable, RestoreHandler {
@@ -18,6 +20,14 @@ public class RestoredObject implements IsRestorable, RestoreHandler {
         this.fields = json.getJSONObject(Constants.FieldsParam);
     }
 
+    public final Object decode() throws DecoderException{
+        try {
+            return this.__decode();
+        } catch (NoSuchMethodException | ClassNotFoundException | InstantiationException | IllegalArgumentException | IllegalAccessException | InvocationTargetException ex) {
+            throw new DecoderException(ex);
+        }
+    }
+    
     /**
     Initialize a new object and fill it's fields.
     @return
@@ -29,8 +39,7 @@ public class RestoredObject implements IsRestorable, RestoreHandler {
     @throws IllegalArgumentException
     @throws InvocationTargetException
      */
-    @Override
-    public final Object decode() throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchFieldException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException {
+    private final Object __decode() throws ClassNotFoundException, InstantiationException, DecoderException, IllegalArgumentException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         Class<?> aClass = Class.forName(json.getString(Constants.TypeParam));
         Object newInstance;
 
@@ -71,7 +80,13 @@ public class RestoredObject implements IsRestorable, RestoreHandler {
                 Field field = getJavaField(aClass, name);
                 if (field == null) throw new RuntimeException("Could not find field '" + name + "' in object '" + aClass.getCanonicalName() + "'");
                 field.setAccessible(true);
-                new Decoder(jsonField, translator, field.getType()).decode(obj->field.set(newInstance, obj));
+                new Decoder(jsonField, translator, field.getType()).decode(obj->{
+                    try {
+                        field.set(newInstance, obj);
+                    } catch (IllegalArgumentException | IllegalAccessException ex) {
+                        throw new DecoderException(ex);
+                    }
+                });
             }
         }
 
@@ -89,7 +104,7 @@ public class RestoredObject implements IsRestorable, RestoreHandler {
     }
 
     @Override
-    public <T> T decodeField(String name) throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchFieldException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException {
+    public <T> T decodeField(String name) throws DecoderException {
         return (T) this.translator.decode(fields.getJSONObject(name));
     }
 

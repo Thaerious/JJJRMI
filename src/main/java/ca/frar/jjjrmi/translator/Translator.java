@@ -7,7 +7,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Set;
 import java.util.function.Consumer;
 import org.json.JSONObject;
 
@@ -198,20 +197,19 @@ public final class Translator implements HasKeys {
      * @throws java.lang.NoSuchMethodException
      * @throws java.lang.reflect.InvocationTargetException
      */
-    final Object decode(JSONObject json) throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchFieldException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException {
-        ObjectWrapper wrapper = new ObjectWrapper();
-
-        new Decoder(json, this, null).decode(
-            obj -> {
-                while (!this.deferred.isEmpty()) {
-                    this.deferred.remove(0).resume();
-                }
-                this.clearTempReferences();
-                wrapper.object = obj;
-            }
-        );
-
-        return wrapper.object;
+    final Object decode(JSONObject json) throws DecoderException {
+            ObjectWrapper wrapper = new ObjectWrapper();
+            
+            new Decoder(json, this, null).decode(
+                    obj -> {
+                        while (!this.deferred.isEmpty()) {
+                            this.deferred.remove(0).resume();
+                        }
+                        this.clearTempReferences();
+                        wrapper.object = obj;
+                    }
+            );
+            return wrapper.object;
     }
 
     /**
@@ -220,14 +218,9 @@ public final class Translator implements HasKeys {
      *
      * @param json
      * @return
-     * @throws java.lang.ClassNotFoundException
-     * @throws java.lang.InstantiationException
-     * @throws java.lang.IllegalAccessException
-     * @throws java.lang.NoSuchFieldException
-     * @throws java.lang.NoSuchMethodException
-     * @throws java.lang.reflect.InvocationTargetException
+     * @throws ca.frar.jjjrmi.translator.DecoderException
      */
-    public final Object decode(String json) throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchFieldException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException {
+    public final Object decode(String json) throws DecoderException {
         EncodedJSON jsonObject = new EncodedJSON(this, json);
         return this.decode(jsonObject);
     }

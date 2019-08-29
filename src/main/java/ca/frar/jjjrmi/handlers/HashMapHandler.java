@@ -1,9 +1,9 @@
 package ca.frar.jjjrmi.handlers;
+import ca.frar.jjjrmi.translator.DecoderException;
 import ca.frar.jjjrmi.translator.EncodeHandler;
 import ca.frar.jjjrmi.translator.EncoderException;
 import ca.frar.jjjrmi.translator.Handler;
 import ca.frar.jjjrmi.translator.RestoreHandler;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 
 public class HashMapHandler implements Handler <HashMap<?,?>>{
@@ -25,7 +25,7 @@ public class HashMapHandler implements Handler <HashMap<?,?>>{
     }
 
     @Override
-    public void jjjDecode(RestoreHandler handler, HashMap hashMap) throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchFieldException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException {
+    public void jjjDecode(RestoreHandler handler, HashMap hashMap) throws DecoderException {
 
         Object[] keys = (Object[]) handler.decodeField("keys");
         Object[] values = (Object[]) handler.decodeField("values");

@@ -8,12 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * @author edward
  */
-public class TranslatorTest {
-    
-    @Test
-    public void testDecode(){
-    }
-    
+public class TranslatorTest {   
     /**
      * Test of addReference method, of class Translator.
      */
@@ -151,11 +146,11 @@ public class TranslatorTest {
     }
 
     /**
-     * Test of addReference method, of class Translator.
+     * When cleared no temp references remain.
      */
     @Test
     public void testClearTempReferences() {
-        System.out.println("addReference");
+        System.out.println("clear");
         String reference = "T0";
         Object object = new Simple();
         Translator instance = new Translator();

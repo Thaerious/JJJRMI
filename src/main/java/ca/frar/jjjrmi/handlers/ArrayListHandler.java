@@ -1,4 +1,5 @@
 package ca.frar.jjjrmi.handlers;
+import ca.frar.jjjrmi.translator.DecoderException;
 import ca.frar.jjjrmi.translator.EncodeHandler;
 import ca.frar.jjjrmi.translator.Handler;
 import ca.frar.jjjrmi.translator.EncoderException;
@@ -15,7 +16,7 @@ public class ArrayListHandler implements Handler <ArrayList>{
     }
 
     @Override
-    public void jjjDecode(RestoreHandler handler, ArrayList list) throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchFieldException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException{
+    public void jjjDecode(RestoreHandler handler, ArrayList list) throws DecoderException{
 
         Object[] array = (Object[]) handler.decodeField("elementData");
         for (int i = 0; i < array.length; i++){

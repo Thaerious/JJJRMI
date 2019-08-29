@@ -121,7 +121,6 @@
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
-
                         <configuration>
                             <outputDirectory>${basedir}/target/jjjrmi/jjjrmi</outputDirectory>
                             <resources>          

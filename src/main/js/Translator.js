@@ -152,8 +152,8 @@ class Translator extends ClassMap {
     getHandler(aClass) {
         return this.handlers.get(aClass.__getClass());
     }
-    hasHandler(aClass) {
-        return this.handlers.has(aClass.__getClass());
+    hasHandler(aClass) {        
+        return aClass.__getClass && this.handlers.has(aClass.__getClass());
     }
     setHandler(aClass, handler) {
         this.handlers.set(aClass.__getClass(), handler);

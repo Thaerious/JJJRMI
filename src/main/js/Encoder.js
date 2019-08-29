@@ -14,22 +14,7 @@ class EncoderInterfaceException extends Error{
 }
 
 class Encoder {
-    constructor(object, translator, keys) {
-        if (object !== null && typeof object === "object" && !object instanceof Array) {
-            if (typeof object.constructor === "undefined") {
-                throw new Error(`Object missing constructor.`);
-            }
-            if (typeof object.constructor.__isTransient !== "function") {
-                EncoderInterfaceException(object, "__isTransient");
-            }
-            if (typeof object.constructor.__isEnum !== "function") {
-                EncoderInterfaceException(object, "__isEnum");
-            }
-            if (typeof object.constructor.__getClass !== "function") {
-                EncoderInterfaceException(object, "__getClass");
-            }
-        }
-        
+    constructor(object, translator, keys) {      
         this.object = object;
         this.translator = translator;
         this.keys = keys;
@@ -56,17 +41,6 @@ class Encoder {
             return null;
         }        
         
-        /* The object's class is expected to be generated from java at this point */
-        if (typeof this.object.constructor.__isEnum !== "function"){
-            throw new EncoderInterfaceException(this.object, "__isEnum");
-        }
-        if (typeof this.object.constructor.__getClass !== "function"){
-            throw new EncoderInterfaceException(this.object, "__getClass");
-        }
-        if (typeof this.object.constructor.__isTransient !== "function"){
-            throw new EncoderInterfaceException(this.object, "__isTransient");
-        }
-        
         /* is Enum */
         /* handler has been registered */
         if (this.translator.hasHandler(this.object.constructor)) {
@@ -81,7 +55,7 @@ class Encoder {
             this.object.jjjEncode(encodedObject);
             return encodedObject.toJSON();
         }        
-        else if (this.object.constructor.__isEnum()) {
+        else if (this.object.constructor.__isEnum && this.object.constructor.__isEnum()) {
             return new EncodedEnum(this.object, this.translator, this.keys).toJSON();
         }        
         /* encode object */
@@ -167,21 +141,20 @@ class EncodedObject {
         this.translator = translator;
         this.keys = keys;
 
-        this.json[Constants.TypeParam] = this.object.constructor.__getClass();
+        if (!this.object.constructor || !this.object.constructor.__getClass){
+            this.json[Constants.TypeParam] = "";
+        } else {
+            this.json[Constants.TypeParam] = this.object.constructor.__getClass();
+        }
         this.json[Constants.FieldsParam] = {};
 
         let key = this.translator.allocNextKey();
         this.json[Constants.KeyParam] = key;
 
-        if (this.object.constructor.__isTransient()) {
+        if (typeof object.constructor.__isTransient !== "function" || this.object.constructor.__isTransient()) {
             this.translator.addTempReference(key, this.object);
         } else {
             this.translator.addReference(key, this.object);
-        }
-
-        if (typeof object.constructor.__isTransient !== "function") {
-            window.object = object;
-            throw new Error(`Field '__isTransient' of class '${object.constructor.name}' is not of type function, found type '${typeof object.constructor.__isTransient}'.`);
         }
     }
 
@@ -199,8 +172,15 @@ class EncodedObject {
      * @returns {undefined}
      */
     setField(name, value) {
+        if (typeof value === "function") return;
         let encodedValue = new Encoder(value, this.translator, this.keys).encode();
-        if (encodedValue !== null) this.json[Constants.FieldsParam][name] = encodedValue;
+        console.log(name);
+        console.log("encodedValue " + encodedValue);
+        if (encodedValue !== null){
+            console.log('fields');
+            this.json[Constants.FieldsParam][name] = encodedValue;
+            console.log(this.json[Constants.FieldsParam]);
+        }
     }
 
     toJSON() {

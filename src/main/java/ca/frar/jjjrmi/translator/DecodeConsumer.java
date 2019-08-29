@@ -9,5 +9,5 @@ import java.lang.reflect.InvocationTargetException;
  * @author edward
  */
 public interface DecodeConsumer {
-    public void accept(Object object) throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchFieldException, NoSuchMethodException, IllegalArgumentException, InvocationTargetException;
+    public void accept(Object object) throws DecoderException;
 }
