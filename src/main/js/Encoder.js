@@ -146,6 +146,10 @@ class EncodedObject {
         } else {
             this.json[Constants.TypeParam] = this.object.constructor.__getClass();
         }
+        
+        if (typeof this.json[Constants.RetainParam] === "undefined"){
+            this.json[Constants.RetainParam] = !this.object.constructor.__isTransient();
+        }
         this.json[Constants.FieldsParam] = {};
 
         let key = this.translator.allocNextKey();
@@ -160,7 +164,9 @@ class EncodedObject {
 
     encode() {
         for (let field in this.object) {
-            this.setField(field, this.object[field]);
+            if (field !== "__jjjrmi"){
+                this.setField(field, this.object[field]);
+            }
         }
         return this.json;
     }
@@ -174,12 +180,8 @@ class EncodedObject {
     setField(name, value) {
         if (typeof value === "function") return;
         let encodedValue = new Encoder(value, this.translator, this.keys).encode();
-        console.log(name);
-        console.log("encodedValue " + encodedValue);
         if (encodedValue !== null){
-            console.log('fields');
             this.json[Constants.FieldsParam][name] = encodedValue;
-            console.log(this.json[Constants.FieldsParam]);
         }
     }
 

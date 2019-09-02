@@ -1,12 +1,21 @@
 The object will encode each parent class until either JJJObject or Object is encountered.
 All encoded objects are JSON compliant.
 
+Translated objects must have a zero argument constructor, it does not have to be
+public.
+
 Object:
 The root record represents an encoded object.
 An object has the following records:
+ - retain : instructs the translator whether to keep this object.
  - type : the canonical class name
  - fields
-- key : reference to this object
+ - key : reference to this object
+
+Setting the retain record will override the default set by the class.  Note, 
+unknown classes are by default retained.  An unknown class is one which has not
+been registered with the JS translator, however it still must have a class name
+in order to return it to the sever.
 
 The fields record can have any number of named records, each of which represents
 a field in the encoded object.  Each named record can be an object, an enum, 

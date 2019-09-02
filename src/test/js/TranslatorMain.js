@@ -7,8 +7,9 @@ let snafu = {
 };
 
 let myObject = {
-    snafu : snafu,
+    snafu : snafu
 };
 
 let encoded = translator.encode(myObject);
-console.log(encoded);
+let jsonEncoded = JSON.stringify(encoded, null, 2);
+console.log(jsonEncoded);

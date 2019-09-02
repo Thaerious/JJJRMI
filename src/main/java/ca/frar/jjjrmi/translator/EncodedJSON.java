@@ -13,4 +13,8 @@ public class EncodedJSON extends JSONObject{
         super(jsonString);
         this.translator = translator;
     }
+    
+    public void setRetain(boolean value){
+        this.put(Constants.RetainParam, value);
+    }
 }

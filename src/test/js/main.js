@@ -1,15 +1,13 @@
-console.log("hello world 1");
-console.log("hello world 2");
-console.log("hello world 3");
+const readline = require('readline');
+const Translator = require("../../main/js/Translator");
 
-var readline = require('readline');
-var rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-  terminal: false
-});
+let translator = new Translator();
+let input = `{"retain":false,"type":"ca.frar.jjjrmi.test.testable.HasInt","fields":{"x":{"primitive":"number","value":0}},"key":"S0"}`;
+let decoded = translator.decode(input);
 
-rl.on('line', function(line){    
-    console.log(">" + line);  
-    if (line === "exit") process.exit(0);
-});
+console.log(decoded);
+console.log(decoded.constructor.__isTransient());
+
+let encoded = translator.encode(decoded);
+console.log(JSON.stringify(encoded, null, 2));
+

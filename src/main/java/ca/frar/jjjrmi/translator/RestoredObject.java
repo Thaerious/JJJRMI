@@ -4,8 +4,6 @@ import ca.frar.jjjrmi.utility.JJJOptionsHandler;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.json.JSONObject;
 
 public class RestoredObject implements IsRestorable, RestoreHandler {
@@ -61,7 +59,15 @@ public class RestoredObject implements IsRestorable, RestoreHandler {
         }
 
         JJJOptionsHandler jjjOptions = new JJJOptionsHandler(aClass);
-        if (jjjOptions.retain()) {
+        
+        /* if json has a 'retain' record, use it, else use the retain policy set by @JJJ which defaults to true */
+        if (this.json.has("retain") && this.json.getBoolean("retain")){
+            translator.addReference(json.get(Constants.KeyParam).toString(), newInstance);
+        }        
+        else if (this.json.has("retain") && !this.json.getBoolean("retain")){
+            translator.addTempReference(json.get(Constants.KeyParam).toString(), newInstance);
+        }
+        else if (jjjOptions.retain()) {
             translator.addReference(json.get(Constants.KeyParam).toString(), newInstance);
         }
         else {

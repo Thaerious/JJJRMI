@@ -1,10 +1,7 @@
 package ca.frar.jjjrmi.translator;
 
 import ca.frar.jjjrmi.test.testable.ArrayWrapper;
-import ca.frar.jjjrmi.test.testable.NoRetain;
-import ca.frar.jjjrmi.test.testable.Simple;
 import java.util.Arrays;
-import java.util.Collection;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -13,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class EncoderDecoderTest {
     final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(EncoderDecoderTest.class);
-
+    
     /*
      * Arrays are always temporary references.
      * When decoded will return a new array.

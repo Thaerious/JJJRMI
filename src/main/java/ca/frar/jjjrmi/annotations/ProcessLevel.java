@@ -9,6 +9,7 @@ package ca.frar.jjjrmi.annotations;
  *
  * @author Ed Armstrong
  */
+@Deprecated
 public enum ProcessLevel {
     NONE,       /* only those marked with NativeJS & !SkipJS */
     ANNOTATED,  /* only those marked with (NativeJS | ServerSide) & !SkipJS (default) */

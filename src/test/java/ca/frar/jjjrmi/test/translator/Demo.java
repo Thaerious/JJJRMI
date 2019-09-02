@@ -15,7 +15,7 @@ public class Demo {
         
         Translator translator = new Translator();
         Parent parent = new Parent();
-        EncodedJSON encode = translator.encode(parent);
+        EncodedJSON encode = translator.encode(1);
         LOGGER.info(encode.toString(2));
     }    
 }

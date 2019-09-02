@@ -65,8 +65,12 @@ class ClassMap {
         this.classmap.set(aClass.__getClass(), aClass);
     }
 
+    hasClass(classname){
+        return this.classmap.has(classname);
+    }
+
     getClass(classname) {
-        if (!this.classmap.has(classname)) throw new Error(`Class ${classname} not registered.`);
+        if (!this.classmap.has(classname)) return null;
         return this.classmap.get(classname);
     }
 
@@ -129,8 +133,9 @@ class Translator extends ClassMap {
         let encodedJSON = new EncodedJSON(json);
         
         new Decoder(encodedJSON, this, null).decode(r => {
-            while (!this.deferred.isEmpty())
+            while (!this.deferred.isEmpty()){
                 this.deferred.remove(0).resume();
+            }
             this.clearTempReferences();
             rvalue = r;
         });
@@ -141,9 +146,9 @@ class Translator extends ClassMap {
         this.deferred.add(decoder);
     }
     encode(object) {
-        let toJSON = new Encoder(object, this).encode();
+        let encoded = new Encoder(object, this).encode();
         this.clearTempReferences();
-        return toJSON;
+        return encoded;
     }
     getAllReferredObjects() {
         let values = this.objectMap.values();

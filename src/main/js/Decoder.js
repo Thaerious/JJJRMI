@@ -17,7 +17,18 @@ class RestoredObject {
         /* aready restored, retrieve restored object */;
         /* if handler, create new object with handler */;
         /* create new object from description */;
-        if (this.json.has(Constants.KeyParam) && this.translator.hasReference(this.json.get(Constants.KeyParam))) {
+        if (aClass === null){            
+            newInstance = {};
+            
+            newInstance.constructor.__jjjrmi = {
+                transient : !this.json.json.retain,
+                class : this.json.json.type
+            };
+
+            newInstance.constructor.__isTransient = function(){return this.__jjjrmi.transient;};
+            newInstance.constructor.__isEnum = function(){return false;};
+            newInstance.constructor.__getClass = function(){return this.__jjjrmi.class;};            
+        } else if (this.json.has(Constants.KeyParam) && this.translator.hasReference(this.json.get(Constants.KeyParam))) {
             newInstance = this.translator.getReferredObject(this.json.get(Constants.KeyParam));
             return newInstance;
         } else if (this.translator.hasHandler(aClass)) {
@@ -26,11 +37,11 @@ class RestoredObject {
         } else {
             newInstance = new aClass();
         }
+            
+        if (newInstance.constructor.__isTransient()) this.translator.addTempReference(this.json.get(Constants.KeyParam), newInstance);
+        else this.translator.addReference(this.json.get(Constants.KeyParam), newInstance);
 
-        if (!aClass.__isTransient()) this.translator.addReference(this.json.get(Constants.KeyParam), newInstance);
-        else this.translator.addTempReference(this.json.get(Constants.KeyParam), newInstance);
-
-        if (this.translator.hasHandler(aClass)) {
+        if (aClass && this.translator.hasHandler(aClass)) {
             let handler = this.translator.getHandler(aClass);
             handler.decode(this, newInstance);
         } else if (typeof newInstance.jjjDecode === "function") {

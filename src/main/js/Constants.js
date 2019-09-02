@@ -30,5 +30,6 @@ Constants.NullValue = "null";
 Constants.PrimativeTypeString = "string";
 Constants.PrimativeTypeNumber = "number";
 Constants.PrimativeTypeBoolean = "boolean";
+Constants.RetainParam = "retain";
 
 module.exports = Constants;
