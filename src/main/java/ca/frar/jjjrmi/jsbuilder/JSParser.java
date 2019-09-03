@@ -1,6 +1,4 @@
 package ca.frar.jjjrmi.jsbuilder;
-import ca.frar.jjjrmi.RuntimeOptions;
-import ca.frar.jjjrmi.socket.JJJSocket;
 import ca.frar.jjjrmi.translator.HasWebsockets;
 import ca.frar.jjjrmi.utility.JJJOptionsHandler;
 import java.util.ArrayList;
@@ -18,12 +16,15 @@ import spoon.reflect.reference.CtTypeReference;
 public class JSParser extends AbstractProcessor<CtClass<?>> {
     final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(JSParser.class);
     private final JSClassContainer jsClassBuilders = new JSClassContainer();
-    private final RuntimeOptions runtimeOptions;
     private ArrayList<CtClass<?>> sourceClasses = new ArrayList<>();
+    private String packageFileName = "packageFile";
     
-    public JSParser(RuntimeOptions runtimeOptions) {
+    public JSParser() {
         super();
-        this.runtimeOptions = runtimeOptions;
+    }
+    
+    public void setPackageFileName(String packageFileName){
+        this.packageFileName = packageFileName;
     }
 
     public ArrayList<CtClass<?>> getSourceClasses(){
@@ -32,6 +33,7 @@ public class JSParser extends AbstractProcessor<CtClass<?>> {
     
     @Override
     public void process(CtClass<?> ctClass) {
+        LOGGER.trace("JSParser.process(" + ctClass.getSimpleName() + ")");
         JJJOptionsHandler jjjOptions = new JJJOptionsHandler(ctClass);
         this.sourceClasses.add(ctClass);
                         
@@ -49,7 +51,7 @@ public class JSParser extends AbstractProcessor<CtClass<?>> {
         /* socket class */
         if (jjjOptions.isSocket()){
             LOGGER.log(Level.forName("VERY-VERBOSE", 475), "(+) Building jjjrmi socket: " + ctClass.getQualifiedName());  
-            JSClassBuilder jsSocketBuilder = new JSSocketBuilder(ctClass, this.runtimeOptions.getPackageFileName()).build();
+            JSClassBuilder jsSocketBuilder = new JSSocketBuilder(ctClass, packageFileName).build();
             jsClassBuilders.addClass(jsSocketBuilder);
         }
         
@@ -78,8 +80,12 @@ public class JSParser extends AbstractProcessor<CtClass<?>> {
                 
         if (ctClass.getDeclaringType() != null) LOGGER.log(Level.forName("VERBOSE", 450), "declaring " + ctClass.getDeclaringType().getSimpleName());
         
-        JSClassBuilder<?> jsClassBuilder = new JSClassBuilder<>(ctClass).build(); 
-        jsClassBuilders.addClass(jsClassBuilder);
+        try{
+            JSClassBuilder<?> jsClassBuilder = new JSClassBuilder<>(ctClass).build(); 
+            jsClassBuilders.addClass(jsClassBuilder);
+        } catch (Exception ex){
+            throw new JSClassBuildException(ex, ctClass);
+        }
     }
 
     public Iterable<JSClassBuilder<?>> jsClassBuilders() {

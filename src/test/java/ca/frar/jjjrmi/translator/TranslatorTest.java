@@ -1,6 +1,6 @@
 package ca.frar.jjjrmi.translator;
 
-import ca.frar.jjjrm.jsportal.JSExec;
+import ca.frar.jjjrm.test.jsportal.JSExec;
 import ca.frar.jjjrmi.test.testable.ForcedDeferred;
 import ca.frar.jjjrmi.test.testable.NoRetain;
 import ca.frar.jjjrmi.test.testable.SelfReferential;

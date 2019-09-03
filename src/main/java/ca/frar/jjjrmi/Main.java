@@ -30,9 +30,7 @@ public class Main implements Runnable {
     private final FactoryImpl factory;
     private final List<Processor<? extends CtElement>> processors = new ArrayList<>();
     private final JSParser jsParser;
-    private final RuntimeOptions runtimeOptions;
-    
-    
+    private final RuntimeOptions runtimeOptions;       
     private static final String JS_PACKAGE_FILENAME = "packageFile.js";
     
     public static void main(String... args) {
@@ -50,7 +48,8 @@ public class Main implements Runnable {
 
     public Main(RuntimeOptions runtimeOptions) {
         Launcher.LOGGER.setLevel(org.apache.log4j.Level.OFF);
-        jsParser = new JSParser(runtimeOptions);
+        jsParser = new JSParser();
+        jsParser.setPackageFileName(runtimeOptions.getPackageFileName());
         this.factory = new FactoryImpl(new DefaultCoreFactory(), new StandardEnvironment());
         this.runtimeOptions = runtimeOptions;
     }
@@ -77,7 +76,12 @@ public class Main implements Runnable {
             }
             
             spoonModelBuilder.addInputSource(src);
-            spoonModelBuilder.setSourceClasspath(this.runtimeOptions.getClasspath());
+            
+            try{
+                spoonModelBuilder.setSourceClasspath(this.runtimeOptions.getClasspath());
+            } catch (spoon.compiler.InvalidClassPathException ex){
+                LOGGER.warn(ex.getMessage());
+            }
             spoonModelBuilder.build();
             spoonModelBuilder.process(processors);
 

@@ -1,4 +1,4 @@
-import ca.frar.jjjrm.jsportal.JSExec;
+import ca.frar.jjjrm.test.jsportal.JSExec;
 import ca.frar.jjjrmi.test.testable.Parent;
 import ca.frar.jjjrmi.translator.EncodedJSON;
 import ca.frar.jjjrmi.translator.EncoderException;

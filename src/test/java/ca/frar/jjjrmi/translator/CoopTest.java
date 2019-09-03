@@ -1,8 +1,9 @@
 package ca.frar.jjjrmi.translator;
 
-import ca.frar.jjjrm.jsportal.JSExec;
+import ca.frar.jjjrm.test.jsportal.JSExec;
 import ca.frar.jjjrmi.test.testable.Foo;
 import ca.frar.jjjrmi.test.testable.HasInt;
+import ca.frar.jjjrmi.test.testable.Primitives;
 import ca.frar.jjjrmi.test.testable.SelfReferential;
 import java.io.IOException;
 import org.junit.jupiter.api.Test;
@@ -154,6 +155,34 @@ public class CoopTest {
         assertEquals(decoded, selfReferential);
     }              
     
-    
+/**
+     * Sanity check primitives.
+     * Primitives is a transient object.
+     * @throws IllegalArgumentException
+     * @throws IllegalAccessException
+     * @throws EncoderException
+     * @throws DecoderException
+     * @throws IOException 
+     */
+    @Test
+    public void test_primitives() throws IllegalArgumentException, IllegalAccessException, EncoderException, DecoderException, IOException {
+        Translator translator = new Translator();
+        
+        Primitives primitives = new Primitives();
+        EncodedJSON encodedJava = translator.encode(primitives);
+        
+        JSExec jsExec = new JSExec();
+        jsExec.start("src/test/js/Translator.js");
+        
+        jsExec.writeLine(encodedJava.toString());
+        String encodedJS = jsExec.stop();
+        Object decoded = translator.decode(encodedJS);        
+        
+        LOGGER.info(encodedJava.toString(2));
+        LOGGER.info(encodedJS);
+        
+        /* same objects */
+        assertTrue(primitives.equals(decoded));
+    }                  
     
 }
