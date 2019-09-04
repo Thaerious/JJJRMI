@@ -8,7 +8,7 @@ by instatiate and passed to decode.
 @param <T>
 */
 
-public interface Handler <T>{
+public interface IHandler <T>{
     public abstract T instatiate();
     public abstract void jjjDecode(RestoreHandler handler, T object) throws DecoderException;
     public abstract void jjjEncode(EncodeHandler handler, T object) throws IllegalArgumentException, IllegalAccessException, EncoderException;

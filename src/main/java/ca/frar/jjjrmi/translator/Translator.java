@@ -1,8 +1,14 @@
 package ca.frar.jjjrmi.translator;
 
+import ca.frar.jjjrmi.annotations.Handles;
 import ca.frar.jjjrmi.utility.BiMap;
-import ca.frar.jjjrmi.handlers.ArrayListHandler;
-import ca.frar.jjjrmi.handlers.HashMapHandler;
+import io.github.classgraph.AnnotationInfo;
+import io.github.classgraph.ClassGraph;
+import io.github.classgraph.ClassInfo;
+import io.github.classgraph.ClassInfoList;
+import io.github.classgraph.ScanResult;
+import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,20 +27,14 @@ import org.json.JSONObject;
  * @author edward
  */
 public final class Translator implements HasKeys {
-    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(Translator.class);
-    
-    private HashMap<String, Handler> handlers = new HashMap<>();
+    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(Translator.class);    
+    private HashMap<String, IHandler> handlers = new HashMap<>();
     private ArrayList<Consumer<Object>> encodeListeners = new ArrayList<>();
     private ArrayList<Consumer<Object>> decodeListeners = new ArrayList<>();
     private ArrayList<Decoder> deferred = new ArrayList<>();
     private final BiMap<String, Object> objectMap = new BiMap<>();
     private final ArrayList<String> tempReferences = new ArrayList<>();
     private int nextKey = 0;
-
-    public Translator() {
-        this.setHandler(ArrayList.class, new ArrayListHandler());
-        this.setHandler(HashMap.class, new HashMapHandler());
-    }
 
     /**
      * Defer action on the decoder. This is used when decoding a reference for
@@ -54,18 +54,34 @@ public final class Translator implements HasKeys {
         return true;
     }
 
-    @Deprecated
-    public void setHandler(Class<?> aClass, Handler<?> handler) {
+    public void seekHandlers() throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException {
+        ClassGraph classGraph = new ClassGraph();
+        classGraph.enableAllInfo();
+        ScanResult scanResult = classGraph.scan();
+        
+        ClassInfoList allClasses = scanResult.getClassesWithAnnotation(Handles.class.getCanonicalName());
+
+        for (ClassInfo ci : allClasses){
+            AnnotationInfo annotationInfo = ci.getAnnotationInfo(Handles.class.getCanonicalName());
+            String value = annotationInfo.getParameterValues().get("value").getValue().toString();
+
+            Class<?> handler = ClassLoader.getSystemClassLoader().loadClass(ci.getName());
+            Class<?> handles = ClassLoader.getSystemClassLoader().loadClass(value);
+            
+            Constructor<?> constructor = handler.getConstructor();            
+            this.setHandler(handles, (IHandler) constructor.newInstance());
+        }
+    }
+    
+    public void setHandler(Class<?> aClass, IHandler handler) {
         this.handlers.put(aClass.getCanonicalName(), handler);
     }
 
-    @Deprecated
     public boolean hasHandler(Class<?> aClass) {
         return this.handlers.containsKey(aClass.getCanonicalName());
     }
 
-    @Deprecated
-    Handler<?> getHandler(Class<?> aClass) {
+    IHandler<?> getHandler(Class<?> aClass) {
         return this.handlers.get(aClass.getCanonicalName());
     }
 

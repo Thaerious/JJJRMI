@@ -48,7 +48,7 @@ public class RestoredObject implements IsRestorable, RestoreHandler {
         }
         else if (translator.hasHandler(aClass)) {
             /* if handler, create new object with handler */
-            Handler<?> handler = translator.getHandler(aClass);
+            IHandler<?> handler = translator.getHandler(aClass);
             newInstance = handler.instatiate();
         }
         else {
@@ -75,7 +75,7 @@ public class RestoredObject implements IsRestorable, RestoreHandler {
         }
 
         if (translator.hasHandler(aClass)) {
-            Handler handler = translator.getHandler(aClass);
+            IHandler handler = translator.getHandler(aClass);
             handler.jjjDecode(this, newInstance);
         } else if (newInstance instanceof SelfHandler) {
             SelfHandler handler = (SelfHandler) newInstance;

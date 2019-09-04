@@ -38,7 +38,7 @@ class Encoder {
         } else if (translator.hasHandler(object.getClass())){
             LOGGER.trace(" -- handler");
             EncodedObject encodedObject = new EncodedObject(object, translator);
-            Handler handler = translator.getHandler(object.getClass());
+            IHandler handler = translator.getHandler(object.getClass());
             handler.jjjEncode(encodedObject, object);
             return encodedObject;
         } else if (object instanceof SelfHandler){
