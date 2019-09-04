@@ -73,7 +73,7 @@ public final class Translator implements HasKeys {
         }
     }
     
-    public void setHandler(Class<?> aClass, IHandler handler) {
+    public void setHandler(Class<?> aClass, IHandler<?> handler) {
         this.handlers.put(aClass.getCanonicalName(), handler);
     }
 

@@ -1,10 +1,8 @@
 package ca.frar.jjjrmi.translator;
-
-import ca.frar.jjjrm.test.jsportal.JSExec;
 import ca.frar.jjjrmi.test.testable.ForcedDeferred;
 import ca.frar.jjjrmi.test.testable.NoRetain;
-import ca.frar.jjjrmi.test.testable.SelfReferential;
 import ca.frar.jjjrmi.test.testable.Simple;
+import ca.frar.jjjrmi.test.testable.handlers.ArrayListHandler;
 import java.io.IOException;
 import java.util.Collection;
 import org.junit.jupiter.api.Test;
@@ -270,14 +268,14 @@ public class TranslatorTest {
 
     @Test
     public void testAllocNextKey_First() {
-        System.out.println("allocNextKey");
+        
         Translator instance = new Translator();
         assertEquals("S0", instance.allocNextKey());
     }
 
     @Test
     public void testAllocNextKey_Second() {
-        System.out.println("allocNextKey");
+        
         Translator instance = new Translator();
         instance.allocNextKey();
         assertEquals("S1", instance.allocNextKey());
@@ -285,7 +283,7 @@ public class TranslatorTest {
 
     @Test
     public void testAllocNextKey_Fifth() {
-        System.out.println("allocNextKey");
+        
         Translator instance = new Translator();
         for (int i = 0; i < 4; i++) instance.allocNextKey();
         assertEquals("S4", instance.allocNextKey());
@@ -296,7 +294,6 @@ public class TranslatorTest {
      */
     @Test
     public void testEncode_nextKeyInc() throws IllegalArgumentException, IllegalAccessException, EncoderException {
-        System.out.println("encode");
         Translator instance = new Translator();
         instance.encode(new Simple());
         assertEquals("S1", instance.allocNextKey());
@@ -304,7 +301,6 @@ public class TranslatorTest {
 
     @Test
     public void testEncode_hasRefObj() throws IllegalArgumentException, IllegalAccessException, EncoderException {
-        System.out.println("encode");
         Translator instance = new Translator();
         Simple simple = new Simple();
         instance.encode(simple);
@@ -313,7 +309,6 @@ public class TranslatorTest {
 
     @Test
     public void testEncode_hasRef() throws IllegalArgumentException, IllegalAccessException, EncoderException {
-        System.out.println("encode");
         Translator instance = new Translator();
         Simple simple = new Simple();
         instance.encode(simple);
@@ -322,7 +317,6 @@ public class TranslatorTest {
 
     @Test
     public void testEncode_getRef() throws IllegalArgumentException, IllegalAccessException, EncoderException {
-        System.out.println("encode");
         Translator instance = new Translator();
         Simple simple = new Simple();
         instance.encode(simple);
@@ -331,7 +325,6 @@ public class TranslatorTest {
 
     @Test
     public void testEncode_getRef_2() throws IllegalArgumentException, IllegalAccessException, EncoderException {
-        System.out.println("encode");
         Translator instance = new Translator();
         instance.encode(new Simple());
         Simple simple = new Simple();
@@ -341,7 +334,6 @@ public class TranslatorTest {
 
     @Test
     public void testEncode_notRetain() throws IllegalArgumentException, IllegalAccessException, EncoderException {
-        System.out.println("encode");
         Translator instance = new Translator();
         NoRetain noRetain = new NoRetain();
         instance.encode(noRetain);
@@ -385,4 +377,36 @@ public class TranslatorTest {
         Object decode = translator.decode(jsonString);
         assertEquals(ForcedDeferred.class, decode.getClass());
     }
+    
+    /**
+     * Test setting a single handler by class.
+     * After being added a handler's existence can be determined by using the handled class as a key.
+     * After being added a handler can be retrieved by using the handled class as a key.
+     */
+    @Test
+    public void test_add_handler() throws IllegalArgumentException, IllegalAccessException, EncoderException, DecoderException, IOException {
+        Translator translator = new Translator();
+        ArrayListHandler arrayListHandler = new ArrayListHandler();
+        translator.setHandler(java.util.ArrayList.class, arrayListHandler);
+        
+        /* After being added a handler's existence can be determined by using the handled class as a key. */
+        assertTrue(translator.hasHandler(java.util.ArrayList.class));
+        
+        /* After being added a handler can be retrieved by using the handled class as a key. */
+        assertEquals(arrayListHandler, translator.getHandler(java.util.ArrayList.class));
+    }
+
+    /**
+     * Test setting a single handler by class.
+     * After being added a handler's existence can be determined by using the handled class as a key.
+     * After being added a handler can be retrieved by using the handled class as a key.
+     */
+    @Test
+    public void test_use_handler() throws IllegalArgumentException, IllegalAccessException, EncoderException, DecoderException, IOException {
+        Translator translator = new Translator();
+        ArrayListHandler arrayListHandler = new ArrayListHandler();
+        translator.setHandler(java.util.ArrayList.class, arrayListHandler);
+        
+        
+    }    
 }
