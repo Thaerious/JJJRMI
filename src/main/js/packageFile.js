@@ -2,10 +2,6 @@
 
 let JJJRMI = {
     handlers : {
-        
-    },
-    javaEquivalent : {
-        ArrayList : require("./java-equiv/ArrayList")        
     },
     JJJRMISocket : require("./JJJRMISocket"),
     Logger : require("./Logger")
