@@ -7,10 +7,9 @@ import ca.frar.jjjrmi.translator.AHandler;
 import ca.frar.jjjrmi.translator.Translator;
 import org.json.JSONObject;
 
-@Handles("java.util.ArrayList")
-public class ArrayListHandler extends AHandler<ArrayList>{
+public class WrongConstructorHandler extends AHandler<ArrayList>{
 
-    public ArrayListHandler(JSONObject json, Translator translator){
+    WrongConstructorHandler(JSONObject json, Translator translator){
         super(json, translator);
     }
         

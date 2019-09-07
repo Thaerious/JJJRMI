@@ -1,6 +1,7 @@
 package ca.frar.jjjrmi.translator;
 
 import ca.frar.jjjrm.test.jsportal.JSExec;
+import ca.frar.jjjrmi.exceptions.JJJRMIException;
 import ca.frar.jjjrmi.test.testable.Foo;
 import ca.frar.jjjrmi.test.testable.HasInt;
 import ca.frar.jjjrmi.test.testable.Primitives;
@@ -17,7 +18,7 @@ public class CoopTest {
     final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(CoopTest.class);
 
     @Test
-    public void test_primative() throws IllegalArgumentException, IllegalAccessException, EncoderException, DecoderException, IOException {
+    public void test_primative() throws JJJRMIException, IOException {
         Translator translator = new Translator();
         EncodedJSON encodedJava = translator.encode(1);
         JSExec jsExec = new JSExec();
@@ -37,7 +38,7 @@ public class CoopTest {
      * object must have a known type, though it can be returned.
      */
     @Test
-    public void test_unknown_class() throws IllegalArgumentException, IllegalAccessException, EncoderException, DecoderException, IOException {
+    public void test_unknown_class() throws JJJRMIException, IOException {
         Translator translator = new Translator();
         
         HasInt hasInt = new HasInt();
@@ -59,7 +60,7 @@ public class CoopTest {
      * instantiation.
      */
     @Test
-    public void test_unknown_class_no_retain() throws IllegalArgumentException, IllegalAccessException, EncoderException, DecoderException, IOException {
+    public void test_unknown_class_no_retain() throws JJJRMIException, IOException {
         Translator translator = new Translator();
         
         HasInt hasInt = new HasInt();
@@ -88,7 +89,7 @@ public class CoopTest {
      * @throws IOException 
      */
     @Test
-    public void test_known_class_js_contructed() throws IllegalArgumentException, IllegalAccessException, EncoderException, DecoderException, IOException {
+    public void test_known_class_js_contructed() throws JJJRMIException, IOException {
         Translator translator = new Translator();
         
         JSExec jsExec = new JSExec();
@@ -110,7 +111,7 @@ public class CoopTest {
      * @throws IOException 
      */
     @Test
-    public void test_known_class_java_contructed() throws IllegalArgumentException, IllegalAccessException, EncoderException, DecoderException, IOException {
+    public void test_known_class_java_contructed() throws JJJRMIException, IOException {
         Translator translator = new Translator();
         
         Foo foo = new Foo(8);
@@ -138,7 +139,7 @@ public class CoopTest {
      * @throws IOException 
      */
     @Test
-    public void test_self_referential() throws IllegalArgumentException, IllegalAccessException, EncoderException, DecoderException, IOException {
+    public void test_self_referential() throws JJJRMIException, IOException {
         Translator translator = new Translator();
         
         SelfReferential selfReferential = new SelfReferential();
@@ -165,7 +166,7 @@ public class CoopTest {
      * @throws IOException 
      */
     @Test
-    public void test_primitives() throws IllegalArgumentException, IllegalAccessException, EncoderException, DecoderException, IOException {
+    public void test_primitives() throws JJJRMIException, IOException {
         Translator translator = new Translator();
         
         Primitives primitives = new Primitives();
@@ -177,9 +178,6 @@ public class CoopTest {
         jsExec.writeLine(encodedJava.toString());
         String encodedJS = jsExec.stop();
         Object decoded = translator.decode(encodedJS);        
-        
-        LOGGER.info(encodedJava.toString(2));
-        LOGGER.info(encodedJS);
         
         /* same objects */
         assertTrue(primitives.equals(decoded));

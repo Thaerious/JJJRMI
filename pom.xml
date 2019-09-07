@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ca.frar</groupId>
     <artifactId>jjjrmi</artifactId>
-    <version>0.6-snapshot</version>
+    <version>0.6.2</version>
     <packaging>maven-plugin</packaging>
     
     <dependencies>
@@ -155,21 +155,21 @@
             <plugin>
                 <groupId>ca.frar</groupId>
                 <artifactId>jjjrmi</artifactId>
-                <version>0.6-snapshot</version>
+                <version>0.6.2</version>
                 <configuration>
                     <packageName>jjjrmi</packageName>
                     <generatePackage>false</generatePackage>
                     <generateJSON>false</generateJSON>
-                    <version>0.6.0</version>
+                    <version>0.6.2</version>
                 </configuration>                
-                <!--                <executions>
+                <executions>
                     <execution>
                         <phase>compile</phase>
                         <goals>
                             <goal>generate-js</goal>
                         </goals>
                     </execution>
-                </executions>-->
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>

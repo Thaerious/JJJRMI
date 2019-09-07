@@ -1,4 +1,6 @@
 package ca.frar.jjjrmi.socket;
+import ca.frar.jjjrmi.exceptions.EncoderException;
+import ca.frar.jjjrmi.exceptions.JJJRMIException;
 import ca.frar.jjjrmi.translator.*;
 import ca.frar.jjjrmi.socket.observer.events.*;
 import ca.frar.jjjrmi.socket.observer.*;
@@ -85,7 +87,7 @@ public abstract class JJJSocket<T extends HasWebsockets> extends Endpoint implem
                 String key = translator.getReference(forgettable);
                 translator.removeByValue(forgettable);
                 this.sendObject(session, new ForgetMessage(key));
-            } catch (InvalidJJJSessionException ex) {
+            } catch (InvalidJJJSessionException | JJJRMIException | IOException ex) {
                 Logger.getLogger(JJJSocket.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
@@ -153,7 +155,7 @@ public abstract class JJJSocket<T extends HasWebsockets> extends Endpoint implem
                     this.sendObject(session, new RejectedConnectionMessage());
                     sessionTranslators.remove(session);
                     return;
-                } catch (InvalidJJJSessionException ex) {
+                } catch (InvalidJJJSessionException | JJJRMIException | IOException ex) {
                     Logger.getLogger(JJJSocket.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -164,7 +166,7 @@ public abstract class JJJSocket<T extends HasWebsockets> extends Endpoint implem
 
             try {
                 this.sendObject(session, new ReadyMessage<>(retrieveRoot()));
-            } catch (InvalidJJJSessionException ex) {
+            } catch (InvalidJJJSessionException | JJJRMIException | IOException ex) {
                 Logger.getLogger(JJJSocket.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
@@ -172,14 +174,14 @@ public abstract class JJJSocket<T extends HasWebsockets> extends Endpoint implem
 
     public abstract T retrieveRoot();
 
-    private void sendObject(JJJMessage msg) throws InvalidJJJSessionException {
+    private void sendObject(JJJMessage msg) throws InvalidJJJSessionException, JJJRMIException, IOException {
         LOGGER.trace("JJJSocket.sendObject() " + hashCode());
         for (Session session : sessionTranslators.keySet()) {
             this.sendObject(session, msg);
         }
     }
 
-    private Translator getTranslator(Session session) throws InvalidJJJSessionException {
+    private Translator getTranslator(Session session) throws InvalidJJJSessionException, JJJRMIException, IOException {
         LOGGER.trace("JJJSocket.getTranslator() " + hashCode());
         Translator translator = this.sessionTranslators.get(session);
 
@@ -197,7 +199,7 @@ public abstract class JJJSocket<T extends HasWebsockets> extends Endpoint implem
      *
      * @param obj
      */
-    private final void sendObject(Session session, JJJMessage msg) throws InvalidJJJSessionException {
+    private final void sendObject(Session session, JJJMessage msg) throws InvalidJJJSessionException, JJJRMIException, IOException {
         LOGGER.trace("JJJSocket.sendObject() " + hashCode());
         JJJSendEvent<?> rmiSendEvent = new JJJSendEvent<>(session, msg);
         this.observers.send(rmiSendEvent);
@@ -223,11 +225,6 @@ public abstract class JJJSocket<T extends HasWebsockets> extends Endpoint implem
                 } catch (InterruptedException ex1) {
                     Logger.getLogger(JJJSocket.class.getName()).log(Level.SEVERE, null, ex1);
                 }
-            } catch (IllegalArgumentException | IllegalAccessException ex) {
-                LOGGER.warn(ex.getClass().getSimpleName());
-                LOGGER.warn(ex.getMessage());
-                Logger.getLogger(JJJSocket.class.getName()).log(Level.SEVERE, null, ex);
-                handleException(ex);
             } catch (EncoderException ex) {
                 LOGGER.warn(ex.getClass().getSimpleName());
                 LOGGER.warn(ex.getObject().getClass().getSimpleName());
@@ -259,24 +256,23 @@ public abstract class JJJSocket<T extends HasWebsockets> extends Endpoint implem
                 if (rmiMethodInvocationEvent.isDefaultPrevented()) return;
 
                 sendObject(session, remoteInvocation);
-            } catch (InvalidJJJSessionException ex) {
-                Logger.getLogger(JJJSocket.class.getName()).log(Level.SEVERE, null, ex);
-                return;
+            } catch (InvalidJJJSessionException | JJJRMIException | IOException ex) {
+                Logger.getLogger(JJJSocket.class.getName()).log(Level.SEVERE, null, ex);                
             }
         }
     }
 
-    private final void handleException(Exception ex, MethodResponse methodResponse) {
+    private final void handleException(Exception ex, MethodResponse methodResponse) throws JJJRMIException, IOException {
         LOGGER.trace("JJJSocket.handleException(ex, methodResponse) " + hashCode());
         for (Session session : this.sessionTranslators.keySet()) this.handleException(session, ex, methodResponse);
     }
 
-    public final void handleException(Exception ex) {
+    public final void handleException(Exception ex) throws JJJRMIException, IOException {
         LOGGER.trace("JJJSocket.handleException(ex)");
         for (Session session : this.sessionTranslators.keySet()) this.handleException(session, ex, null);
     }
 
-    private void handleException(Session session, Exception ex, MethodResponse methodResponse) {
+    private void handleException(Session session, Exception ex, MethodResponse methodResponse) throws JJJRMIException, IOException {
         LOGGER.trace("JJJSocket.handleException(seesion, ex, methodResponse) " + hashCode());
         JJJExceptionEvent exceptionEvent = new JJJExceptionEvent(session, ex);
         this.observers.exception(exceptionEvent);
@@ -290,24 +286,18 @@ public abstract class JJJSocket<T extends HasWebsockets> extends Endpoint implem
             return;
         }
 
-        try {
-            ServerSideExceptionMessage serverSideExceptionMessage;
-
-            if (methodResponse != null) {
-                serverSideExceptionMessage = new ServerSideExceptionMessage(methodResponse.getUid(), methodResponse.getObjectPTR(), methodResponse.getMethodName(), ex);
-            } else {
-                serverSideExceptionMessage = new ServerSideExceptionMessage(ex);
-            }
-
-            String exAsString = translator.encode(serverSideExceptionMessage).toString();
-            session.getBasicRemote().sendText(exAsString);
-            ex.printStackTrace();
-        } catch (IllegalArgumentException | IllegalAccessException | EncoderException | IOException ex1) {
-            Logger.getLogger(JJJSocket.class.getName()).log(Level.SEVERE, null, ex1);
+        ServerSideExceptionMessage serverSideExceptionMessage;
+        if (methodResponse != null) {
+            serverSideExceptionMessage = new ServerSideExceptionMessage(methodResponse.getUid(), methodResponse.getObjectPTR(), methodResponse.getMethodName(), ex);
+        } else {
+            serverSideExceptionMessage = new ServerSideExceptionMessage(ex);
         }
+        String exAsString = translator.encode(serverSideExceptionMessage).toString();
+        session.getBasicRemote().sendText(exAsString);
+        ex.printStackTrace();
     }
 
-    private void onMethodRequest(Session session, MethodRequest request) throws SecurityException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, NoSuchFieldException, IOException, InvalidJJJSessionException {
+    private void onMethodRequest(Session session, MethodRequest request) throws SecurityException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, NoSuchFieldException, IOException, InvalidJJJSessionException, JJJRMIException {
         LOGGER.trace("JJJSocket.onMethodRequest() " + hashCode());
         Translator translator = getTranslator(session);
         Object object = translator.getReferredObject(request.objectPTR);

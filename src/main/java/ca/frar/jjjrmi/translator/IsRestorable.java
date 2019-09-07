@@ -5,6 +5,7 @@
  */
 package ca.frar.jjjrmi.translator;
 
+import ca.frar.jjjrmi.exceptions.DecoderException;
 import java.lang.reflect.InvocationTargetException;
 
 /**

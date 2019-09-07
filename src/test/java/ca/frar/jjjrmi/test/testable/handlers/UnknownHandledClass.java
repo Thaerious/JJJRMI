@@ -7,29 +7,23 @@ import ca.frar.jjjrmi.translator.AHandler;
 import ca.frar.jjjrmi.translator.Translator;
 import org.json.JSONObject;
 
-@Handles("java.util.ArrayList")
-public class ArrayListHandler extends AHandler<ArrayList>{
+@Handles("not.a.class")
+public class UnknownHandledClass extends AHandler<ArrayList>{
 
-    public ArrayListHandler(JSONObject json, Translator translator){
+    public UnknownHandledClass(JSONObject json, Translator translator){
         super(json, translator);
     }
         
     @Override
     public void jjjEncode(ArrayList list) throws EncoderException {
-        Object[] array = list.toArray();
-        setField("elementData", array);
     }
 
     @Override
     public void jjjDecode(ArrayList list) throws DecoderException{
-        Object[] array = (Object[]) decodeField("elementData");
-        for (int i = 0; i < array.length; i++){
-            list.add(array[i]);
-        }
     }
 
     @Override
     public ArrayList<?> instatiate() {
-        return new ArrayList<>();
+        return null;
     }
 }

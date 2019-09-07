@@ -74,6 +74,11 @@ class ClassMap {
         return this.classmap.get(classname);
     }
 
+    /**
+     * Copy all registered classes from a given map.
+     * @param {type} map
+     * @returns {undefined}
+     */
     copyFrom(map) {
         for (let classname of map.keys()) {
             this.classmap.set(classname, map.get(classname));

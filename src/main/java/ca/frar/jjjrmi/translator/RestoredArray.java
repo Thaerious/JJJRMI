@@ -1,6 +1,6 @@
 package ca.frar.jjjrmi.translator;
+import ca.frar.jjjrmi.exceptions.DecoderException;
 import java.lang.reflect.Array;
-import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.json.JSONArray;
 import org.json.JSONObject;

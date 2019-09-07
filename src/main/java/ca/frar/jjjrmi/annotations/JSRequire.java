@@ -8,4 +8,5 @@ import java.lang.annotation.RetentionPolicy;
 public @interface JSRequire {
     String name();
     String value();
+    String postfix() default "";
 }

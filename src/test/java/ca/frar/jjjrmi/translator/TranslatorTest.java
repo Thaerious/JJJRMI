@@ -1,10 +1,22 @@
 package ca.frar.jjjrmi.translator;
+
+import ca.frar.jjjrmi.exceptions.JJJRMIException;
+import ca.frar.jjjrmi.exceptions.MissingHandlerException;
+import ca.frar.jjjrmi.exceptions.NewHandlerException;
+import ca.frar.jjjrmi.exceptions.SeekHandlersException;
+import ca.frar.jjjrmi.exceptions.TranslatorException;
 import ca.frar.jjjrmi.test.testable.ForcedDeferred;
 import ca.frar.jjjrmi.test.testable.NoRetain;
 import ca.frar.jjjrmi.test.testable.Simple;
 import ca.frar.jjjrmi.test.testable.handlers.ArrayListHandler;
+import ca.frar.jjjrmi.test.testable.handlers.WrongConstructorHandler;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -12,7 +24,6 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author edward
  */
 public class TranslatorTest {
-
     final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(TranslatorTest.class);
 
     /**
@@ -20,7 +31,6 @@ public class TranslatorTest {
      */
     @Test
     public void testRemoveByValue_returnTrue() {
-        System.out.println("removeByValue");
         String reference = "T0";
         Object object = new Simple();
         Translator instance = new Translator();
@@ -33,7 +43,6 @@ public class TranslatorTest {
      */
     @Test
     public void testRemoveByValue_returnFalse() {
-        System.out.println("removeByValue");
         Object object = new Simple();
         Translator instance = new Translator();
         assertFalse(instance.removeByValue(object));
@@ -44,7 +53,6 @@ public class TranslatorTest {
      */
     @Test
     public void testAddReference_hasReference() {
-        System.out.println("addReference");
         String reference = "T0";
         Object object = new Simple();
         Translator instance = new Translator();
@@ -54,7 +62,6 @@ public class TranslatorTest {
 
     @Test
     public void testAddReference_hasReferredObject() {
-        System.out.println("addReference");
         String reference = "T0";
         Object object = new Simple();
         Translator instance = new Translator();
@@ -64,7 +71,6 @@ public class TranslatorTest {
 
     @Test
     public void testAddReference_getReferredObject() {
-        System.out.println("addReference");
         String reference = "T0";
         Object object = new Simple();
         Translator instance = new Translator();
@@ -74,7 +80,6 @@ public class TranslatorTest {
 
     @Test
     public void testAddTempReference_getReferredObject() {
-        System.out.println("addReference");
         String reference = "T0";
         Object object = new Simple();
         Translator instance = new Translator();
@@ -84,7 +89,6 @@ public class TranslatorTest {
 
     @Test
     public void testAddTempReference_hasReferredObject() {
-        System.out.println("addReference");
         String reference = "T0";
         Object object = new Simple();
         Translator instance = new Translator();
@@ -97,7 +101,6 @@ public class TranslatorTest {
      */
     @Test
     public void testAddReference_notHasReference() {
-        System.out.println("addReference");
         String reference = "T0";
         Object object = new Simple();
         Translator instance = new Translator();
@@ -107,7 +110,6 @@ public class TranslatorTest {
 
     @Test
     public void testAddReference_getReference() {
-        System.out.println("addReference");
         String reference = "T0";
         Object object = new Simple();
         Translator instance = new Translator();
@@ -120,7 +122,6 @@ public class TranslatorTest {
      */
     @Test
     public void testAddTempReference_hasReference() {
-        System.out.println("addReference");
         String reference = "T0";
         Object object = new Simple();
         Translator instance = new Translator();
@@ -130,7 +131,6 @@ public class TranslatorTest {
 
     @Test
     public void testAddTempReference_getReference() {
-        System.out.println("addReference");
         String reference = "T0";
         Object object = new Simple();
         Translator instance = new Translator();
@@ -143,7 +143,6 @@ public class TranslatorTest {
      */
     @Test
     public void testAddTempReference_notHasReference() {
-        System.out.println("addReference");
         String reference = "T0";
         Object object = new Simple();
         Translator instance = new Translator();
@@ -156,7 +155,6 @@ public class TranslatorTest {
      */
     @Test
     public void testClearTempReferences() {
-        System.out.println("clear");
         String reference = "T0";
         Object object = new Simple();
         Translator instance = new Translator();
@@ -167,7 +165,6 @@ public class TranslatorTest {
 
     @Test
     public void testGetAllReferredObjects_00() {
-        System.out.println("getAllReferredObjects");
         Translator instance = new Translator();
         Collection<Object> result = instance.getAllReferredObjects();
         assertEquals(0, result.size());
@@ -178,7 +175,6 @@ public class TranslatorTest {
      */
     @Test
     public void testGetAllReferredObjects_01() {
-        System.out.println("getAllReferredObjects");
         Translator instance = new Translator();
         instance.addReference("T0", new Simple());
         Collection<Object> result = instance.getAllReferredObjects();
@@ -190,7 +186,6 @@ public class TranslatorTest {
      */
     @Test
     public void testGetAllReferredObjects_02() {
-        System.out.println("getAllReferredObjects");
         Translator instance = new Translator();
         instance.addTempReference("T0", new Simple());
         Collection<Object> result = instance.getAllReferredObjects();
@@ -202,7 +197,6 @@ public class TranslatorTest {
      */
     @Test
     public void testGetAllReferredObjects_03() {
-        System.out.println("getAllReferredObjects");
         Translator instance = new Translator();
         instance.addTempReference("T0", new Simple());
         instance.clearTempReferences();
@@ -215,7 +209,6 @@ public class TranslatorTest {
      */
     @Test
     public void testGetAllReferredObjects_04() {
-        System.out.println("getAllReferredObjects");
         Translator instance = new Translator();
         instance.addReference("T0", new Simple());
         instance.addTempReference("T1", new Simple());
@@ -228,7 +221,6 @@ public class TranslatorTest {
      */
     @Test
     public void testGetAllReferredObjects_05() {
-        System.out.println("getAllReferredObjects");
         Translator instance = new Translator();
         instance.addReference("T0", new Simple());
         instance.addTempReference("T1", new Simple());
@@ -242,7 +234,6 @@ public class TranslatorTest {
      */
     @Test
     public void testClear_00() {
-        System.out.println("clear");
         Translator instance = new Translator();
         instance.addReference("T0", new Simple());
         instance.addTempReference("T1", new Simple());
@@ -256,7 +247,6 @@ public class TranslatorTest {
      */
     @Test
     public void testClear_01() {
-        System.out.println("clear");
         Translator instance = new Translator();
         instance.addReference("T0", new Simple());
         instance.addTempReference("T1", new Simple());
@@ -268,14 +258,12 @@ public class TranslatorTest {
 
     @Test
     public void testAllocNextKey_First() {
-        
         Translator instance = new Translator();
         assertEquals("S0", instance.allocNextKey());
     }
 
     @Test
     public void testAllocNextKey_Second() {
-        
         Translator instance = new Translator();
         instance.allocNextKey();
         assertEquals("S1", instance.allocNextKey());
@@ -283,7 +271,6 @@ public class TranslatorTest {
 
     @Test
     public void testAllocNextKey_Fifth() {
-        
         Translator instance = new Translator();
         for (int i = 0; i < 4; i++) instance.allocNextKey();
         assertEquals("S4", instance.allocNextKey());
@@ -293,14 +280,14 @@ public class TranslatorTest {
      * next key increments
      */
     @Test
-    public void testEncode_nextKeyInc() throws IllegalArgumentException, IllegalAccessException, EncoderException {
+    public void testEncode_nextKeyInc() throws JJJRMIException {
         Translator instance = new Translator();
         instance.encode(new Simple());
         assertEquals("S1", instance.allocNextKey());
     }
 
     @Test
-    public void testEncode_hasRefObj() throws IllegalArgumentException, IllegalAccessException, EncoderException {
+    public void testEncode_hasRefObj() throws JJJRMIException {
         Translator instance = new Translator();
         Simple simple = new Simple();
         instance.encode(simple);
@@ -308,7 +295,7 @@ public class TranslatorTest {
     }
 
     @Test
-    public void testEncode_hasRef() throws IllegalArgumentException, IllegalAccessException, EncoderException {
+    public void testEncode_hasRef() throws JJJRMIException {
         Translator instance = new Translator();
         Simple simple = new Simple();
         instance.encode(simple);
@@ -316,7 +303,7 @@ public class TranslatorTest {
     }
 
     @Test
-    public void testEncode_getRef() throws IllegalArgumentException, IllegalAccessException, EncoderException {
+    public void testEncode_getRef() throws JJJRMIException {
         Translator instance = new Translator();
         Simple simple = new Simple();
         instance.encode(simple);
@@ -324,7 +311,7 @@ public class TranslatorTest {
     }
 
     @Test
-    public void testEncode_getRef_2() throws IllegalArgumentException, IllegalAccessException, EncoderException {
+    public void testEncode_getRef_2() throws JJJRMIException {
         Translator instance = new Translator();
         instance.encode(new Simple());
         Simple simple = new Simple();
@@ -333,7 +320,7 @@ public class TranslatorTest {
     }
 
     @Test
-    public void testEncode_notRetain() throws IllegalArgumentException, IllegalAccessException, EncoderException {
+    public void testEncode_notRetain() throws JJJRMIException {
         Translator instance = new Translator();
         NoRetain noRetain = new NoRetain();
         instance.encode(noRetain);
@@ -352,11 +339,11 @@ public class TranslatorTest {
      * @throws IOException
      */
     @Test
-    public void test_self_deferred() throws IllegalArgumentException, IllegalAccessException, EncoderException, DecoderException, IOException {
+    public void test_self_deferred() throws JJJRMIException, IOException {
         Translator translator = new Translator();
 
-        String jsonString = 
-                  "{\n"
+        String jsonString
+                = "{\n"
                 + "  'retain': true,\n"
                 + "  'type': 'ca.frar.jjjrmi.test.testable.ForcedDeferred',\n"
                 + "  'fields': {\n"
@@ -377,36 +364,117 @@ public class TranslatorTest {
         Object decode = translator.decode(jsonString);
         assertEquals(ForcedDeferred.class, decode.getClass());
     }
-    
+
     /**
-     * Test setting a single handler by class.
-     * After being added a handler's existence can be determined by using the handled class as a key.
-     * After being added a handler can be retrieved by using the handled class as a key.
+     * Test setting a single handler by class. After being added a handler's
+     * existence can be determined by using the handled class as a key. After
+     * being added a handler can be retrieved by using the handled class as a
+     * key.
      */
     @Test
-    public void test_add_handler() throws IllegalArgumentException, IllegalAccessException, EncoderException, DecoderException, IOException {
+    public void test_add_handler() throws JJJRMIException {
         Translator translator = new Translator();
-        ArrayListHandler arrayListHandler = new ArrayListHandler();
-        translator.setHandler(java.util.ArrayList.class, arrayListHandler);
-        
+
+        translator.setHandler(java.util.ArrayList.class, ArrayListHandler.class);
+
         /* After being added a handler's existence can be determined by using the handled class as a key. */
         assertTrue(translator.hasHandler(java.util.ArrayList.class));
-        
+
         /* After being added a handler can be retrieved by using the handled class as a key. */
-        assertEquals(arrayListHandler, translator.getHandler(java.util.ArrayList.class));
+        assertEquals(ArrayListHandler.class, translator.newHandler(java.util.ArrayList.class, new JSONObject()).getClass());
     }
 
     /**
-     * Test setting a single handler by class.
-     * After being added a handler's existence can be determined by using the handled class as a key.
-     * After being added a handler can be retrieved by using the handled class as a key.
+     * Test using a handler. The encoder will add a handler record to the json.
      */
     @Test
-    public void test_use_handler() throws IllegalArgumentException, IllegalAccessException, EncoderException, DecoderException, IOException {
+    public void test_use_handler_encode() throws JJJRMIException {
         Translator translator = new Translator();
-        ArrayListHandler arrayListHandler = new ArrayListHandler();
-        translator.setHandler(java.util.ArrayList.class, arrayListHandler);
+        translator.setHandler(java.util.ArrayList.class, ArrayListHandler.class);
+        ArrayList<String> arrayList = new ArrayList<>();
+        arrayList.add("ONE");
+        arrayList.add("TWO");
+        EncodedJSON encode = translator.encode(arrayList);
+
+        assertEquals("ca.frar.jjjrmi.test.testable.handlers.ArrayListHandler", encode.get(Constants.HandlerParam));
+    }
+
+    /**
+     * Test using a handler. The encoder will add a handler record to the json.
+     */
+    @Test
+    public void test_use_handler_decode() throws JJJRMIException {
+        Translator translator = new Translator();
+        translator.setHandler(java.util.ArrayList.class, ArrayListHandler.class);
+        ArrayList<String> arrayList = new ArrayList<>();
+        arrayList.add("ONE");
+        arrayList.add("TWO");
+        EncodedJSON encode = translator.encode(arrayList);
+
+        translator.clear();
+        ArrayList<String> decode = (ArrayList<String>) translator.decode(encode);
+
+        assertEquals(ArrayList.class, decode.getClass());
+        assertEquals("ONE", decode.get(0));
+        assertEquals("TWO", decode.get(1));
+        assertEquals(2, decode.size());
+    }
+
+    /**
+     * Automatically search the classpath for handlers and set them. Uses the
+     * @Handles annotation to set to the target class. There are two in the test
+     * classes.
+     */
+    @Test
+    public void test_seek_handlers() {
+        Translator translator = new Translator();
         
+        try {
+            translator.seekHandlers();
+        } catch (TranslatorException ex) {
+            /* ignore, see test_seek_handlers_unknown_class() */
+        }
+
+        assertTrue(translator.hasHandler(ArrayList.class));
+        assertTrue(translator.hasHandler(HashMap.class));
+    }
+
+    /**
+     * A handler must has a (Translator, JSONObject) constructor.
+     * note: it doesn't have @Handles so that it isn't picked up by seekHandlers
+     */
+    @Test
+    public void test_add_handler_wrong_constructor() throws JJJRMIException {
+        Translator translator = new Translator();
         
+        assertThrows(NewHandlerException.class, () -> {
+            translator.setHandler(ArrayList.class, WrongConstructorHandler.class);
+            translator.newHandler(ArrayList.class, new JSONObject());
+        });
+    }
+    
+    /**
+     * Attempting to retrieve a handler for an unregistered class will throw an
+     * exception.
+     */
+    @Test
+    public void test_add_no_handler_constructor() throws JJJRMIException {
+        Translator translator = new Translator();
+        
+        assertThrows(MissingHandlerException.class, () -> {
+            translator.newHandler(ArrayList.class, new JSONObject());
+        });
     }    
+    
+    /**
+     * If the class in @Handles is not found it will throw an exception.
+     */
+    @Test
+    public void test_seek_handlers_unknown_class() throws JJJRMIException {
+        Translator translator = new Translator();
+        
+        assertThrows(SeekHandlersException.class, () -> {
+            translator.seekHandlers();
+        });
+    }       
 }

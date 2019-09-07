@@ -1,13 +1,18 @@
 package ca.frar.jjjrmi.translator;
 
+import ca.frar.jjjrmi.exceptions.TranslatorException;
 import ca.frar.jjjrmi.annotations.Handles;
+import ca.frar.jjjrmi.exceptions.DecoderException;
+import ca.frar.jjjrmi.exceptions.EncoderException;
+import ca.frar.jjjrmi.exceptions.MissingHandlerException;
+import ca.frar.jjjrmi.exceptions.NewHandlerException;
+import ca.frar.jjjrmi.exceptions.SeekHandlersException;
 import ca.frar.jjjrmi.utility.BiMap;
 import io.github.classgraph.AnnotationInfo;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ClassInfoList;
 import io.github.classgraph.ScanResult;
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -28,7 +33,7 @@ import org.json.JSONObject;
  */
 public final class Translator implements HasKeys {
     final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(Translator.class);    
-    private HashMap<String, IHandler> handlers = new HashMap<>();
+    private HashMap<String, Class <? extends AHandler<?>>> handlers = new HashMap<>();
     private ArrayList<Consumer<Object>> encodeListeners = new ArrayList<>();
     private ArrayList<Consumer<Object>> decodeListeners = new ArrayList<>();
     private ArrayList<Decoder> deferred = new ArrayList<>();
@@ -54,7 +59,7 @@ public final class Translator implements HasKeys {
         return true;
     }
 
-    public void seekHandlers() throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException {
+    public void seekHandlers() throws TranslatorException {
         ClassGraph classGraph = new ClassGraph();
         classGraph.enableAllInfo();
         ScanResult scanResult = classGraph.scan();
@@ -62,18 +67,21 @@ public final class Translator implements HasKeys {
         ClassInfoList allClasses = scanResult.getClassesWithAnnotation(Handles.class.getCanonicalName());
 
         for (ClassInfo ci : allClasses){
-            AnnotationInfo annotationInfo = ci.getAnnotationInfo(Handles.class.getCanonicalName());
-            String value = annotationInfo.getParameterValues().get("value").getValue().toString();
-
-            Class<?> handler = ClassLoader.getSystemClassLoader().loadClass(ci.getName());
-            Class<?> handles = ClassLoader.getSystemClassLoader().loadClass(value);
-            
-            Constructor<?> constructor = handler.getConstructor();            
-            this.setHandler(handles, (IHandler) constructor.newInstance());
+            try {
+                AnnotationInfo annotationInfo = ci.getAnnotationInfo(Handles.class.getCanonicalName());
+                String value = annotationInfo.getParameterValues().get("value").getValue().toString();
+                
+                Class<?> handler = ClassLoader.getSystemClassLoader().loadClass(ci.getName());
+                Class<?> handles = ClassLoader.getSystemClassLoader().loadClass(value);
+                
+                this.setHandler(handles, (Class<? extends AHandler<?>>) handler);
+            } catch (ClassNotFoundException ex) {
+                throw new SeekHandlersException(ex);
+            }
         }
     }
     
-    public void setHandler(Class<?> aClass, IHandler<?> handler) {
+    public void setHandler(Class<?> aClass, Class <? extends AHandler<?>> handler) {
         this.handlers.put(aClass.getCanonicalName(), handler);
     }
 
@@ -81,8 +89,24 @@ public final class Translator implements HasKeys {
         return this.handlers.containsKey(aClass.getCanonicalName());
     }
 
-    IHandler<?> getHandler(Class<?> aClass) {
-        return this.handlers.get(aClass.getCanonicalName());
+    /**
+     * Instantiate a new Handler for 'aClass' associating it with 'json'.
+     * @param aClass
+     * @param json
+     * @return
+     * @throws NewHandlerException 
+     */
+    AHandler<?> newHandler(Class<?> aClass, JSONObject json) throws NewHandlerException {
+        if (!this.hasHandler(aClass)) throw new MissingHandlerException(aClass);
+        
+        try {
+            Class<? extends AHandler<?>> handlerClass = this.handlers.get(aClass.getCanonicalName());
+            Constructor<? extends AHandler<?>> constructor = handlerClass.getConstructor(JSONObject.class, Translator.class);
+            AHandler<?> newInstance = constructor.newInstance(json, this);
+            return newInstance;
+        } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+            throw new NewHandlerException(ex);
+        }
     }
 
     /**
@@ -193,7 +217,7 @@ public final class Translator implements HasKeys {
      * @param object
      * @return
      */
-    public final EncodedJSON encode(Object object) throws IllegalArgumentException, IllegalAccessException, EncoderException {
+    public final EncodedJSON encode(Object object) throws EncoderException {
         LOGGER.trace("Translator.encode(" + object.getClass().getSimpleName() + ")");
         EncodedJSON toJSON = new Encoder(object, this).encode();
         this.clearTempReferences();

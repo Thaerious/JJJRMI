@@ -1,5 +1,5 @@
 package ca.frar.jjjrmi.translator;
-import java.lang.reflect.InvocationTargetException;
+import ca.frar.jjjrmi.exceptions.DecoderException;
 
 /**
  * This class is the same as a Consumer but throws exceptions relevant to decoding.

@@ -299,12 +299,14 @@ public class JSClassBuilder<T> {
     }
 
     private void appendRequire(StringBuilder builder, JSRequire jsRequire) {
-        LOGGER.log(Level.forName("VERBOSE", 450), "@JSRequire: " + jsRequire.name());
+        LOGGER.log(Level.forName("VERBOSE", 450), "@JSRequire: " + jsRequire.name() + ", " + jsRequire.value() + ", " + jsRequire.postfix());
         builder.append("const ");
         builder.append(jsRequire.name());
         builder.append(" = require(\"");
         builder.append(jsRequire.value());
-        builder.append("\");\n");
+        builder.append("\")");
+        if (!jsRequire.postfix().isEmpty()) builder.append(".").append(jsRequire.postfix());
+        builder.append(";\n");
     }
     
     private void appendPrequel(StringBuilder builder, JSPrequel jsPrequel){

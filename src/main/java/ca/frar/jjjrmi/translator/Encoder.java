@@ -1,4 +1,6 @@
 package ca.frar.jjjrmi.translator;
+import ca.frar.jjjrmi.exceptions.EncoderException;
+import ca.frar.jjjrmi.exceptions.TranslatorException;
 import org.apache.commons.lang3.ClassUtils;
 
 /**
@@ -16,7 +18,7 @@ class Encoder {
         this.translator = translator;
     }
 
-    EncodedJSON encode() throws IllegalArgumentException, IllegalAccessException, EncoderException {
+    EncodedJSON encode() throws EncoderException {
         if (this.object != null) LOGGER.trace("Encoder.encode() : " + this.object.getClass().getSimpleName());
         else LOGGER.trace("Encoder.encode() : null");
         
@@ -37,21 +39,25 @@ class Encoder {
             return new EncodedEnum(object);
         } else if (translator.hasHandler(object.getClass())){
             LOGGER.trace(" -- handler");
-            EncodedObject encodedObject = new EncodedObject(object, translator);
-            IHandler handler = translator.getHandler(object.getClass());
-            handler.jjjEncode(encodedObject, object);
-            return encodedObject;
-        } else if (object instanceof SelfHandler){
-            LOGGER.trace(" -- selfhandler");
-            EncodedObject encodedObject = new EncodedObject(object, translator);
-            SelfHandler<?> handler = (SelfHandler) object;
-            handler.encode(encodedObject);
-            return encodedObject;
-        }  else {
-            LOGGER.trace(" -- object");
-            EncodedObject encodedObject = new EncodedObject(object, translator);
-            encodedObject.encode();
-            return encodedObject;
+            try {
+                EncodedObject encodedObject = new EncodedObject(object, translator);            
+                AHandler handler;                
+                handler = translator.newHandler(object.getClass(), encodedObject);
+                encodedObject.put(Constants.HandlerParam, handler.getClass().getCanonicalName());
+                handler.jjjEncode(object);
+                return encodedObject;
+            } catch (TranslatorException ex) {
+                throw new EncoderException(ex, object);
+            }                        
+        } else {
+            LOGGER.trace(" -- object");            
+            try {
+                EncodedObject encodedObject = new EncodedObject(object, translator);
+                encodedObject.encode();
+                return encodedObject;
+            } catch (IllegalArgumentException | IllegalAccessException ex) {
+                throw new EncoderException(ex, object);
+            }            
         }
     }
 }

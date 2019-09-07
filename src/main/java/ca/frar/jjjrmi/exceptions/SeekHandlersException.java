@@ -3,14 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ca.frar.jjjrmi.translator;
+package ca.frar.jjjrmi.exceptions;
 
 /**
  *
- * @author edward
+ * @author Ed Armstrong
  */
-public class DecoderException extends Exception{
-    DecoderException(Exception ex) {
+public class SeekHandlersException extends TranslatorException {
+
+    public SeekHandlersException(Exception ex) {
         super(ex);
-    }   
+    }
+    
 }

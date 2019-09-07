@@ -19,6 +19,7 @@ public class Constants {
     public final static String PrimativeTypeNumber = "number";
     public final static String PrimativeTypeBoolean = "boolean";
     public final static String RetainParam = "retain";
+    public final static String HandlerParam = "handler";
 
     private Constants(){};
 }

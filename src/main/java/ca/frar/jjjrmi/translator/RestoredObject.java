@@ -1,5 +1,7 @@
 package ca.frar.jjjrmi.translator;
 
+import ca.frar.jjjrmi.exceptions.DecoderException;
+import ca.frar.jjjrmi.exceptions.TranslatorException;
 import ca.frar.jjjrmi.utility.JJJOptionsHandler;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -21,7 +23,7 @@ public class RestoredObject implements IsRestorable, RestoreHandler {
     public final Object decode() throws DecoderException{
         try {
             return this.__decode();
-        } catch (NoSuchMethodException | ClassNotFoundException | InstantiationException | IllegalArgumentException | IllegalAccessException | InvocationTargetException ex) {
+        } catch (TranslatorException | NoSuchMethodException | ClassNotFoundException | InstantiationException | IllegalArgumentException | IllegalAccessException | InvocationTargetException ex) {
             throw new DecoderException(ex);
         }
     }
@@ -37,10 +39,11 @@ public class RestoredObject implements IsRestorable, RestoreHandler {
     @throws IllegalArgumentException
     @throws InvocationTargetException
      */
-    private final Object __decode() throws ClassNotFoundException, InstantiationException, DecoderException, IllegalArgumentException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+    private final Object __decode() throws ClassNotFoundException, InstantiationException, DecoderException, IllegalArgumentException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, TranslatorException {
         Class<?> aClass = Class.forName(json.getString(Constants.TypeParam));
         Object newInstance;
-
+        AHandler handler = null;
+        
         /* aready restored, retrieve restored object */
         if (json.has(Constants.KeyParam) && translator.hasReference(json.getString(Constants.KeyParam))) {
             newInstance = translator.getReferredObject(json.getString(Constants.KeyParam));
@@ -48,7 +51,7 @@ public class RestoredObject implements IsRestorable, RestoreHandler {
         }
         else if (translator.hasHandler(aClass)) {
             /* if handler, create new object with handler */
-            IHandler<?> handler = translator.getHandler(aClass);
+            handler = translator.newHandler(aClass, this.json);
             newInstance = handler.instatiate();
         }
         else {
@@ -75,11 +78,7 @@ public class RestoredObject implements IsRestorable, RestoreHandler {
         }
 
         if (translator.hasHandler(aClass)) {
-            IHandler handler = translator.getHandler(aClass);
-            handler.jjjDecode(this, newInstance);
-        } else if (newInstance instanceof SelfHandler) {
-            SelfHandler handler = (SelfHandler) newInstance;
-            handler.decode(this);
+            handler.jjjDecode(newInstance);
         } else {
             for (String name : fields.keySet()) {
                 EncodedJSON jsonField = new EncodedJSON(this.translator, fields.getJSONObject(name).toString());

@@ -3,8 +3,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import org.json.JSONObject;
 import ca.frar.jjjrmi.annotations.Transient;
+import ca.frar.jjjrmi.exceptions.EncoderException;
 import ca.frar.jjjrmi.socket.JJJObject;
-import static ca.frar.jjjrmi.translator.Encoder.LOGGER;
 import ca.frar.jjjrmi.utility.JJJOptionsHandler;
 
 class EncodedObject extends EncodedJSON implements EncodeHandler{    
@@ -13,7 +13,7 @@ class EncodedObject extends EncodedJSON implements EncodeHandler{
     private final JSONObject fields;
     private final Translator translator;
 
-    EncodedObject(Object object, Translator translator) throws IllegalArgumentException, IllegalAccessException, EncoderException {        
+    EncodedObject(Object object, Translator translator) throws EncoderException {        
         super(translator);
         LOGGER.trace("new EncodedObject(" + object.getClass().getSimpleName() + ", translator)");
         this.object = object;
@@ -58,7 +58,7 @@ class EncodedObject extends EncodedJSON implements EncodeHandler{
     }
 
     @Override
-    public void setField(String name, Object value) throws IllegalArgumentException, IllegalAccessException, EncoderException {
+    public void setField(String name, Object value) throws EncoderException {
         EncodedJSON toJSON = new Encoder(value, translator).encode();
         this.fields.put(name, toJSON);
     }

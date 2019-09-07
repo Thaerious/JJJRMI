@@ -262,8 +262,6 @@ JJJRMISocket.registerClass(require("./MethodResponse"));
 JJJRMISocket.registerClass(require("./ReadyMessage"));
 JJJRMISocket.registerClass(require("./RejectedConnectionMessage"));
 JJJRMISocket.registerClass(require("./ServerSideExceptionMessage"));
-JJJRMISocket.registerClass(require("./java-equiv/HashMap"));
-JJJRMISocket.registerClass(require("./java-equiv/ArrayList"));
 
 JJJRMISocket.Translator = Translator;
 module.exports = JJJRMISocket;

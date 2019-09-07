@@ -66,7 +66,7 @@ public class JSConstructorGenerator {
         JSElementList jsElementList = new JSElementList();
         
         /* add fields to js constructor */
-        Collection<CtFieldReference<?>> allFields = ctClass.getAllFields();
+        Collection<CtFieldReference<?>> allFields = ctClass.getDeclaredFields();
         
         for (CtFieldReference<?> ctFieldRef : allFields) {
             CtField<?> ctField = ctFieldRef.getFieldDeclaration();

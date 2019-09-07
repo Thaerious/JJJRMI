@@ -36,7 +36,7 @@ public class MOJO extends AbstractMojo {
     @Parameter private boolean generateJSON = true;
     @Parameter private boolean generatePackage = true;
     @Parameter private boolean generateSocket = true;
-    @Parameter private String packageFileName = "packageFile";
+    @Parameter private String packageFileName = "packageFile.js";
     @Parameter private String[] sourceClassPath = new String[0];
     @Parameter(defaultValue = "${project}", required = true, readonly = true) MavenProject project;
 
@@ -63,13 +63,17 @@ public class MOJO extends AbstractMojo {
         LOGGER.debug("generateJSON = " + generateJSON);
         LOGGER.debug("generatePackage = " + generatePackage);
         LOGGER.debug("generateSocket = " + generateSocket);
-        LOGGER.debug("packageFileName = " + packageFileName);        
+        LOGGER.debug("packageFileName = " + packageFileName);     
+        
+        if (sourceClassPath.length == 0){
+            LOGGER.debug("sourceClassPath N/A");
+        }
         for (int i = 0; i < sourceClassPath.length; i++){
-            LOGGER.debug("sourceClassPath = " + sourceClassPath[i]);
+            LOGGER.debug("sourceClassPath[" + i + "] = " + sourceClassPath[i]);
         }
     }
 
-    public void run() {
+    public void run() {       
         Launcher launcher = new Launcher();
         launcher.addInputResource(this.source);
         launcher.getEnvironment().setSourceClasspath(sourceClassPath);
