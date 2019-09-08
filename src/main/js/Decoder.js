@@ -83,6 +83,7 @@ class RestoredArray {
     }
     decode() {
         let newInstance = [];
+        this.translator.addTempReference(this.json.get(Constants.KeyParam), newInstance);
 
         for (let i = 0; i < this.elements.length; i++) {
             let element = this.elements[i];

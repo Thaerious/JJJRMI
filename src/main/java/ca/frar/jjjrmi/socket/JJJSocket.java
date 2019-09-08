@@ -28,7 +28,7 @@ import org.json.JSONException;
  *
  * @author edward
  */
-public abstract class JJJSocket<T extends HasWebsockets> extends Endpoint implements InvokesMethods, ServerApplicationConfig {
+public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, ServerApplicationConfig {
     final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(JJJSocket.class);
     private int nextUID = 0;
     private final MethodBank methodBank = new MethodBank();
