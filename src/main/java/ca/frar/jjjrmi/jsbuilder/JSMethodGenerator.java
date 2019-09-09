@@ -38,6 +38,8 @@ public class JSMethodGenerator {
             if (!nativeJSAnno.value().isEmpty()) jsMethodBuilder.setName(nativeJSAnno.value());
             if (nativeJSAnno.isAsync()) jsMethodBuilder.setAsync(true);
             if (nativeJSAnno.isStatic()) jsMethodBuilder.setStatic(true);
+            if (nativeJSAnno.isSetter()) jsMethodBuilder.setSetter(true);
+            if (nativeJSAnno.isGetter()) jsMethodBuilder.setGetter(true);
         }
 
         for (Iterator<CtAnnotation<? extends Annotation>> it = ctMethod.getAnnotations().iterator(); it.hasNext();) {

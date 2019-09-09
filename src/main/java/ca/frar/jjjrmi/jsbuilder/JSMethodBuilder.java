@@ -9,9 +9,11 @@ public class JSMethodBuilder {
     private String name = "";
     private final List<String> parameters = new ArrayList<>();
     private final List<JSCodeElement> elements = new ArrayList<>();
-    private boolean async = false;
+    private boolean isAsync = false;
     private boolean isStatic = false;
     private boolean invokeSuper = false;
+    private boolean isSetter;
+    private boolean isGetter;
 
     public JSMethodBuilder(String name) {
         this.name = name;
@@ -23,21 +25,13 @@ public class JSMethodBuilder {
     void setInvokeSuper(boolean b) {
         this.invokeSuper = b;
     }
-
-    public boolean isStatic() {
-        return this.isStatic;
-    }
     
     void setStatic(boolean b) {
         this.isStatic = true;
     }
 
-    public boolean isAsync() {
-        return async;
-    }
-
     public JSMethodBuilder setAsync(boolean async) {
-        this.async = async;
+        this.isAsync = async;
         return this;
     }
 
@@ -81,8 +75,10 @@ public class JSMethodBuilder {
 
         StringBuilder builder = new StringBuilder();
         builder.append("\t");
-        if (this.isStatic()) builder.append("static ");
-        if (this.isAsync()) builder.append("async ");
+        if (this.isStatic) builder.append("static ");
+        if (this.isAsync) builder.append("async ");
+        if (this.isSetter) builder.append("set ");
+        if (this.isGetter) builder.append("get ");
         builder.append(name);
         builder.append("(");
 
@@ -109,6 +105,14 @@ public class JSMethodBuilder {
 
         builder.append("\t}");
         return builder.toString();
+    }
+
+    void setSetter(boolean b) {
+        this.isSetter = b;
+    }
+
+    void setGetter(boolean b) {
+        this.isGetter = b;
     }
 
 }

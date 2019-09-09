@@ -6,11 +6,11 @@
     </CustomLevels>        
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d{HH:mm:ss} : %msg (%C{1}:%L)%n"/>
+            <PatternLayout pattern="%d{HH:mm:ss} : %msg (%C{1}:%L)%n "/>
         </Console>
     </Appenders>
     <Loggers>
-        <Root level="INFO">
+        <Root level="DEBUG">
             <AppenderRef ref="Console"/>
         </Root>    
     </Loggers>

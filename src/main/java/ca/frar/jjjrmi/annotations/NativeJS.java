@@ -15,4 +15,6 @@ public @interface NativeJS {
     public String value() default "";
     public boolean isAsync() default false;
     public boolean isStatic() default false;
+    public boolean isSetter() default false;
+    public boolean isGetter() default false;
 }
