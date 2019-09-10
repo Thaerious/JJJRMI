@@ -42,6 +42,7 @@ public class JSParser extends AbstractProcessor<CtClass<?>> {
         
         /* enum class */
         if (ctClass.isEnum() && jjjOptions.hasJJJ()) {
+            LOGGER.log(Level.forName("VERY-VERBOSE", 475), "+------------------------------------------------------------------------------+");
             LOGGER.log(Level.forName("VERY-VERBOSE", 475), "(+) Building javascript enumeration class: " + ctClass.getQualifiedName());
             JSClassBuilder<?> jsClassBuilder = new JSEnumBuilder<>((CtEnum<?>) ctClass).build();
             jsClassBuilders.addClass(jsClassBuilder);
@@ -50,6 +51,7 @@ public class JSParser extends AbstractProcessor<CtClass<?>> {
         
         /* socket class */
         if (jjjOptions.isSocket()){
+            LOGGER.log(Level.forName("VERY-VERBOSE", 475), "+------------------------------------------------------------------------------+");
             LOGGER.log(Level.forName("VERY-VERBOSE", 475), "(+) Building jjjrmi socket: " + ctClass.getQualifiedName());  
             JSClassBuilder jsSocketBuilder = new JSSocketBuilder(ctClass, packageFileName).build();
             jsClassBuilders.addClass(jsSocketBuilder);
@@ -57,31 +59,34 @@ public class JSParser extends AbstractProcessor<CtClass<?>> {
         
         /* POJO class */
         if (!isSubtype){
-            LOGGER.log(Level.forName("VERY-VERBOSE", 475), "(-)" + ctClass.getQualifiedName() + " is not subtype of JJJObject");
+            LOGGER.log(Level.forName("VERY-VERBOSE", 475), "(-) " + ctClass.getQualifiedName() + " is not subtype of JJJObject");
             return;
         }
         if (!jjjOptions.generateJS()){
-            LOGGER.log(Level.forName("VERY-VERBOSE", 475), "(-)" + ctClass.getQualifiedName() + " has option generateJS=false");
+            LOGGER.log(Level.forName("VERY-VERBOSE", 475), "(-) " + ctClass.getQualifiedName() + " has option generateJS=false");
             return;
         }               
         if (jjjOptions.isGenerated()) {
-            LOGGER.log(Level.forName("VERY-VERBOSE", 475), "(-)" + ctClass.getQualifiedName() + " has @Generated");
+            LOGGER.log(Level.forName("VERY-VERBOSE", 475), "(-) " + ctClass.getQualifiedName() + " has @Generated");
             return;
         }
         if (ctClass.isEnum() && ctClass.getDeclaringType() != null){
-            LOGGER.log(Level.forName("VERY-VERBOSE", 475), "(-)" + ctClass.getQualifiedName() + " inner type");
+            LOGGER.log(Level.forName("VERY-VERBOSE", 475), "(-) " + ctClass.getQualifiedName() + " inner type");
             return;
         }        
         if (!jjjOptions.hasJJJ()) {
-            LOGGER.log(Level.forName("VERBOSE", 475), "(+)" + ctClass.getQualifiedName() + " no @JJJ, using defaults");
+            LOGGER.log(Level.forName("VERY-VERBOSE", 475), "+------------------------------------------------------------------------------+");
+            LOGGER.log(Level.forName("VERBOSE", 475), "(+) " + ctClass.getQualifiedName());
         } else {
-            LOGGER.log(Level.forName("VERBOSE", 475), "(+)" + ctClass.getQualifiedName());
+            LOGGER.log(Level.forName("VERY-VERBOSE", 475), "+------------------------------------------------------------------------------+");
+            LOGGER.log(Level.forName("VERBOSE", 475), "(+) " + ctClass.getQualifiedName() + "@JJJ");
         }
                 
         if (ctClass.getDeclaringType() != null) LOGGER.log(Level.forName("VERBOSE", 450), "declaring " + ctClass.getDeclaringType().getSimpleName());
         
         try{
             JSClassBuilder<?> jsClassBuilder = new JSClassBuilder<>(ctClass).build(); 
+            LOGGER.log(Level.forName("VERY-VERBOSE", 475), "+------------------------------------------------------------------------------+");
             jsClassBuilders.addClass(jsClassBuilder);
         } catch (Exception ex){
             throw new JSClassBuildException(ex, ctClass);

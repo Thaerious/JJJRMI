@@ -9,6 +9,7 @@ import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.annotations.ServerSide;
 import ca.frar.jjjrmi.annotations.SkipJS;
 import ca.frar.jjjrmi.socket.JJJObject;
+import ca.frar.jjjrmi.translator.HasWebsockets;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,8 +25,10 @@ import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.TypeFactory;
+import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.AnnotationFilter;
+import spoon.reflect.visitor.filter.ReferenceTypeFilter;
 import spoon.reflect.visitor.filter.TypeFilter;
 
 public class JSClassBuilder<T> {
@@ -82,14 +85,14 @@ public class JSClassBuilder<T> {
         }
         
         if (this.jjjOptions.hasExtends()) {
-            LOGGER.log(Level.forName("VERBOSE", 450), "Setting superclass based on jjj options: " + jjjOptions.getExtends());
+            LOGGER.log(Level.forName("VERBOSE", 450), "Setting JS superclass from @JJJ annotation: " + jjjOptions.getExtends());
             this.getHeader().setExtend(jjjOptions.getExtends());
         } else if (supertype == null) {
-            LOGGER.log(Level.forName("VERY-VERBOSE", 475), "No superclass found.");
+            LOGGER.log(Level.forName("VERY-VERBOSE", 475), "No JS superclass found.");
         } else if (supertype.getSimpleName().equals(JJJObject.class.getSimpleName())){
-            LOGGER.log(Level.forName("VERY-VERBOSE", 475), "Direct superclass is of type JJJObject: " + supertype.getSimpleName());
+            LOGGER.log(Level.forName("VERY-VERBOSE", 475), "Direct Java superclass is of type JJJObject: " + supertype.getSimpleName());
         } else {
-            LOGGER.log(Level.forName("VERBOSE", 450), "Setting superclass based on java class: " + supertype.getSimpleName());
+            LOGGER.log(Level.forName("VERBOSE", 450), "Setting JS superclass from Java superclass: " + supertype.getSimpleName());
             this.getHeader().setExtend(supertype.getSimpleName());
             requires.put(supertype.getSimpleName(), supertype);
         } 
@@ -102,11 +105,35 @@ public class JSClassBuilder<T> {
             .<CtType>select(new AnnotationFilter<>(JJJ.class))
             .<CtType>forEach((CtType ele) ->{
                 JJJOptionsHandler options = new JJJOptionsHandler(ele);
-                if (options.getName().equals(ctClass.getSimpleName()) == false){
-                    LOGGER.log(Level.forName("VERBOSE", 450), "Required class detected: " + options.getName());
-                    requires.put(options.getName(), ele);
+                
+                if (options.getName().equals(ctClass.getSimpleName()) == false){ // skip self
+                    boolean containsKey = requires.containsKey(options.getName());
+                    if (!containsKey){
+                        LOGGER.log(Level.forName("VERBOSE", 450), "require " + options.getName());
+                        requires.put(options.getName(), ele);
+                    }
                 }
             });
+        
+        ctClass
+            .<CtConstructorCall>filterChildren(new TypeFilter<>(CtConstructorCall.class))
+            .<CtConstructorCall, CtType>map(ele -> ele.getType().getTypeDeclaration())
+            .<CtType>select(ele -> ele.isTopLevel())
+            .<CtType>select(ele ->{
+                CtTypeReference<Object> jjjObjectType = ctClass.getFactory().Type().get(HasWebsockets.class).getReference();        
+                return ele.isSubtypeOf(jjjObjectType);                
+            })
+            .<CtType>forEach((CtType ele) ->{
+                JJJOptionsHandler options = new JJJOptionsHandler(ele);
+                
+                if (options.getName().equals(ctClass.getSimpleName()) == false){ // skip self
+                    boolean containsKey = requires.containsKey(options.getName());
+                    if (!containsKey){
+                        LOGGER.log(Level.forName("VERBOSE", 450), "require " + options.getName());
+                        requires.put(options.getName(), ele);
+                    }
+                }
+            });        
         
         TypeFactory Type = ctClass.getFactory().Type();
         
@@ -120,8 +147,13 @@ public class JSClassBuilder<T> {
             .<CtType>select(new AnnotationFilter<>(JJJ.class))
             .<CtType>forEach((CtType ele) ->{
                 JJJOptionsHandler options = new JJJOptionsHandler(ele);
-                LOGGER.log(Level.forName("VERBOSE", 450), "Required class detected: " + options.getName());
-                requires.put(options.getName(), ele);
+                if (options.getName().equals(ctClass.getSimpleName()) == false){
+                    boolean containsKey = requires.containsKey(options.getName());
+                    if (!containsKey){
+                        LOGGER.log(Level.forName("VERBOSE", 450), "require " + options.getName());
+                        requires.put(options.getName(), ele);
+                    }
+                }
             });
 
         /* Constructor Generation */
@@ -299,7 +331,7 @@ public class JSClassBuilder<T> {
     }
 
     private void appendRequire(StringBuilder builder, JSRequire jsRequire) {
-        LOGGER.log(Level.forName("VERBOSE", 450), "@JSRequire: " + jsRequire.name() + ", " + jsRequire.value() + ", " + jsRequire.postfix());
+        LOGGER.debug("@JSRequire: " + jsRequire.name() + ", " + jsRequire.value() + ", " + jsRequire.postfix());
         builder.append("const ");
         builder.append(jsRequire.name());
         builder.append(" = require(\"");

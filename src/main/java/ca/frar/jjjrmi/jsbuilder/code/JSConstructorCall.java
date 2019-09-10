@@ -1,7 +1,6 @@
 package ca.frar.jjjrmi.jsbuilder.code;
 import ca.frar.jjjrmi.utility.JJJOptionsHandler;
 import spoon.reflect.code.CtConstructorCall;
-import spoon.reflect.declaration.CtType;
 
 public class JSConstructorCall extends AbstractJSCodeElement {
     final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(JSConstructorCall.class);
@@ -17,12 +16,6 @@ public class JSConstructorCall extends AbstractJSCodeElement {
 
     @Override
     public String toString() {
-        CtType typeDeclaration = ctConstructorCall.getType().getTypeDeclaration();
-        LOGGER.debug(" ********************* typeDeclaration == null");
-        LOGGER.debug(typeDeclaration == null);
-        LOGGER.debug(ctConstructorCall.getType().getActualClass());
-        
-        
         JJJOptionsHandler jjjOptionsHandler = new JJJOptionsHandler(ctConstructorCall.getType().getTypeDeclaration());
                 
         StringBuilder builder = new StringBuilder();

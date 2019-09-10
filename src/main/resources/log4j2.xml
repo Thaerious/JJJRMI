@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- JJJRMI -->
 <Configuration package="log4j.test" status="WARN">
     <CustomLevels>
         <CustomLevel name="VERBOSE" intLevel="450" />
         <CustomLevel name="VERY-VERBOSE" intLevel="475" />
     </CustomLevels>        
     <Appenders>
-        <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d{HH:mm:ss} : %msg (%C{1}:%L)%n "/>
+        <Console name="Console" target="SYSTEM_OUT">            
+<!--            <PatternLayout pattern="JJJ %d{HH:mm:ss} : %msg (%C{1}:%L) [%level{VERY-VERBOSE=VV, VERBOSE=V, WARN=W, DEBUG=D, ERROR=E, TRACE=T, INFO=I}]%n"/>-->
+                <PatternLayout pattern="JJJ[%level{VERY-VERBOSE=Z, VERBOSE=V, WARN=W, DEBUG=D, ERROR=E, TRACE=T, INFO=I}] %d{HH:mm:ss} : %msg%n"/>
         </Console>
     </Appenders>
     <Loggers>
