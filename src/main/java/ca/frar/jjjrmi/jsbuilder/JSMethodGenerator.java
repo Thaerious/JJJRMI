@@ -1,6 +1,7 @@
 package ca.frar.jjjrmi.jsbuilder;
 
 import ca.frar.jjjrmi.annotations.InvokeSuper;
+import ca.frar.jjjrmi.annotations.JSParam;
 import ca.frar.jjjrmi.jsbuilder.code.JSElementList;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.annotations.ServerSide;
@@ -42,10 +43,6 @@ public class JSMethodGenerator {
             if (nativeJSAnno.isGetter()) jsMethodBuilder.setGetter(true);
         }
 
-        for (Iterator<CtAnnotation<? extends Annotation>> it = ctMethod.getAnnotations().iterator(); it.hasNext();) {
-            CtAnnotation<? extends Annotation> annotation = it.next();
-        }
-
         if (ctMethod.hasModifier(ModifierKind.STATIC)) jsMethodBuilder.setStatic(true);
         processArguments();
 
@@ -59,6 +56,16 @@ public class JSMethodGenerator {
             jsMethodBuilder.setInvokeSuper(true);
         }
 
+        List<CtAnnotation<? extends Annotation>> annotations = ctMethod.getAnnotations();
+        for (CtAnnotation ctAnnotation : annotations) {
+            Annotation actualAnnotation = ctAnnotation.getActualAnnotation();
+            if (actualAnnotation instanceof JSParam){
+                JSParam annotationParameter = (JSParam) actualAnnotation;
+                JSParameter methodParameter = jsMethodBuilder.getParameter(annotationParameter.name());
+                methodParameter.initializer = annotationParameter.init();
+            }
+        }
+        
         jsClassBuilder.addMethod(jsMethodBuilder);
     }
 

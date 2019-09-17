@@ -274,4 +274,20 @@ public final class Translator implements HasKeys {
     public final synchronized String allocNextKey() {
         return "S" + (nextKey++);
     }
+    
+    public void addEncodeListener(Consumer<Object> lst) {
+        this.encodeListeners.add(lst);
+    }
+
+    public void addDecodeListener(Consumer<Object> lst) {
+        this.decodeListeners.add(lst);
+    }
+
+    public void notifyEncode(Object object) {
+        for (Consumer<Object> encodeListener : this.encodeListeners) encodeListener.accept(object);
+    }
+
+    public void notifyDecode(Object object) {
+        for (Consumer<Object> decodeListener : this.decodeListeners) decodeListener.accept(object);
+    }    
 }

@@ -55,6 +55,8 @@ class EncodedObject extends EncodedJSON implements EncodeHandler{
             }
             aClass = aClass.getSuperclass();
         }
+        
+        translator.notifyEncode(object);
     }
 
     @Override

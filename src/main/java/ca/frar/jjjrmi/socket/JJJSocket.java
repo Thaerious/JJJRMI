@@ -9,8 +9,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.websocket.*;
 import ca.frar.jjjrmi.translator.HasWebsockets;
 import java.util.ArrayList;
@@ -20,6 +18,8 @@ import java.util.Set;
 import javax.servlet.ServletContext;
 import javax.websocket.server.ServerApplicationConfig;
 import javax.websocket.server.ServerEndpointConfig;
+import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
 import org.json.JSONException;
 
 /**
@@ -88,7 +88,7 @@ public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, S
                 translator.removeByValue(forgettable);
                 this.sendObject(session, new ForgetMessage(key));
             } catch (InvalidJJJSessionException | JJJRMIException | IOException ex) {
-                Logger.getLogger(JJJSocket.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.catching(ex);
             }
         }
     }
@@ -113,12 +113,10 @@ public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, S
             }
         } catch (JSONException ex) {
             LOGGER.warn(message);
-            Logger.getLogger(JJJSocket.class.getName()).log(Level.SEVERE, null, ex);
-            if (ex.getCause() != null) Logger.getLogger(JJJSocket.class.getName()).log(Level.SEVERE, null, ex.getCause());
+            if (ex.getCause() != null) LOGGER.catching(ex);
         } catch (Exception ex) {
             LOGGER.warn(message);
-            Logger.getLogger(JJJSocket.class.getName()).log(Level.SEVERE, null, ex);
-            if (ex.getCause() != null) Logger.getLogger(JJJSocket.class.getName()).log(Level.SEVERE, null, ex.getCause());
+            if (ex.getCause() != null) LOGGER.catching(ex);
         }
     }
 
@@ -156,18 +154,26 @@ public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, S
                     sessionTranslators.remove(session);
                     return;
                 } catch (InvalidJJJSessionException | JJJRMIException | IOException ex) {
-                    Logger.getLogger(JJJSocket.class.getName()).log(Level.SEVERE, null, ex);
+                    LOGGER.catching(ex);
                 }
             }
 
             if (rmiOpenEvent.isDefaultPrevented()) return;
 
+            translator.addDecodeListener((obj) -> {
+                if (obj instanceof HasWebsockets) ((HasWebsockets) obj).addWebsocket(this);
+            });
+
+            translator.addEncodeListener((obj) -> {
+                if (obj instanceof HasWebsockets) ((HasWebsockets) obj).addWebsocket(this);
+            });            
+            
             session.addMessageHandler(new MsgHandler(this, session));
 
             try {
                 this.sendObject(session, new ReadyMessage<>(retrieveRoot()));
             } catch (InvalidJJJSessionException | JJJRMIException | IOException ex) {
-                Logger.getLogger(JJJSocket.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.catching(ex);
             }
         }
     }
@@ -208,7 +214,7 @@ public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, S
 
         synchronized (this) {
             try {
-                LOGGER.info(msg.getClass().getSimpleName());
+                LOGGER.log(Level.forName("VERY-VERBOSE", 475), msg.getClass().getSimpleName());
                 EncodedJSON encoded = translator.encode(msg);
                 String exAsString = encoded.toString();
                 session.getBasicRemote().sendText(exAsString);
@@ -223,12 +229,12 @@ public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, S
                     Thread.sleep(2000);
                     LOGGER.warn(this.getClass().getSimpleName() + " IllegalStateException : resume");
                 } catch (InterruptedException ex1) {
-                    Logger.getLogger(JJJSocket.class.getName()).log(Level.SEVERE, null, ex1);
+                    LOGGER.catching(ex);
                 }
             } catch (EncoderException ex) {
                 LOGGER.warn(ex.getClass().getSimpleName());
                 LOGGER.warn(ex.getObject().getClass().getSimpleName());
-                Logger.getLogger(JJJSocket.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.catching(ex);
 
                 if (msg instanceof MethodResponse) {
                     handleException(ex, (MethodResponse) msg);
@@ -236,7 +242,7 @@ public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, S
                     handleException(ex);
                 }
             } catch (Exception ex) {
-                Logger.getLogger(JJJSocket.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.catching(ex);
                 handleException(ex);
             }
         }
@@ -257,7 +263,7 @@ public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, S
 
                 sendObject(session, remoteInvocation);
             } catch (InvalidJJJSessionException | JJJRMIException | IOException ex) {
-                Logger.getLogger(JJJSocket.class.getName()).log(Level.SEVERE, null, ex);                
+                LOGGER.catching(ex);                
             }
         }
     }
@@ -282,7 +288,7 @@ public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, S
         try {
             translator = getTranslator(session);
         } catch (InvalidJJJSessionException ex1) {
-            Logger.getLogger(JJJSocket.class.getName()).log(Level.SEVERE, null, ex1);
+            LOGGER.catching(ex1);
             return;
         }
 
@@ -336,13 +342,13 @@ public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, S
             } catch (IllegalAccessException | InvocationTargetException ex) {
                 String msg = String.format("Error accessing method %s in class %s. Ensure both class and method are public.", method.getName(), object.getClass().getSimpleName());
                 LOGGER.error(msg);
-                if (ex.getCause() != null) Logger.getLogger(JJJSocket.class.getName()).log(Level.SEVERE, null, ex.getCause());
-                Logger.getLogger(JJJSocket.class.getName()).log(Level.SEVERE, null, ex);
+                if (ex.getCause() != null) LOGGER.catching(ex.getCause());
+                LOGGER.catching(ex);
                 if (ex.getCause() != null) this.sendObject(new ServerSideExceptionMessage(request.uid, request.objectPTR, request.methodName, ex.getCause()));
                 else this.sendObject(new ServerSideExceptionMessage(request.uid, request.objectPTR, request.methodName, ex));
             }
         } catch (java.lang.IllegalArgumentException ex) {
-            Logger.getLogger(JJJSocket.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.catching(ex);
             if (request.methodArguments.length == 0) {
                 LOGGER.warn(object.getClass().getSimpleName() + "." + method.getName() + " could not be invoked with no arguments.");
             } else {

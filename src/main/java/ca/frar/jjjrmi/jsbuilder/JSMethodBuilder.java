@@ -7,7 +7,7 @@ import java.util.List;
 
 public class JSMethodBuilder {
     private String name = "";
-    private final List<String> parameters = new ArrayList<>();
+    private final List<JSParameter> parameters = new ArrayList<>();
     private final List<JSCodeElement> elements = new ArrayList<>();
     private boolean isAsync = false;
     private boolean isStatic = false;
@@ -35,9 +35,27 @@ public class JSMethodBuilder {
         return this;
     }
 
-    public JSMethodBuilder addParameter(String parameter) {
+    public JSMethodBuilder addParameter(JSParameter parameter) {
         parameters.add(parameter);
         return this;
+    }
+    
+    public JSMethodBuilder addParameter(String name) {
+        parameters.add(new JSParameter(name, ""));
+        return this;
+    }    
+    
+    /**
+     * Returns a reflective JSParameter.  Changes made to this parameter affect
+     * the class output.
+     * @param name
+     * @return 
+     */
+    public JSParameter getParameter(String name){
+        for (JSParameter p : this.parameters){
+            if (p.name.equals(name)) return p;
+        }
+        return null;
     }
 
     public JSMethodBuilder setBody(String body) {

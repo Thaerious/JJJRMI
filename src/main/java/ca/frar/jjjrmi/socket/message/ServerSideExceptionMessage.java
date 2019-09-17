@@ -23,7 +23,6 @@ public final class ServerSideExceptionMessage extends JJJMessage{
     
     public ServerSideExceptionMessage(Throwable ex){
         super(EXCEPTION);
-        LOGGER.info(ex);
         this.uid = "";
         this.objectPTR = "";
         this.methodName = "";
@@ -33,7 +32,6 @@ public final class ServerSideExceptionMessage extends JJJMessage{
 
     public ServerSideExceptionMessage(String uid, String objectPTR, String methodName, Throwable ex){
         super(EXCEPTION);
-        LOGGER.info(ex);
         this.uid = uid;
         this.objectPTR = objectPTR;
         this.methodName = methodName;
@@ -43,7 +41,6 @@ public final class ServerSideExceptionMessage extends JJJMessage{
 
     public ServerSideExceptionMessage(String uid, String objectPTR, String methodName, String exception, String message){
         super(EXCEPTION);
-        LOGGER.info(exception);
         this.uid = uid;
         this.objectPTR = objectPTR;
         this.methodName = methodName;
