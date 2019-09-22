@@ -18,7 +18,6 @@ import java.util.Set;
 import javax.servlet.ServletContext;
 import javax.websocket.server.ServerApplicationConfig;
 import javax.websocket.server.ServerEndpointConfig;
-import org.apache.log4j.Logger;
 import org.apache.logging.log4j.Level;
 import org.json.JSONException;
 
@@ -29,13 +28,22 @@ import org.json.JSONException;
  * @author edward
  */
 public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, ServerApplicationConfig {
-    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(JJJSocket.class);
+    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");
     private int nextUID = 0;
     private final MethodBank methodBank = new MethodBank();
     private final HashMap<Session, Translator> sessionTranslators = new HashMap<>();
     final JJJObserverCollection observers = new JJJObserverCollection();
     private ServletContext context;
+    private HashMap<String, Class <? extends AHandler<?>>> handlers = new HashMap<>();
+    
+    public void setHandler(Class<?> aClass, Class <? extends AHandler<?>> handler) {
+        this.handlers.put(aClass.getCanonicalName(), handler);
+    }
 
+    public boolean hasHandler(Class<?> aClass) {
+        return this.handlers.containsKey(aClass.getCanonicalName());
+    }    
+    
     void setContext(ServletContext servletContext) {
         this.context = servletContext;
     }
@@ -140,8 +148,11 @@ public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, S
     @Override
     public final void onOpen(Session session, EndpointConfig ec) {
         LOGGER.trace("JJJSocket.onOpen() " + hashCode());
-        synchronized (this) {
-            Translator translator = new Translator();
+        synchronized (this) {            
+            Translator translator = new Translator();    
+            for (String className : this.handlers.keySet()){
+                translator.setHandler(className, this.handlers.get(className));
+            }
             sessionTranslators.put(session, translator);
 
             JJJOpenEvent rmiOpenEvent = new JJJOpenEvent(session, translator);

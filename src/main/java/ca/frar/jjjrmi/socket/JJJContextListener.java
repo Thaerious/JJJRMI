@@ -13,7 +13,7 @@ import javax.servlet.ServletContextListener;
  * @author Ed Armstrong
  */
 public class JJJContextListener implements ServletContextListener{
-    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(JJJContextListener.class);
+    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");
     
     @Override
     public void contextInitialized(ServletContextEvent event) {

@@ -21,7 +21,7 @@ import java.util.logging.Logger;
  * @author Ed Armstrong
  */
 public class JSExec {
-
+    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");
     protected OutputStreamWriter writer;
     private Process exec;
 
@@ -65,7 +65,7 @@ public class JSExec {
                     readLine = reader.readLine();
                 }
             } catch (IOException ex) {
-                Logger.getLogger(TranslatorJSDemo.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.catching(ex);
             }
         };
 

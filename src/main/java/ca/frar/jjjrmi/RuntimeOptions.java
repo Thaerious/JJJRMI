@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 @SuppressWarnings("PackageVisibleField")
 public class RuntimeOptions {
-    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(RuntimeOptions.class);
+    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");
     private String inputDirectory = "src/main/java";
     private String outputDirectory = "target/jjjrmi";
     private String packageFileName = "packageFile";

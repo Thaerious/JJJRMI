@@ -9,7 +9,7 @@ import static ca.frar.jjjrmi.socket.message.JJJMessageType.EXCEPTION;
  */
 @JJJ(retain=false)
 public final class ServerSideExceptionMessage extends JJJMessage{
-    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(ServerSideExceptionMessage.class);
+    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");
     private String exception;
     private String message;
     private String uid;

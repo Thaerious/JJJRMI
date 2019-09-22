@@ -9,7 +9,7 @@ import java.util.HashMap;
  * @author Ed Armstrong
  */
 public class MethodBank {
-    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(MethodBank.class);
+    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");
     private class MethodStore extends HashMap<String, Method> {};
     private final HashMap<Class<?>, MethodStore> classStore = new HashMap<>();
 

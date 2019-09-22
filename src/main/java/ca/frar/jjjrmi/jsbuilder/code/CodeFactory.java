@@ -3,7 +3,7 @@ import spoon.reflect.code.*;
 import spoon.support.reflect.code.CtReturnImpl;
 
 public class CodeFactory {
-    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(CodeFactory.class);
+    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");
 
     private CodeFactory() {}
 

@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author edward
  */
 public class TranslatorTest {
-    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(TranslatorTest.class);
+    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");
 
     /**
      * Test of addReference method, of class Translator.

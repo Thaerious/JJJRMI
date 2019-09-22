@@ -5,7 +5,7 @@ import ca.frar.jjjrmi.exceptions.JJJRMIException;
 import java.io.IOException;
 
 public class JSDemo {
-    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(JSDemo.class);    
+    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");    
     
     public static void main(String ... args) throws JJJRMIException, IOException{
         JSExec jsExec = new JSExec();

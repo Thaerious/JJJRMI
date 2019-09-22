@@ -18,7 +18,7 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.support.reflect.code.CtInvocationImpl;
 
 public class JSConstructorGenerator {
-    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(JSConstructorGenerator.class);
+    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");
     private final CtClass<?> ctClass;
     private final CtExecutable<?> ctConstructor;
     private final JSClassBuilder<?> jsClassBuilder;

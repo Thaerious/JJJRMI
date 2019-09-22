@@ -19,7 +19,7 @@ import java.io.OutputStreamWriter;
  * @author edward
  */
 public class NewClass {
-    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(NewClass.class);
+    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");
     
     public static void main(String... args) throws IOException, InterruptedException {
         String cDir = System.getProperty("user.dir");

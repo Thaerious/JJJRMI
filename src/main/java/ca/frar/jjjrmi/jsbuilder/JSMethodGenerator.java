@@ -16,7 +16,7 @@ import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.ModifierKind;
 
 public class JSMethodGenerator {
-    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(JSMethodGenerator.class);
+    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");
     private final CtMethod<?> ctMethod;
     private final JSClassBuilder<?> jsClassBuilder;
     private final JSMethodBuilder jsMethodBuilder;

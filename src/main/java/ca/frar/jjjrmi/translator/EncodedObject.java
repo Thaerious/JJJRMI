@@ -8,7 +8,7 @@ import ca.frar.jjjrmi.socket.JJJObject;
 import ca.frar.jjjrmi.utility.JJJOptionsHandler;
 
 class EncodedObject extends EncodedJSON implements EncodeHandler{    
-    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(Translator.class);
+    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");
     private final Object object;
     private final JSONObject fields;
     private final Translator translator;

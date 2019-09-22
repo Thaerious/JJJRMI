@@ -21,7 +21,7 @@ import spoon.Launcher;
 import spoon.reflect.CtModel;
 
 public class CLI {
-    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(CLI.class);
+    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");
     @Parameter private String source = "src/main/java";
     @Parameter private String destination = "target/jjjrmi";
     @Parameter private String packageName = "package";

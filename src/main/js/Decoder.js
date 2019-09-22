@@ -1,6 +1,7 @@
 "use strict";
 let Constants = require("./Constants");
 let EncodedJSON = require("./EncodedJSON");
+let DecodeException = require("./DecodeException");
 
 class RestoredObject {
     constructor(json, translator) {
@@ -48,7 +49,11 @@ class RestoredObject {
             newInstance.jjjDecode(this);
         } else {
             for (let field in this.json.get(Constants.FieldsParam)) {
-                new Decoder(new EncodedJSON(this.json.get(Constants.FieldsParam)[field]), this.translator).decode(r=>newInstance[field] = r);
+                try{
+                    new Decoder(new EncodedJSON(this.json.get(Constants.FieldsParam)[field]), this.translator).decode(r=>newInstance[field] = r);
+                } catch (err){
+                    throw new DecodeException(`Field '${field}' of class '${this.json.json.type}'`, err);
+                }
             }
         }
 
@@ -112,6 +117,11 @@ class Decoder {
             let className = this.json.get(Constants.EnumParam);
             let fieldName = this.json.get(Constants.ValueParam);
             let aClass = this.translator.getClass(className);
+            
+            if (aClass === null | aClass === undefined){
+                throw new DecodeException(`Enumeration class '${className}' not found.`);
+            }
+            
             let result = aClass[fieldName];
             callback(result);
         } else if (this.json.has(Constants.ValueParam)) {

@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author edward
  */
 public class EncoderDecoderTest {
-    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(EncoderDecoderTest.class);
+    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");
     
     /*
      * Arrays are always temporary references.

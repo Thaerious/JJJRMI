@@ -3,6 +3,7 @@ const Translator = require("./Translator");
 const MethodRequest = require("./MethodRequest");
 const JJJMessageType = require("./JJJMessageType");
 const LOGGER = require("./Logger");
+const DecodeException = require("./DecodeException");
 
 class JJJRMISocket {
     constructor(socketName) {        
@@ -40,7 +41,14 @@ class JJJRMISocket {
                 console.error(err);
                 reject(err);
             };
-            this.socket.onmessage = (evt) => this.onMessage(evt);
+            this.socket.onmessage = (evt) =>{
+                try{
+                    this.onMessage(evt);
+                } catch (ex){
+                    if (ex instanceof DecodeException) ex.printStack();
+                    throw ex;
+                }
+            }
             this.nextUID = 0;
             this.callback = {};
         }.bind(this);

@@ -14,7 +14,7 @@ import spoon.reflect.reference.CtTypeReference;
  */
 @SuppressWarnings("unchecked")
 public class JSParser extends AbstractProcessor<CtClass<?>> {
-    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(JSParser.class);
+    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");
     private final JSClassContainer jsClassBuilders = new JSClassContainer();
     private ArrayList<CtClass<?>> sourceClasses = new ArrayList<>();
     private String packageFileName = "packageFile";

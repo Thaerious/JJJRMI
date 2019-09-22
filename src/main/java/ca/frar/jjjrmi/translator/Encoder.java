@@ -9,7 +9,7 @@ import org.apache.commons.lang3.ClassUtils;
  * @author edward
  */
 class Encoder {
-    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(Translator.class);
+    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");
     private final Object object;
     private final Translator translator;
 

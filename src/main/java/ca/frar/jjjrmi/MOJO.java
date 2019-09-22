@@ -51,7 +51,7 @@ public class MOJO extends AbstractMojo {
         try {
             this.output();
         } catch (IOException | JSBuilderException ex) {
-            Logger.getLogger(MOJO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger("JJJRMI").log(Level.SEVERE, null, ex);
         }
     }
 

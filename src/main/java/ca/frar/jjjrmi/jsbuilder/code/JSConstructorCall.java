@@ -3,7 +3,7 @@ import ca.frar.jjjrmi.utility.JJJOptionsHandler;
 import spoon.reflect.code.CtConstructorCall;
 
 public class JSConstructorCall extends AbstractJSCodeElement {
-    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(JSConstructorCall.class);
+    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");
     private final JSElementList arguments;
     private final String name;
     private final CtConstructorCall ctConstructorCall;

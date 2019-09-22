@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author edward
  */
 public class CoopTest {
-    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(CoopTest.class);
+    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");
 
     @Test
     public void test_primative() throws JJJRMIException, IOException {

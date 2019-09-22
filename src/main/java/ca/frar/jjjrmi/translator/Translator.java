@@ -31,8 +31,8 @@ import org.json.JSONObject;
  *
  * @author edward
  */
-public final class Translator implements HasKeys {
-    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(Translator.class);    
+public final class Translator implements HasKeys{
+    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");    
     private HashMap<String, Class <? extends AHandler<?>>> handlers = new HashMap<>();
     private ArrayList<Consumer<Object>> encodeListeners = new ArrayList<>();
     private ArrayList<Consumer<Object>> decodeListeners = new ArrayList<>();
@@ -40,7 +40,7 @@ public final class Translator implements HasKeys {
     private final BiMap<String, Object> objectMap = new BiMap<>();
     private final ArrayList<String> tempReferences = new ArrayList<>();
     private int nextKey = 0;
-
+    
     /**
      * Defer action on the decoder. This is used when decoding a reference for
      * which the object has not yet been encountered.
@@ -80,6 +80,10 @@ public final class Translator implements HasKeys {
             }
         }
     }
+    
+    public void setHandler(String className, Class <? extends AHandler<?>> handler) {
+        this.handlers.put(className, handler);
+    }    
     
     public void setHandler(Class<?> aClass, Class <? extends AHandler<?>> handler) {
         this.handlers.put(aClass.getCanonicalName(), handler);

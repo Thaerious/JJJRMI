@@ -14,7 +14,7 @@ import javax.websocket.server.ServerEndpointConfig;
 
 /* see http://stackoverflow.com/questions/17936440/accessing-httpsession-from-httpservletrequest-in-a-web-socket-serverendpoint */
 public class JJJConfigurator extends ServerEndpointConfig.Configurator {
-    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(JJJConfigurator.class);
+    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");
     private JJJSocket<?> instance;
     private final Class<? extends JJJSocket<?>> rmiClass;
 
@@ -85,7 +85,7 @@ public class JJJConfigurator extends ServerEndpointConfig.Configurator {
                 constructor.setAccessible(true);
                 rvalue = constructor.newInstance();
             } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException ex) {
-                Logger.getLogger(JJJConfigurator.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.catching(ex);
             }
         }
 

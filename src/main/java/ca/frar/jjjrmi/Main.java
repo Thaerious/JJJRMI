@@ -26,7 +26,7 @@ import spoon.support.StandardEnvironment;
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
 
 public class Main implements Runnable {
-    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(Main.class);
+    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");
     private final FactoryImpl factory;
     private final List<Processor<? extends CtElement>> processors = new ArrayList<>();
     private final JSParser jsParser;

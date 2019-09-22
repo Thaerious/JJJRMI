@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  */
 public class TranslatorJSDemo {
 
-    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(TranslatorJSDemo.class);
+    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");
 
     public static void main(String... args) throws IOException, InterruptedException {
         String cDir = System.getProperty("user.dir");
@@ -56,7 +56,7 @@ public class TranslatorJSDemo {
                     readLine = reader.readLine();
                 }
             } catch (IOException ex) {
-                Logger.getLogger(TranslatorJSDemo.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.catching(ex);
             }
         };
         
