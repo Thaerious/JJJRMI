@@ -28,7 +28,7 @@ import org.json.JSONException;
  * @author edward
  */
 public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, ServerApplicationConfig {
-    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");
+    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJSocket");
     private int nextUID = 0;
     private final MethodBank methodBank = new MethodBank();
     private final HashMap<Session, Translator> sessionTranslators = new HashMap<>();
@@ -119,9 +119,6 @@ public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, S
                         break;
                 }
             }
-        } catch (JSONException ex) {
-            LOGGER.warn(message);
-            if (ex.getCause() != null) LOGGER.catching(ex);
         } catch (Exception ex) {
             LOGGER.warn(message);
             if (ex.getCause() != null) LOGGER.catching(ex);
@@ -261,7 +258,11 @@ public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, S
 
     @Override
     public final void invokeClientMethod(Object source, String methodName, Object... args) {
-        LOGGER.trace("JJJSocket.invokeClientMethod() " + hashCode());
+        LOGGER.trace("JJJSocket.invokeClientMethod()");
+        LOGGER.debug("  source: " + source.getClass().getSimpleName() + " " + source.hashCode());
+        LOGGER.debug("  methodName: " + methodName);
+        LOGGER.debug("  websocket: " + this.hashCode());
+                
         for (Session session : this.sessionTranslators.keySet()) {
             Translator translator;
             try {
@@ -348,6 +349,7 @@ public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, S
             Object returnedFromInvoke;
 
             try {
+                LOGGER.trace("INVOKE " + request.methodName);
                 returnedFromInvoke = method.invoke(object, request.methodArguments);
                 sendObject(session, new MethodResponse(request.uid, request.objectPTR, request.methodName, returnedFromInvoke));
             } catch (IllegalAccessException | InvocationTargetException ex) {

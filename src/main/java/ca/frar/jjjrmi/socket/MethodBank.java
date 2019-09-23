@@ -24,22 +24,19 @@ public class MethodBank {
     }
 
     private void storeClass(Class<?> aClass) {
-        LOGGER.debug("Retrieving methods for class: " + aClass.getSimpleName());
+        LOGGER.trace("storeClass: " + aClass.getSimpleName());
         MethodStore methodStore = new MethodStore();
 
         Class<?> current = aClass;
         while (current != Object.class) {
             for (Method method : current.getMethods()) {                
                 if (method.getAnnotation(ServerSide.class) == null){
-                    LOGGER.debug("no ServerSide annotation: " + current.getSimpleName() + "." + method.getName());
                     continue;
                 }
                 if (methodStore.containsKey(method.getName())){
-                    LOGGER.debug("duplicate method: " + current.getSimpleName() + "." + method.getName());
                     continue;
                 }
                 
-                LOGGER.debug("method retrieved: " + current.getSimpleName() + "." + method.getName());
                 methodStore.put(method.getName(), method);
             }
             current = current.getSuperclass();
