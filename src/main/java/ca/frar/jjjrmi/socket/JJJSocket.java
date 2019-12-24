@@ -1,6 +1,7 @@
 package ca.frar.jjjrmi.socket;
 import ca.frar.jjjrmi.exceptions.EncoderException;
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
+import ca.frar.jjjrmi.exceptions.ParameterCountException;
 import ca.frar.jjjrmi.translator.*;
 import ca.frar.jjjrmi.socket.observer.events.*;
 import ca.frar.jjjrmi.socket.observer.*;
@@ -28,7 +29,9 @@ import org.json.JSONException;
  * @author edward
  */
 public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, ServerApplicationConfig {
-    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJSocket");
+    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJSOCKET");
+    Level VERBOSE = Level.forName("VERBOSE", 450);        
+    
     private int nextUID = 0;
     private final MethodBank methodBank = new MethodBank();
     private final HashMap<Session, Translator> sessionTranslators = new HashMap<>();
@@ -120,6 +123,8 @@ public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, S
                 }
             }
         } catch (Exception ex) {
+            LOGGER.warn(ex.getClass().getSimpleName());
+            LOGGER.warn(ex.getMessage());
             LOGGER.warn(message);
             if (ex.getCause() != null) LOGGER.catching(ex);
         }
@@ -145,11 +150,14 @@ public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, S
     @Override
     public final void onOpen(Session session, EndpointConfig ec) {
         LOGGER.trace("JJJSocket.onOpen() " + hashCode());
+        
         synchronized (this) {            
             Translator translator = new Translator();    
             for (String className : this.handlers.keySet()){
                 translator.setHandler(className, this.handlers.get(className));
             }
+            
+            LOGGER.log(VERBOSE, "Socket '" + this.getClass().getSimpleName() + "' adding session " + session.hashCode());
             sessionTranslators.put(session, translator);
 
             JJJOpenEvent rmiOpenEvent = new JJJOpenEvent(session, translator);
@@ -200,9 +208,7 @@ public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, S
         Translator translator = this.sessionTranslators.get(session);
 
         if (translator == null) {
-            InvalidJJJSessionException invalidJJJSessionException = new InvalidJJJSessionException();
-            handleException(session, invalidJJJSessionException, null);
-            throw invalidJJJSessionException;
+            throw new InvalidJJJSessionException();
         }
 
         return translator;
@@ -231,14 +237,9 @@ public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, S
                 this.observers.sent(rmiSentEvent);
             } catch (IOException | IllegalStateException ex) {
                 /* can be caused by the user refreshing the browser while a message is being processed */
-                LOGGER.warn(this.getClass().getSimpleName() + " IllegalStateException");
-                LOGGER.warn(ex.getMessage());
-                try {
-                    Thread.sleep(2000);
-                    LOGGER.warn(this.getClass().getSimpleName() + " IllegalStateException : resume");
-                } catch (InterruptedException ex1) {
-                    LOGGER.catching(ex);
-                }
+                LOGGER.warn(this.getClass().getSimpleName() + " " + ex.getClass().getSimpleName());
+                LOGGER.warn(ex.getMessage());   
+                this.close(session, ex.getLocalizedMessage());
             } catch (EncoderException ex) {
                 LOGGER.warn(ex.getClass().getSimpleName());
                 LOGGER.warn(ex.getObject().getClass().getSimpleName());
@@ -342,7 +343,7 @@ public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, S
 
         try {
             if (method.getParameters().length != request.methodArguments.length) {
-                throw new RuntimeException("Required and received argument list length does not match");
+                throw new ParameterCountException();
             }
 
             request.update(method.getParameters());
@@ -379,18 +380,25 @@ public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, S
     @OnClose
     public final void onClose(Session session, CloseReason cr) {
         LOGGER.trace("JJJSocket.onClose() " + hashCode());
+        this.close(session, cr.getReasonPhrase());
+    }
+    
+    public final void close(Session session, String reason) {
+        LOGGER.trace("JJJSocket.close() " + hashCode() + " " + reason);
+        LOGGER.log(VERBOSE, "Socket '" + this.getClass().getSimpleName() + "' closing session " + session.hashCode());
+        
         Translator removedTranslator = this.sessionTranslators.remove(session);
-
         JJJCloseEvent closeEvent = new JJJCloseEvent(session);
+        
         if (removedTranslator != null) {
             Collection objRef = removedTranslator.getAllReferredObjects();
-
             objRef.forEach(obj -> {
                 if (obj instanceof HasWebsockets) ((HasWebsockets) obj).removeWebsocket(this);
             });
         }
+        
         this.observers.close(closeEvent);
-    }
+    }    
 
     @Override
     @OnError
