@@ -126,14 +126,15 @@
             </plugin>
             
             <!-- copy jjjrmi javascript files 
-                 see: https://stackoverflow.com/questions/586202/best-practices-for-copying-files-with-maven
+                 https://stackoverflow.com/questions/586202/best-practices-for-copying-files-with-maven
+                 https://maven.apache.org/plugins/maven-resources-plugin/examples/copy-resources.html
             -->
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>3.1.0</version>
                 <executions>
                     <execution>
-                        <id>copy-resource-one</id>
+                        <id>copy-resource-js</id>
                         <phase>compile</phase>
                         <goals>
                             <goal>copy-resources</goal>
@@ -142,7 +143,7 @@
                             <outputDirectory>${basedir}/target/jjjrmi/jjjrmi</outputDirectory>
                             <resources>          
                                 <resource>
-                                    <directory>/src/main/js</directory>
+                                    <directory>src/main/js</directory>
                                     <filtering>true</filtering>
                                 </resource>
                             </resources>              
@@ -162,14 +163,14 @@
                     <generateJSON>false</generateJSON>
                     <version>0.6.2</version>
                 </configuration>                
-<!--                <executions>
+                <executions>
                     <execution>
                         <phase>compile</phase>
                         <goals>
                             <goal>generate-js</goal>
                         </goals>
                     </execution>
-                </executions>-->
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
