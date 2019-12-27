@@ -1,27 +1,19 @@
 package ca.frar.jjjrmi.translator;
+
 import ca.frar.jjjrmi.annotations.DoNotInvoke;
 import ca.frar.jjjrmi.socket.InvokesMethods;
 import java.util.Collection;
 
 public interface HasWebsockets {
+
     Collection<InvokesMethods> getWebsockets();
 
-    default void addWebsocket(InvokesMethods socket) {
-        this.getWebsockets().add(socket);
-    }
+    void addWebsocket(InvokesMethods socket);
 
-    default void removeWebsocket(InvokesMethods socket) {
-        this.getWebsockets().remove(socket);
-    }
+    void removeWebsocket(InvokesMethods socket);
 
-    default void forget() {
-        this.getWebsockets().forEach(s->s.forget(this));
-    }    
-    
+    void forget();
+
     @DoNotInvoke
-    default void invokeClientMethod(String method, Object ... args){
-        for (ca.frar.jjjrmi.socket.InvokesMethods invokes : this.getWebsockets()){
-            invokes.invokeClientMethod(this, method, args);
-        }
-    }
+    void invokeClientMethod(String method, Object... args);
 }
