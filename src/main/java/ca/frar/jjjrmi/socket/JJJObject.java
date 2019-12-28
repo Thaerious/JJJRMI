@@ -22,15 +22,15 @@ public class JJJObject implements HasWebsockets {
     }
 
     synchronized public void addWebsocket(InvokesMethods socket) {
-        this.getWebsockets().add(socket);
+        this.websockets.add(socket);
     }
 
     synchronized public void removeWebsocket(InvokesMethods socket) {
-        this.getWebsockets().remove(socket);
+        this.websockets.remove(socket);
     }
 
     synchronized public void forget() {
-        this.getWebsockets().forEach(s -> s.forget(this));
+        this.websockets.forEach(s -> s.forget(this));
     }
 
     @DoNotInvoke
