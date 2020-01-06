@@ -17,4 +17,5 @@ public @interface NativeJS {
     public boolean isStatic() default false;
     public boolean isSetter() default false;
     public boolean isGetter() default false;
+    public boolean callSuper() default true; // only valid on constructors
 }

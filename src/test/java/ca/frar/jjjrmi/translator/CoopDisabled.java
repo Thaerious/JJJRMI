@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * Java-JS co-operation tests.
  * @author edward
  */
-public class CoopTest {
+public class CoopDisabled {
     final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");
 
     @Test

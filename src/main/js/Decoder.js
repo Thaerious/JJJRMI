@@ -18,7 +18,8 @@ class RestoredObject {
         /* aready restored, retrieve restored object */;
         /* if handler, create new object with handler */;
         /* create new object from description */;
-        if (aClass === null){            
+        if (aClass === null){                  
+            /* if class unknown, create & fill generic JS object */
             newInstance = {};
             
             newInstance.constructor.__jjjrmi = {
@@ -30,12 +31,15 @@ class RestoredObject {
             newInstance.constructor.__isEnum = function(){return false;};
             newInstance.constructor.__getClass = function(){return this.__jjjrmi.class;};            
         } else if (this.json.has(Constants.KeyParam) && this.translator.hasReference(this.json.get(Constants.KeyParam))) {
+            /* retrieve previously decoded objects */
             newInstance = this.translator.getReferredObject(this.json.get(Constants.KeyParam));
             return newInstance;
         } else if (this.translator.hasHandler(aClass)) {
+            /* invoke any handler */
             let handler = this.translator.getHandler(aClass);
             newInstance = handler.instatiate();
         } else {
+            /* create a new instance */
             newInstance = new aClass();
         }
             
@@ -52,7 +56,8 @@ class RestoredObject {
                 try{
                     new Decoder(new EncodedJSON(this.json.get(Constants.FieldsParam)[field]), this.translator).decode(r=>newInstance[field] = r);
                 } catch (err){
-                    throw new DecodeException(`Field '${field}' of class '${this.json.json.type}'`, err);
+                    console.error(err);
+                    console.error(`Field '${field}' of class '${this.json.json.type}'`);
                 }
             }
         }
