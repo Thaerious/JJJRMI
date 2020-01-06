@@ -1,9 +1,11 @@
 package ca.frar.jjjrmi.jsbuilder;
 
+import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.annotations.Transient;
 import ca.frar.jjjrmi.jsbuilder.code.JSElementList;
 import ca.frar.jjjrmi.jsbuilder.code.JSFieldDeclaration;
 import ca.frar.jjjrmi.jsbuilder.code.JSSuperConstructor;
+import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.List;
 import org.apache.logging.log4j.Level;
@@ -70,7 +72,6 @@ public class JSConstructorGenerator {
         
         for (CtFieldReference<?> ctFieldRef : allFields) {
             CtField<?> ctField = ctFieldRef.getFieldDeclaration();
-//            ctClass.getField(ctFieldRef.getSimpleName());
             
             if (ctField == null) {
                 LOGGER.log(Level.forName("VERY-VERBOSE", 475), "ctField.getDeclaration() == null");
@@ -106,6 +107,8 @@ public class JSConstructorGenerator {
     }
 
     private void processBody() {
+        NativeJS nativeJS = this.ctConstructor.getAnnotation(NativeJS.class);                
+        
         CtBlock<?> body;
         if (this.ctConstructor == null) {
             body = this.ctClass.getFactory().createBlock();
@@ -130,7 +133,9 @@ public class JSConstructorGenerator {
             jsElementList.addCtCodeElement(statement);
         }
 
-        if (superInvoke != null && this.jsClassBuilder.getHeader().hasExtend()) {
+        boolean callSuper = nativeJS == null || nativeJS.callSuper();        
+        
+        if (callSuper && superInvoke != null && this.jsClassBuilder.getHeader().hasExtend()) {
             jsElementList.add(0, new JSSuperConstructor(superInvoke));
         }
 

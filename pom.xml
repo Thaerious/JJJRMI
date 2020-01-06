@@ -163,14 +163,14 @@
                     <generateJSON>false</generateJSON>
                     <version>0.6.2</version>
                 </configuration>                
-                <executions>
+<!--                <executions>
                     <execution>
                         <phase>compile</phase>
                         <goals>
                             <goal>generate-js</goal>
                         </goals>
                     </execution>
-                </executions>
+                </executions>-->
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
