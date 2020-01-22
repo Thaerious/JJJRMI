@@ -38,6 +38,7 @@ public class MethodRequest extends ClientMessage{
     */
     @SkipJS
     public void update(Parameter[] parameters) {
+        System.out.println("update " + this.methodName);
         for (int i = 0; i < parameters.length; i++){
             Parameter parameter = parameters[i];
             if (methodArguments[i] == null) continue;
@@ -48,8 +49,9 @@ public class MethodRequest extends ClientMessage{
                 for (int j = 0; j < argument.length; j++){
                     Array.set(newInstance, j, argument[j]);
                 }
+                System.out.println(newInstance.getClass());
                 methodArguments[i] = newInstance;
-                return;
+                continue;
             }
 
             switch(parameter.getType().getCanonicalName()){
