@@ -13,9 +13,6 @@ public class JSClassContainer implements Iterable<JSClassBuilder<?>>{
         int extendIndex = -1;
         int containerIndex = -1;
 
-//        if (jsClassBuilder.getHeader().hasExtend()) extendIndex = find(jsClassBuilder.getHeader().getExtend());
-//        if (jsClassBuilder.hasContainer()) containerIndex = find(jsClassBuilder.getContainer().getSimpleName());
-
         int maxIndex = Math.max(extendIndex, containerIndex);
         jsClassBuilders.add(maxIndex + 1, jsClassBuilder);
         map.put(jsClassBuilder.getCtClass().getQualifiedName(), jsClassBuilder);

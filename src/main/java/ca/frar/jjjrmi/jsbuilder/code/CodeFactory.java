@@ -28,6 +28,7 @@ public class CodeFactory {
             case MUL: return"*";
             case DIV: return"/";
             case MOD: return"%";
+            case INSTANCEOF: return"instanceof";
             default: return"/* unknown operator */";
         }
     }
@@ -70,7 +71,7 @@ public class CodeFactory {
             case "spoon.support.reflect.code.CtInvocationImpl": return new JSInvocation((CtInvocation) ctCodeElement);
             case "spoon.support.reflect.code.CtJavaDocImpl": break;
             case "spoon.support.reflect.code.CtLabelledFlowBreakImpl": break;
-            case "spoon.support.reflect.code.CtLambdaImpl": break;
+            case "spoon.support.reflect.code.CtLambdaImpl": return new JSLambda((CtLambda) ctCodeElement);
             case "spoon.support.reflect.code.CtLiteralImpl": return new JSLiteral((CtLiteral) ctCodeElement);
             case "spoon.support.reflect.code.CtLocalVariableImpl": return new JSLocalVariable((CtLocalVariable) ctCodeElement);
             case "spoon.support.reflect.code.CtLoopImpl": break;

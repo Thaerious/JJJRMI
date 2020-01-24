@@ -1,6 +1,4 @@
 package ca.frar.jjjrmi;
-
-import static ca.frar.jjjrmi.Main.LOGGER;
 import ca.frar.jjjrmi.jsbuilder.JSBuilderException;
 import ca.frar.jjjrmi.jsbuilder.JSClassBuilder;
 import ca.frar.jjjrmi.jsbuilder.JSParser;
@@ -16,32 +14,61 @@ import java.io.PrintWriter;
 import org.apache.logging.log4j.Level;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.Parameter;
 import spoon.Launcher;
 import spoon.reflect.CtModel;
 
+/**
+ * See jjjrmi script in root directory.
+ * @author Ed Armstrong
+ */
 public class CLI {
     final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");
-    @Parameter private String source = "src/main/java";
-    @Parameter private String destination = "target/jjjrmi";
-    @Parameter private String packageName = "package";
-    @Parameter private String version = "0.0.0";
-    @Parameter private boolean generateJSON = true;
-    @Parameter private boolean generatePackage = true;
-    @Parameter private boolean generateSocket = true;
-    @Parameter private String packageFileName = "packageFile";
+    private String source = ".";
+    private String destination = ".";
+    private String packageName = "package";
+    private String version = "0.0.0";
+    private boolean generateJSON = false; /* generate the package.json file */
+    private boolean generatePackage = false; /* generate the package file */
+    private boolean packageSubDir = false; /* place files in package subdirectory */
+    private String packageFileName = "packageFile";
 
     private JSParser jsParser;
 
     public static void main(String... args) throws MojoExecutionException, MojoFailureException, FileNotFoundException, JSBuilderException, IOException {
         CLI cli = new CLI();
+        System.out.println("JJJRMI CLI");
+        cli.parseArgs(args);
         cli.run();
         cli.output();
+    }
+    
+    public void parseArgs(String ... args){
+        for (int i = 0; i < args.length; i++){
+            String s = args[i];
+            switch(s){
+                case "--json":
+                    generateJSON = true;
+                    break;
+                case "--package":
+                    generatePackage = true;
+                    break;
+                case "-p":
+                    if (args[i+1].charAt(0) != '-') packageName = args[i + 1];
+                    packageSubDir = true;
+                    break;
+                case "-i":                    
+                    source = args[i + 1];
+                    break;
+                case "-o":
+                    destination = args[i + 1];
+                    break;
+            }
+        }
     }
 
     public void run() throws MojoExecutionException, MojoFailureException, FileNotFoundException {
         Launcher launcher = new Launcher();
-        launcher.addInputResource(this.source);
+        launcher.addInputResource(source);
         jsParser = new JSParser();
         jsParser.setPackageFileName(packageFileName);
         launcher.buildModel();
@@ -57,12 +84,15 @@ public class CLI {
      */
     public void output() throws FileNotFoundException, JSBuilderException, IOException {
         LOGGER.info("Javascript Code Generator: Generating output");
-        String rootPath = String.format("%s/%s", destination, packageName);
+        String rootPath;
+        
+        if (this.packageSubDir) rootPath =  String.format("%s/%s", destination, packageName);
+        else rootPath =  String.format("%s", destination);
         new File(rootPath).mkdirs();
 
         for (JSClassBuilder<?> jsClassBuilder : jsParser.jsClassBuilders()) {
             LOGGER.info("file: " + jsClassBuilder.getSimpleName() + ".js");
-            String outPath = String.format("%s/%s/%s.js", destination, packageName, jsClassBuilder.getSimpleName());
+            String outPath = String.format("%s/%s.js", rootPath, jsClassBuilder.getSimpleName());
             File outFile = new File(outPath);
             FileOutputStream fos = new FileOutputStream(outFile);
             PrintWriter pw = new PrintWriter(fos);

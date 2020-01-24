@@ -1,0 +1,2 @@
+#!/bin/bash
+java -classpath ./target/dependency/*:./target/classes ca.frar.jjjrmi.CLI "$@"
