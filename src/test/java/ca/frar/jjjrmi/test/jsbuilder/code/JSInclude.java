@@ -4,18 +4,12 @@
  * and open the template in the editor.
  */
 package ca.frar.jjjrmi.jsbuilder.code;
+import ca.frar.jjjrmi.socket.JJJObject;
 
 /**
  *
  * @author Ed Armstrong
  */
-public class JSLambdaTest {
-
-    public static void main(String ... args){
-        
-    }
-    
-    public JSLambdaTest() {
-    }
+public class JSEmptyClassCode extends JJJObject{
     
 }
