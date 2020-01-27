@@ -1,18 +1,19 @@
 package ca.frar.jjjrmi.jsbuilder.code;
+
 import java.util.ArrayList;
 import java.util.List;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtComment;
 
-public class JSElementList extends ArrayList<JSCodeElement> {
+public class JSElementList extends AbstractJSCodeElement {
 
     public JSElementList() {
     }
 
     public JSElementList(List<? extends CtCodeElement> ctList) {
         for (CtCodeElement element : ctList) {
-            if (!element.getComments().isEmpty()){
-                for (CtComment comment : element.getComments()){
+            if (!element.getComments().isEmpty()) {
+                for (CtComment comment : element.getComments()) {
                     this.addCtCodeElement(comment);
                 }
             }
@@ -20,43 +21,54 @@ public class JSElementList extends ArrayList<JSCodeElement> {
         }
     }
 
-    final public void setCtCodeElement(int index, CtCodeElement element){
-        this.set(index, CodeFactory.generate(element));
-    }
-
-    final public void addCtCodeElement(CtCodeElement element){
-        this.add(CodeFactory.generate(element));
+    final public void addCtCodeElement(CtCodeElement element) {
+        this.generate(element);
     }
 
     public String inline() {
         StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < this.size(); i++) {
-            builder.append(get(i).toString());
-            if (i != this.size() - 1) builder.append(", ");
+        for (int i = 0; i < this.childElements.size(); i++) {
+            builder.append(this.childElements.get(i).toString());
+            if (i != this.childElements.size() - 1) builder.append(", ");
         }
         return builder.toString();
     }
 
+    /**
+     * Return a string with enclosing brackets.
+     *
+     * @return
+     */
     public String scoped() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("{\n");
-        for (int i = 0; i < this.size(); i++) {
-            JSCodeElement ele = get(i);
-            String s = ele.toString();
-            builder.append(s);
-            if (s.trim().endsWith(";") || s.trim().endsWith("}")) builder.append("\n");
-            else builder.append(";\n");
+        StringBuilder builder = new StringBuilder();        
+
+        if (this.childElements.isEmpty()) {
+            builder.append("{}");
+        } else {
+            builder.append("{\n");
+            for (int i = 0; i < this.childElements.size(); i++) {                
+                JSCodeElement ele = this.childElements.get(i);
+                String s = ele.toString();
+                builder.append(s);
+                if (s.trim().endsWith(";") || s.trim().endsWith("}")) builder.append("\n");
+                else if (!s.isEmpty()) builder.append(";\n");
+            }
+            builder.append("}");
         }
-        builder.append("}");
         return builder.toString();
     }
 
+    /**
+     * Return a string without enclosing brackets.
+     *
+     * @return
+     */
     public String unscoped() {
         StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < this.size(); i++) {
-            JSCodeElement ele = get(i);
+        for (int i = 0; i < this.childElements.size(); i++) {
+            JSCodeElement ele = this.childElements.get(i);
             String s = ele.toString();
-            if (!s.isEmpty()){
+            if (!s.isEmpty()) {
                 builder.append(s);
                 if (s.trim().endsWith(";") || s.trim().endsWith("}")) builder.append("\n");
                 else builder.append(";\n");
@@ -69,11 +81,19 @@ public class JSElementList extends ArrayList<JSCodeElement> {
     public String toString() {
         StringBuilder builder = new StringBuilder();
 
-        if (this.size() > 1) {
+        if (this.childElements.size() > 1) {
             return scoped();
-        } else if (this.size() == 1) {
+        } else if (this.childElements.size() == 1) {
             return unscoped();
         }
         return builder.toString();
+    }
+
+    public void add(int i, JSCodeElement jsCodeElement) {
+        this.childElements.add(i, jsCodeElement);
+    }
+
+    public void add(JSCodeElement jsCodeElement) {
+        this.childElements.add(jsCodeElement);
     }
 }

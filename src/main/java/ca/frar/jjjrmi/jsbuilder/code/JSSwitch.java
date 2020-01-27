@@ -8,7 +8,7 @@ public class JSSwitch extends AbstractJSCodeElement {
     private final JSElementList cases;
 
     public JSSwitch(CtSwitch ctSwitch) {
-        selector = CodeFactory.generate(ctSwitch.getSelector());
+        selector = this.generate(ctSwitch.getSelector());
         cases = new JSElementList(ctSwitch.getCases());
 
     }

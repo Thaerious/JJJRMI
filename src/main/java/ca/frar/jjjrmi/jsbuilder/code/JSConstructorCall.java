@@ -1,6 +1,9 @@
 package ca.frar.jjjrmi.jsbuilder.code;
 import ca.frar.jjjrmi.utility.JJJOptionsHandler;
+import java.util.HashSet;
+import java.util.Set;
 import spoon.reflect.code.CtConstructorCall;
+import spoon.reflect.declaration.CtType;
 
 public class JSConstructorCall extends AbstractJSCodeElement {
     final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");
@@ -9,10 +12,20 @@ public class JSConstructorCall extends AbstractJSCodeElement {
     private final CtConstructorCall ctConstructorCall;
 
     public JSConstructorCall(CtConstructorCall ctConstructorCall) {
+        LOGGER.trace(this.getClass().getSimpleName());
         this.ctConstructorCall = ctConstructorCall;
         arguments = new JSElementList(ctConstructorCall.getArguments());
         name = ctConstructorCall.getType().getSimpleName();
     }
+    
+    @Override
+    public Set<CtType> getRequires() {
+        HashSet<CtType> requires = new HashSet<>();
+        requires.addAll(super.getRequires());
+        requires.add(ctConstructorCall.getType().getDeclaration());
+        return requires;
+    }    
+    
 
     @Override
     public String toString() {
@@ -30,5 +43,4 @@ public class JSConstructorCall extends AbstractJSCodeElement {
         builder.append(")");
         return builder.toString();
     }
-
 }

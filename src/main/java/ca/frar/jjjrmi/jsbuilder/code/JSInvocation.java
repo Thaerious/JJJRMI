@@ -18,7 +18,7 @@ public class JSInvocation extends AbstractJSCodeElement {
         this.invocation = ctInvocation;
         arguments = new JSElementList(ctInvocation.getArguments());
         name = ctInvocation.getExecutable().getSimpleName();
-        target = CodeFactory.generate(ctInvocation.getTarget());
+        target = this.generate(ctInvocation.getTarget());
         checkForSpecialCase(ctInvocation);
     }
 

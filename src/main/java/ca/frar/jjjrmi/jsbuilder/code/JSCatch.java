@@ -8,7 +8,7 @@ public class JSCatch extends AbstractJSCodeElement {
     private final String param;
 
     public JSCatch(CtCatch ctCatch) {
-        body = (JSBlock) CodeFactory.generate(ctCatch.getBody());
+        body = (JSBlock) this.generate(ctCatch.getBody());
         param = ctCatch.getParameter().getReference().getSimpleName();
     }
 

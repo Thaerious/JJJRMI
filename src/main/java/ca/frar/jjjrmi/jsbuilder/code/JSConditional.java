@@ -9,9 +9,9 @@ public class JSConditional extends AbstractJSCodeElement {
     private final JSCodeElement thenEx;
 
     public JSConditional(CtConditional ctConditional) {
-        condition = CodeFactory.generate(ctConditional.getCondition());
-        elseEx = CodeFactory.generate(ctConditional.getElseExpression());
-        thenEx = CodeFactory.generate(ctConditional.getThenExpression());
+        condition = this.generate(ctConditional.getCondition());
+        elseEx = this.generate(ctConditional.getElseExpression());
+        thenEx = this.generate(ctConditional.getThenExpression());
     }
 
     @Override

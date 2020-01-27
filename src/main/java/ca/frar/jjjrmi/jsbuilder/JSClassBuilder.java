@@ -1,22 +1,23 @@
 package ca.frar.jjjrmi.jsbuilder;
-import ca.frar.jjjrmi.utility.JJJOptionsHandler;
+import static ca.frar.jjjrmi.Global.LOGGER;
+import static ca.frar.jjjrmi.Global.VERBOSE;
+import static ca.frar.jjjrmi.Global.VERY_VERBOSE;
 import ca.frar.jjjrmi.annotations.JJJ;
 import ca.frar.jjjrmi.annotations.JSPrequel;
 import ca.frar.jjjrmi.annotations.JSRequire;
+import ca.frar.jjjrmi.annotations.NativeJS;
+import ca.frar.jjjrmi.annotations.SkipJS;
 import ca.frar.jjjrmi.jsbuilder.code.JSCodeElement;
 import ca.frar.jjjrmi.jsbuilder.code.JSFieldDeclaration;
-import ca.frar.jjjrmi.annotations.NativeJS;
-import ca.frar.jjjrmi.annotations.ServerSide;
-import ca.frar.jjjrmi.annotations.SkipJS;
 import ca.frar.jjjrmi.socket.JJJObject;
-import ca.frar.jjjrmi.translator.HasWebsockets;
+import ca.frar.jjjrmi.utility.JJJOptionsHandler;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.apache.logging.log4j.Level;
-import spoon.reflect.code.CtConstructorCall;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
@@ -24,16 +25,9 @@ import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.factory.TypeFactory;
-import spoon.reflect.reference.CtReference;
 import spoon.reflect.reference.CtTypeReference;
-import spoon.reflect.visitor.filter.AnnotationFilter;
-import spoon.reflect.visitor.filter.ReferenceTypeFilter;
-import spoon.reflect.visitor.filter.TypeFilter;
 
 public class JSClassBuilder<T> {
-    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");
-    
     protected JSHeaderBuilder header = new JSHeaderBuilder();
     protected JSMethodBuilder constructor = new JSMethodBuilder("constructor");
     protected final CtClass<T> ctClass;
@@ -42,7 +36,8 @@ public class JSClassBuilder<T> {
     protected List<JSFieldDeclaration> staticFields = new ArrayList<>();
     protected List<JSCodeElement> sequel = new ArrayList<>();
     protected JSClassBuilder<?> container = null;
-    protected HashMap<String, CtType> requires = new HashMap<>(); // js require statements
+//    protected HashMap<String, CtType> requires = new HashMap<>(); // js require statements
+    protected HashSet<CtType> requireSet = new HashSet<>(); // js require statements
     protected ArrayList<JSClassBuilder> nested = new ArrayList<>();
 
     /* locally defined classes and enums (not fully implemented) */
@@ -63,14 +58,6 @@ public class JSClassBuilder<T> {
         return ctClass;
     }
 
-    protected String getQualifiedName(CtClass<?> ctClass) {
-        String orgName = ctClass.getSimpleName();
-        ctClass.setSimpleName(jjjOptions.getName());
-        String rvalue = ctClass.getQualifiedName();
-        ctClass.setSimpleName(orgName);
-        return rvalue;
-    }
-
     JSClassBuilder<T> build() {
         LOGGER.trace("JSClassBuilder.build()");
         addJJJMethods();
@@ -79,82 +66,23 @@ public class JSClassBuilder<T> {
         /* determine superclass, first by jjjoptions then by extends */
         CtType<?> supertype = null;
         CtTypeReference<?> superclass = ctClass.getSuperclass();
-        
-        if (superclass != null){
+
+        if (superclass != null) {
             supertype = ctClass.getSuperclass().getDeclaration();
         }
-        
+
         if (this.jjjOptions.hasExtends()) {
-            LOGGER.log(Level.forName("VERBOSE", 450), "Setting JS superclass from @JJJ annotation: " + jjjOptions.getExtends());
+            LOGGER.log(VERBOSE, "Setting JS superclass from @JJJ annotation: " + jjjOptions.getExtends());
             this.getHeader().setExtend(jjjOptions.getExtends());
         } else if (supertype == null) {
-            LOGGER.log(Level.forName("VERY-VERBOSE", 475), "No JS superclass found.");
-        } else if (supertype.getSimpleName().equals(JJJObject.class.getSimpleName())){
-            LOGGER.log(Level.forName("VERY-VERBOSE", 475), "Direct Java superclass is of type JJJObject: " + supertype.getSimpleName());
+            LOGGER.log(VERY_VERBOSE, "No JS superclass found.");
+        } else if (supertype.getSimpleName().equals(JJJObject.class.getSimpleName())) {
+            LOGGER.log(VERY_VERBOSE, "Direct Java superclass is of type JJJObject: " + supertype.getSimpleName());
         } else {
-            LOGGER.log(Level.forName("VERBOSE", 450), "Setting JS superclass from Java superclass: " + supertype.getSimpleName());
+            LOGGER.log(VERBOSE, "Setting JS superclass from Java superclass: " + supertype.getSimpleName());
             this.getHeader().setExtend(supertype.getSimpleName());
-            requires.put(supertype.getSimpleName(), supertype);
-        } 
-
-        /* add to require list each constructor call (new) of a top level type with @JJJ */
-        ctClass
-            .<CtConstructorCall>filterChildren(new TypeFilter<>(CtConstructorCall.class))
-            .<CtConstructorCall, CtType>map(ele -> ele.getType().getTypeDeclaration())
-            .<CtType>select(ele -> ele.isTopLevel())
-            .<CtType>select(new AnnotationFilter<>(JJJ.class))
-            .<CtType>forEach((CtType ele) ->{
-                JJJOptionsHandler options = new JJJOptionsHandler(ele);
-                
-                if (options.getName().equals(ctClass.getSimpleName()) == false){ // skip self
-                    boolean containsKey = requires.containsKey(options.getName());
-                    if (!containsKey){
-                        LOGGER.log(Level.forName("VERBOSE", 450), "require " + options.getName());
-                        requires.put(options.getName(), ele);
-                    }
-                }
-            });
-        
-        ctClass
-            .<CtConstructorCall>filterChildren(new TypeFilter<>(CtConstructorCall.class))
-            .<CtConstructorCall, CtType>map(ele -> ele.getType().getTypeDeclaration())
-            .<CtType>select(ele -> ele.isTopLevel())
-            .<CtType>select(ele ->{
-                CtTypeReference<Object> jjjObjectType = ctClass.getFactory().Type().get(HasWebsockets.class).getReference();        
-                return ele.isSubtypeOf(jjjObjectType);                
-            })
-            .<CtType>forEach((CtType ele) ->{
-                JJJOptionsHandler options = new JJJOptionsHandler(ele);
-                
-                if (options.getName().equals(ctClass.getSimpleName()) == false){ // skip self
-                    boolean containsKey = requires.containsKey(options.getName());
-                    if (!containsKey){
-                        LOGGER.log(Level.forName("VERBOSE", 450), "require " + options.getName());
-                        requires.put(options.getName(), ele);
-                    }
-                }
-            });        
-        
-        TypeFactory Type = ctClass.getFactory().Type();
-        
-        /* add enum references with @JJJ to the require list */
-        ctClass
-            .<CtTypeReference>filterChildren(new TypeFilter<>(CtTypeReference.class))
-            .<CtTypeReference>select(ele->!ele.getSimpleName().equals(CtTypeReference.NULL_TYPE_NAME))                
-            .<CtTypeReference, CtType>map(ele -> ele.getTypeDeclaration())
-            .<CtType>select(ele -> ele.isEnum())
-            .<CtType>select(ele -> ele.isTopLevel())
-            .<CtType>select(new AnnotationFilter<>(JJJ.class))
-            .<CtType>forEach((CtType ele) ->{
-                JJJOptionsHandler options = new JJJOptionsHandler(ele);
-                if (options.getName().equals(ctClass.getSimpleName()) == false){
-                    boolean containsKey = requires.containsKey(options.getName());
-                    if (!containsKey){
-                        LOGGER.log(Level.forName("VERBOSE", 450), "require " + options.getName());
-                        requires.put(options.getName(), ele);
-                    }
-                }
-            });
+            requireSet.add(supertype);
+        }
 
         /* Constructor Generation */
         Set<? extends CtConstructor<?>> allConstructors = ctClass.getConstructors();
@@ -173,10 +101,10 @@ public class JSClassBuilder<T> {
 
         /* Create constructor, if none found create default */
         if (vettedConstructors.isEmpty()) {
-            LOGGER.log(Level.forName("VERBOSE", 450), "No constructor found, generating default.");
+            LOGGER.log(VERBOSE, "No constructor found, generating default.");
             new JSConstructorGenerator(ctClass, this).run();
         } else {
-            LOGGER.log(Level.forName("VERBOSE", 450), "Constructors found, generating js constructors.");
+            LOGGER.log(VERBOSE, "Constructors found, generating js constructors.");
             for (CtConstructor<?> ctConstructor : vettedConstructors) {
                 new JSConstructorGenerator(ctClass, ctConstructor, this).run();
             }
@@ -186,7 +114,9 @@ public class JSClassBuilder<T> {
         Set<CtMethod<?>> allMethods = ctClass.getMethods();
         for (CtMethod<?> ctMethod : allMethods) {
             if (testGenerateMethod(ctClass, ctMethod)) {
-                new JSMethodGenerator(ctMethod, this).run();
+                JSMethodBuilder jsMethodBuilder = new JSMethodGenerator(ctMethod).run();
+                this.methods.add(jsMethodBuilder);
+                this.requireSet.addAll(jsMethodBuilder.getRequires());
             }
         }
 
@@ -194,11 +124,11 @@ public class JSClassBuilder<T> {
         Set<CtType<?>> nestedTypes = ctClass.getNestedTypes();
         for (CtType ctType : nestedTypes) {
             if (!ctType.isEnum()) {
-                LOGGER.log(Level.forName("VERY-VERBOSE", 475), "(--)" + ctClass.getSimpleName() + "." + ctType.getSimpleName() + " not an enumeration");
+                LOGGER.log(VERY_VERBOSE, "(--)" + ctClass.getSimpleName() + "." + ctType.getSimpleName() + " not an enumeration");
             } else if (ctClass.getAnnotation(JJJ.class) == null) {
-                LOGGER.log(Level.forName("VERY-VERBOSE", 475), "(--)" + ctClass.getSimpleName() + "." + ctType.getSimpleName() + " class missing @JJJ");
+                LOGGER.log(VERY_VERBOSE, "(--)" + ctClass.getSimpleName() + "." + ctType.getSimpleName() + " class missing @JJJ");
             } else {
-                LOGGER.log(Level.forName("VERBOSE", 450), "(++)" + ctClass.getSimpleName() + "." + ctType.getSimpleName());
+                LOGGER.log(VERBOSE, "(++)" + ctClass.getSimpleName() + "." + ctType.getSimpleName());
                 JSEnumBuilder<? extends Enum<?>> jsEnumBuilder = new JSEnumBuilder<>((CtEnum<?>) ctType).build();
                 this.nested.add(jsEnumBuilder);
             }
@@ -214,20 +144,14 @@ public class JSClassBuilder<T> {
     protected boolean testGenerateMethod(CtClass<?> ctClass, CtElement ctElement) {
         boolean skipJS = ctElement.getAnnotation(SkipJS.class) != null;
         boolean nativeJS = ctElement.getAnnotation(NativeJS.class) != null;
-        boolean serverSide = ctElement.getAnnotation(ServerSide.class) != null;
-        
-        if (skipJS) return false;
-        if (nativeJS) return true;
-        
-        switch (jjjOptions.processLevel()) {
-            case ALL:
-                return true;
-            case NONE:                
-                return false;            
-            default:
-                if (serverSide) return true;
-                return false;
+
+        if (skipJS) {
+            return false;
         }
+        if (nativeJS) {
+            return true;
+        }
+        return false;
     }
 
     void addJJJMethods() {
@@ -244,13 +168,13 @@ public class JSClassBuilder<T> {
         JSMethodBuilder jsGetClassMethod = new JSMethodBuilder();
         jsGetClassMethod.setStatic(true);
         jsGetClassMethod.setName("__getClass");
-        jsGetClassMethod.appendBody("return \"" + this.getFullPath() + "\";");
+        jsGetClassMethod.appendToBody("return \"" + this.getFullPath() + "\";");
         addMethod(jsGetClassMethod);
 
         JSMethodBuilder jsIsEnumMethod = new JSMethodBuilder();
         jsIsEnumMethod.setStatic(true);
         jsIsEnumMethod.setName("__isEnum");
-        jsIsEnumMethod.appendBody("return false;");
+        jsIsEnumMethod.appendToBody("return false;");
         addMethod(jsIsEnumMethod);
     }
 
@@ -294,22 +218,21 @@ public class JSClassBuilder<T> {
         if (header == null) {
             throw new JSBuilderIncompleteObjectException("class", "header");
         }
-        
+
         StringBuilder builder = new StringBuilder();
         builder.append("\"use strict\";\n");
-        
+
         List<CtAnnotation<? extends Annotation>> annotations = ctClass.getAnnotations();
         for (CtAnnotation ctAnnotation : annotations) {
             Annotation actualAnnotation = ctAnnotation.getActualAnnotation();
             if (actualAnnotation instanceof JSRequire) {
                 appendRequire(builder, (JSRequire) actualAnnotation);
-            }
-            else if (actualAnnotation instanceof JSPrequel) {
+            } else if (actualAnnotation instanceof JSPrequel) {
                 appendPrequel(builder, (JSPrequel) actualAnnotation);
-            }            
+            }
         }
 
-        for (CtType anImport : this.requires.values()) {
+        for (CtType anImport : this.requireSet) {
             builder.append("const ");
             builder.append(JSClassBuilder.requireString(anImport));
             builder.append("\n");
@@ -325,8 +248,8 @@ public class JSClassBuilder<T> {
 
         builder.append("\nif (typeof module !== \"undefined\") module.exports = ");
         builder.append(this.ctClass.getSimpleName());
-        builder.append(";");
-        
+        builder.append(";\n");
+
         return builder.toString();
     }
 
@@ -337,16 +260,18 @@ public class JSClassBuilder<T> {
         builder.append(" = require(\"");
         builder.append(jsRequire.value());
         builder.append("\")");
-        if (!jsRequire.postfix().isEmpty()) builder.append(".").append(jsRequire.postfix());
+        if (!jsRequire.postfix().isEmpty()) {
+            builder.append(".").append(jsRequire.postfix());
+        }
         builder.append(";\n");
     }
-    
-    private void appendPrequel(StringBuilder builder, JSPrequel jsPrequel){
-        LOGGER.log(Level.forName("VERBOSE", 450), "@JSPrequel: " + jsPrequel.value());        
+
+    private void appendPrequel(StringBuilder builder, JSPrequel jsPrequel) {
+        LOGGER.log(VERBOSE, "@JSPrequel: " + jsPrequel.value());
         builder.append(jsPrequel.value());
-        builder.append("\n");        
+        builder.append("\n");
     }
-    
+
     public String bodyString() throws JSBuilderException {
         StringBuilder builder = new StringBuilder();
         builder.append(" {\n");
@@ -416,5 +341,24 @@ public class JSClassBuilder<T> {
             list.add(0, current);
         }
         return list;
+    }
+
+    public String toXML(int indent) {
+        StringBuilder builder = new StringBuilder();
+
+        for (int i = 0; i < indent; i++) builder.append("\t");
+
+        builder.append("<").append(this.getClass().getSimpleName());
+        builder.append(" name=\"").append(this.getQualifiedName()).append("\"");
+        builder.append(">\n");
+
+        for (JSMethodBuilder method : this.methods) {
+            builder.append(method.toXML(indent + 1));
+        }
+
+        for (int i = 0; i < indent; i++) builder.append("\t");
+        builder.append("</").append(this.getClass().getSimpleName()).append(">\n");
+
+        return builder.toString();
     }
 }

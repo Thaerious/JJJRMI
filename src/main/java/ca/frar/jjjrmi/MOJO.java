@@ -101,13 +101,7 @@ public class MOJO extends AbstractMojo {
 
         for (JSClassBuilder<?> jsClassBuilder : jsParser.jsClassBuilders()) {
             LOGGER.info("file: " + jsClassBuilder.getSimpleName() + ".js");
-            String outPath = String.format("%s/%s/%s.js", destination, packageName, jsClassBuilder.getSimpleName());
-            File outFile = new File(outPath);
-            FileOutputStream fos = new FileOutputStream(outFile);
-            PrintWriter pw = new PrintWriter(fos);
-
-            pw.print(jsClassBuilder.fullString());
-            pw.close();
+            Base.writeClass(jsParser, rootPath);
         }
 
         if (this.generatePackage == true) {

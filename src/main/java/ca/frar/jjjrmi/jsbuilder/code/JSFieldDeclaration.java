@@ -11,7 +11,7 @@ public class JSFieldDeclaration extends AbstractJSCodeElement{
     public JSFieldDeclaration(CtField<?> ctField){
         if (ctField.hasModifier(ModifierKind.STATIC)) this.isStatic = true;
         reference = ctField.getReference();
-        rhs = CodeFactory.generate(ctField.getAssignment());
+        rhs = this.generate(ctField.getAssignment());
     }
 
     public boolean isStatic(){

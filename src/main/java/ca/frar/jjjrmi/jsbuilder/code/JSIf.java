@@ -8,9 +8,9 @@ public class JSIf extends AbstractJSCodeElement {
     private final JSCodeElement elseStatement;
 
     public JSIf(CtIf ctIf) {
-        condition = CodeFactory.generate(ctIf.getCondition());
-        thenStatement = CodeFactory.generate(ctIf.getThenStatement());
-        elseStatement = CodeFactory.generate(ctIf.getElseStatement());
+        condition = this.generate(ctIf.getCondition());
+        thenStatement = this.generate(ctIf.getThenStatement());
+        elseStatement = this.generate(ctIf.getElseStatement());
     }
 
     @Override

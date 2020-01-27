@@ -5,7 +5,6 @@ import ca.frar.jjjrmi.annotations.Transient;
 import ca.frar.jjjrmi.jsbuilder.code.JSElementList;
 import ca.frar.jjjrmi.jsbuilder.code.JSFieldDeclaration;
 import ca.frar.jjjrmi.jsbuilder.code.JSSuperConstructor;
-import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.List;
 import org.apache.logging.log4j.Level;

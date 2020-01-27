@@ -12,8 +12,8 @@ public class JSBinaryOperator extends AbstractJSCodeElement {
 
     public JSBinaryOperator(CtBinaryOperator ctBinaryOperator) {
         kind = ctBinaryOperator.getKind();
-        lhs = CodeFactory.generate(ctBinaryOperator.getLeftHandOperand());
-        rhs = CodeFactory.generate(ctBinaryOperator.getRightHandOperand());
+        lhs = this.generate(ctBinaryOperator.getLeftHandOperand());
+        rhs = this.generate(ctBinaryOperator.getRightHandOperand());
     }
 
     @Override

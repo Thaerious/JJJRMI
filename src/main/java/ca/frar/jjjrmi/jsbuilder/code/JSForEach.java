@@ -8,9 +8,9 @@ public class JSForEach extends AbstractJSCodeElement {
     private final JSCodeElement variable;
 
     public JSForEach(CtForEach ctForEach) {
-        body = CodeFactory.generate(ctForEach.getBody());
-        expression = CodeFactory.generate(ctForEach.getExpression());
-        variable = CodeFactory.generate(ctForEach.getVariable());
+        body = this.generate(ctForEach.getBody());
+        expression = this.generate(ctForEach.getExpression());
+        variable = this.generate(ctForEach.getVariable());
     }
 
     @Override

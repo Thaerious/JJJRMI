@@ -1,7 +1,7 @@
 package ca.frar.jjjrmi.translator;
 
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
-import ca.frar.jjjrmi.test.testable.ArrayWrapper;
+import ca.frar.jjjrmi.testable.ArrayWrapper;
 import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;

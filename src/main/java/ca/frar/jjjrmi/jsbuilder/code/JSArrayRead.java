@@ -2,13 +2,12 @@ package ca.frar.jjjrmi.jsbuilder.code;
 import spoon.reflect.code.CtArrayRead;
 
 public class JSArrayRead extends AbstractJSCodeElement {
-
     private final JSCodeElement target;
     private final JSCodeElement index;
 
     public JSArrayRead(CtArrayRead<?> ctArrayRead) {
-        target = CodeFactory.generate(ctArrayRead.getTarget());
-        index = CodeFactory.generate(ctArrayRead.getIndexExpression());
+        target = this.generate(ctArrayRead.getTarget());
+        index = this.generate(ctArrayRead.getIndexExpression());
     }
 
     @Override

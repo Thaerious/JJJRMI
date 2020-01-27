@@ -9,7 +9,7 @@ public class JSLocalVariable extends AbstractJSCodeElement{
     public JSLocalVariable(CtLocalVariable ctLocalVariable){
         this.ctLocalVariable = ctLocalVariable;
         this.lhs = new JSLocalVariableReference(ctLocalVariable.getReference());
-        this.rhs = CodeFactory.generate(ctLocalVariable.getAssignment());
+        this.rhs = this.generate(ctLocalVariable.getAssignment());
     }
 
     @Override
@@ -17,5 +17,4 @@ public class JSLocalVariable extends AbstractJSCodeElement{
         if (rhs.isEmpty()) return "let " + lhs.toString();
         else return "let " + lhs.toString() + " = " + rhs.toString();
     }
-
 }

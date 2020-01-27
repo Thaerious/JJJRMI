@@ -3,7 +3,7 @@
 <Configuration package="log4j.test" status="WARN">
     <CustomLevels>
         <CustomLevel name="VERBOSE" intLevel="450" />
-        <CustomLevel name="VERY-VERBOSE" intLevel="475" />
+        <CustomLevel name="VERY_VERBOSE" intLevel="475" />
     </CustomLevels>        
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">            

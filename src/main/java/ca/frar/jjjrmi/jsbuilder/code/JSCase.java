@@ -8,7 +8,7 @@ public class JSCase extends AbstractJSCodeElement {
     private final JSElementList body;
 
     public JSCase(CtCase<?> ctCase) {
-        expression = CodeFactory.generate(ctCase.getCaseExpression());
+        expression = this.generate(ctCase.getCaseExpression());
         body = new JSElementList(ctCase.getStatements());
     }
 

@@ -7,7 +7,7 @@ public class JSReturnImpl extends AbstractJSCodeElement {
     private final JSCodeElement ex;
 
     public JSReturnImpl(CtReturnImpl ctReturnImpl) {
-        ex = CodeFactory.generate(ctReturnImpl.getReturnedExpression());
+        ex = this.generate(ctReturnImpl.getReturnedExpression());
     }
 
     @Override

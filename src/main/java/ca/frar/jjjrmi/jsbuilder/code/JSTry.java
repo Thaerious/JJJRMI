@@ -8,9 +8,9 @@ public class JSTry extends AbstractJSCodeElement {
     private final JSCodeElement finalizer;
 
     public JSTry(CtTry ctTry) {
-        body = CodeFactory.generate(ctTry.getBody());
+        body = this.generate(ctTry.getBody());
         catchers = new JSElementList(ctTry.getCatchers());
-        finalizer = CodeFactory.generate(ctTry.getFinalizer());
+        finalizer = this.generate(ctTry.getFinalizer());
     }
 
     @Override

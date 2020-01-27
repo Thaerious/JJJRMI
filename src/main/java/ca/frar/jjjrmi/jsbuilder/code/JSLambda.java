@@ -22,8 +22,8 @@ public class JSLambda extends AbstractJSCodeElement{
 
     JSLambda(CtLambda ctLambda) {
         parameters = ctLambda.getParameters();
-        if (ctLambda.getBody() != null) this.body = CodeFactory.generate(ctLambda.getBody());
-        if (ctLambda.getExpression() != null) this.expression = CodeFactory.generate(ctLambda.getExpression());
+        if (ctLambda.getBody() != null) this.body = this.generate(ctLambda.getBody());
+        if (ctLambda.getExpression() != null) this.expression = this.generate(ctLambda.getExpression());
     }
     
     @Override

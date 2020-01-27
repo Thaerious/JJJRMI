@@ -1,4 +1,4 @@
-package ca.frar.jjjrmi.test.testable;
+package ca.frar.jjjrmi.testable;
 import ca.frar.jjjrmi.annotations.JJJ;
 import ca.frar.jjjrmi.socket.JJJObject;
 

@@ -37,7 +37,7 @@ public class JSEnumBuilder <T extends Enum> extends JSClassBuilder<T>{
         jsMethodBuilder.setName("constructor");
         jsMethodBuilder.addParameter("value");
         JSCodeSnippet jsCodeSnippet = new JSCodeSnippet("this.__value = value;");
-        jsMethodBuilder.appendBody(jsCodeSnippet);
+        jsMethodBuilder.appendToBody(jsCodeSnippet);
         this.addMethod(jsMethodBuilder);
     }
 
@@ -69,13 +69,13 @@ public class JSEnumBuilder <T extends Enum> extends JSClassBuilder<T>{
         JSMethodBuilder jsGetClassMethod = new JSMethodBuilder();
         jsGetClassMethod.setStatic(true);
         jsGetClassMethod.setName("__getClass");
-        jsGetClassMethod.appendBody("return \"" + getCtClass().getQualifiedName() + "\";");
+        jsGetClassMethod.appendToBody("return \"" + getCtClass().getQualifiedName() + "\";");
         addMethod(jsGetClassMethod);
 
         JSMethodBuilder jsIsEnumMethod = new JSMethodBuilder();
         jsIsEnumMethod.setStatic(true);
         jsIsEnumMethod.setName("__isEnum");
-        jsIsEnumMethod.appendBody("return true;");
+        jsIsEnumMethod.appendToBody("return true;");
         addMethod(jsIsEnumMethod);
     }
 }

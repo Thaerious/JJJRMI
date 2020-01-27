@@ -1,4 +1,5 @@
 package ca.frar.jjjrmi;
+import static ca.frar.jjjrmi.Global.LOGGER;
 import ca.frar.jjjrmi.jsbuilder.JSBuilderException;
 import ca.frar.jjjrmi.jsbuilder.JSClassBuilder;
 import ca.frar.jjjrmi.jsbuilder.JSParser;
@@ -22,7 +23,6 @@ import spoon.reflect.CtModel;
  * @author Ed Armstrong
  */
 public class CLI {
-    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");
     private String source = ".";
     private String destination = ".";
     private String packageName = "package";
@@ -31,9 +31,10 @@ public class CLI {
     private boolean generatePackage = false; /* generate the package file */
     private boolean packageSubDir = false; /* place files in package subdirectory */
     private String packageFileName = "packageFile";
-
+    private boolean printXML = false;
     private JSParser jsParser;
-
+    private String xmlClass = "";
+    
     public static void main(String... args) throws MojoExecutionException, MojoFailureException, FileNotFoundException, JSBuilderException, IOException {
         CLI cli = new CLI();
         System.out.println("JJJRMI CLI");
@@ -42,10 +43,11 @@ public class CLI {
         cli.output();
     }
     
+    
     public void parseArgs(String ... args){
         for (int i = 0; i < args.length; i++){
             String s = args[i];
-            System.out.println(s);
+
             switch(s){
                 case "--json":
                     generateJSON = true;
@@ -62,6 +64,10 @@ public class CLI {
                     break;
                 case "-o":
                     destination = args[i + 1];
+                    break;
+                case "--xml":
+                    if (args[i+1].charAt(0) != '-') xmlClass = args[i + 1];
+                    printXML = true;
                     break;
             }
         }
@@ -94,13 +100,9 @@ public class CLI {
 
         for (JSClassBuilder<?> jsClassBuilder : jsParser.jsClassBuilders()) {
             LOGGER.info("file: " + jsClassBuilder.getSimpleName() + ".js");
-            String outPath = String.format("%s/%s.js", rootPath, jsClassBuilder.getSimpleName());
-            File outFile = new File(outPath);
-            FileOutputStream fos = new FileOutputStream(outFile);
-            PrintWriter pw = new PrintWriter(fos);
-
-            pw.print(jsClassBuilder.fullString());
-            pw.close();
+            Base.writeClass(jsParser, rootPath);
+            if (this.printXML && this.xmlClass.isEmpty()) System.out.println(jsClassBuilder.toXML(0));
+            else if (this.printXML && this.xmlClass.equals(jsClassBuilder.getSimpleName())) System.out.println(jsClassBuilder.toXML(0));
         }
 
         if (this.generatePackage == true) {
@@ -146,7 +148,7 @@ public class CLI {
      * @throws FileNotFoundException
      * @throws IOException
      */
-    private void copyPackageJSON() throws FileNotFoundException, IOException {
+    public void copyPackageJSON() throws FileNotFoundException, IOException {
         InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("package.json");
 
         if (inputStream == null) {

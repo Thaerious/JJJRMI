@@ -1,7 +1,7 @@
 package ca.frar.jjjrmi.jsbuilder;
 
 public class JSFormatter {
-
+    private final static String INDENT = "    ";
     private final StringBuilder builder = new StringBuilder();
 
     public static String process(String input, int starting) {
@@ -15,7 +15,7 @@ public class JSFormatter {
 
         for (String s : split) {
             if (s.contains("}")) indent--;
-            for (int i = 0; i < indent; i++) builder.append("\t");
+            for (int i = 0; i < indent; i++) builder.append(INDENT);
             builder.append(s).append("\n");
             if (s.contains("{")) indent++;
         }

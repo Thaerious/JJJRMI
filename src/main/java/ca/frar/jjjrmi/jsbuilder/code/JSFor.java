@@ -10,8 +10,8 @@ public class JSFor extends AbstractJSCodeElement {
     public JSFor(CtFor ctFor) {
         forInit = new JSElementList(ctFor.getForInit());
         forUpdate = new JSElementList(ctFor.getForUpdate());
-        forExpression = CodeFactory.generate(ctFor.getExpression());
-        body = CodeFactory.generate(ctFor.getBody());
+        forExpression = this.generate(ctFor.getExpression());
+        body = this.generate(ctFor.getBody());
     }
 
     @Override

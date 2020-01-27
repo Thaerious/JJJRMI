@@ -7,8 +7,8 @@ public class JSDo extends AbstractJSCodeElement {
     private final JSBlock body;
 
     public JSDo(CtDo ctDo) {
-        expression = CodeFactory.generate(ctDo.getLoopingExpression());
-        body = (JSBlock) CodeFactory.generate(ctDo.getBody());
+        expression = this.generate(ctDo.getLoopingExpression());
+        body = (JSBlock) this.generate(ctDo.getBody());
     }
 
     @Override

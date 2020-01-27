@@ -156,12 +156,12 @@
             <plugin>
                 <groupId>ca.frar</groupId>
                 <artifactId>jjjrmi</artifactId>
-                <version>0.6.2</version>
+                <version>0.6.3</version>
                 <configuration>
                     <packageName>jjjrmi</packageName>
                     <generatePackage>false</generatePackage>
                     <generateJSON>false</generateJSON>
-                    <version>0.6.2</version>
+                    <version>0.6.3</version>
                 </configuration>                
 <!--                <executions>
                     <execution>

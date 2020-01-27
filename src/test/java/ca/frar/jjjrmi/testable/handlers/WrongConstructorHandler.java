@@ -1,10 +1,9 @@
-package ca.frar.jjjrmi.test.testable.handlers;
-import java.util.ArrayList;
-import ca.frar.jjjrmi.annotations.Handles;
+package ca.frar.jjjrmi.testable.handlers;
 import ca.frar.jjjrmi.exceptions.DecoderException;
 import ca.frar.jjjrmi.exceptions.EncoderException;
 import ca.frar.jjjrmi.translator.AHandler;
 import ca.frar.jjjrmi.translator.Translator;
+import java.util.ArrayList;
 import org.json.JSONObject;
 
 public class WrongConstructorHandler extends AHandler<ArrayList>{

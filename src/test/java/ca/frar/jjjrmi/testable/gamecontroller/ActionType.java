@@ -1,4 +1,4 @@
-package ca.frar.jjjrmi.test.testable.gamecontroller;
+package ca.frar.jjjrmi.testable.gamecontroller;
 
 public enum ActionType {
     PLAY_CARD,

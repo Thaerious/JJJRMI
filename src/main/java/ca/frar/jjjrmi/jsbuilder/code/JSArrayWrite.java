@@ -8,8 +8,8 @@ public class JSArrayWrite extends AbstractJSCodeElement {
     private final JSCodeElement index;
 
     public JSArrayWrite(CtArrayWrite ctArrayWrite) {
-        target = CodeFactory.generate(ctArrayWrite.getTarget());
-        index = CodeFactory.generate(ctArrayWrite.getIndexExpression());
+        target = this.generate(ctArrayWrite.getTarget());
+        index = this.generate(ctArrayWrite.getIndexExpression());
     }
 
     @Override

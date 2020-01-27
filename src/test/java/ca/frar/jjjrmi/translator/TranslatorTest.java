@@ -1,24 +1,21 @@
 package ca.frar.jjjrmi.translator;
-
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
 import ca.frar.jjjrmi.exceptions.MissingHandlerException;
 import ca.frar.jjjrmi.exceptions.NewHandlerException;
 import ca.frar.jjjrmi.exceptions.SeekHandlersException;
 import ca.frar.jjjrmi.exceptions.TranslatorException;
-import ca.frar.jjjrmi.test.testable.ForcedDeferred;
-import ca.frar.jjjrmi.test.testable.NoRetain;
-import ca.frar.jjjrmi.test.testable.Simple;
-import ca.frar.jjjrmi.test.testable.handlers.ArrayListHandler;
-import ca.frar.jjjrmi.test.testable.handlers.WrongConstructorHandler;
+import ca.frar.jjjrmi.testable.ForcedDeferred;
+import ca.frar.jjjrmi.testable.NoRetain;
+import ca.frar.jjjrmi.testable.Simple;
+import ca.frar.jjjrmi.testable.handlers.ArrayListHandler;
+import ca.frar.jjjrmi.testable.handlers.WrongConstructorHandler;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.json.JSONObject;
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author edward
@@ -345,12 +342,12 @@ public class TranslatorTest {
         String jsonString
                 = "{\n"
                 + "  'retain': true,\n"
-                + "  'type': 'ca.frar.jjjrmi.test.testable.ForcedDeferred',\n"
+                + "  'type': 'ca.frar.jjjrmi.testable.ForcedDeferred',\n"
                 + "  'fields': {\n"
                 + "    'hasInt2': {'ptr': 'S1'},\n"
                 + "    'hasInt1': {\n"
                 + "      'retain': true,\n"
-                + "      'type': 'ca.frar.jjjrmi.test.testable.HasInt',\n"
+                + "      'type': 'ca.frar.jjjrmi.testable.HasInt',\n"
                 + "      'fields': {'x': {\n"
                 + "        'primitive': 'number',\n"
                 + "        'value': 0\n"
@@ -396,7 +393,7 @@ public class TranslatorTest {
         arrayList.add("TWO");
         EncodedJSON encode = translator.encode(arrayList);
 
-        assertEquals("ca.frar.jjjrmi.test.testable.handlers.ArrayListHandler", encode.get(Constants.HandlerParam));
+        assertEquals("ca.frar.jjjrmi.testable.handlers.ArrayListHandler", encode.get(Constants.HandlerParam));
     }
 
     /**

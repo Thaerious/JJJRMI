@@ -1,4 +1,4 @@
-package ca.frar.jjjrmi.test.testable.gamecontroller;
+package ca.frar.jjjrmi.testable.gamecontroller;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.annotations.Transient;
 import ca.frar.jjjrmi.socket.JJJObject;

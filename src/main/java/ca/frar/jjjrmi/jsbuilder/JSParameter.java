@@ -5,11 +5,13 @@
  */
 package ca.frar.jjjrmi.jsbuilder;
 
+import ca.frar.jjjrmi.jsbuilder.code.AbstractJSCodeElement;
+
 /**
  *
  * @author Ed Armstrong
  */
-public class JSParameter {
+public class JSParameter extends AbstractJSCodeElement{
     String name = "";
     String initializer = "";
     

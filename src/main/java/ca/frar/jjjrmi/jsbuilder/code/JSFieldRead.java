@@ -8,7 +8,7 @@ public class JSFieldRead extends AbstractJSCodeElement {
 
     public JSFieldRead(CtFieldRead ctFieldRead) {
         variable = ctFieldRead.getVariable();
-        target = CodeFactory.generate(ctFieldRead.getTarget());
+        target = this.generate(ctFieldRead.getTarget());
     }
 
     @Override

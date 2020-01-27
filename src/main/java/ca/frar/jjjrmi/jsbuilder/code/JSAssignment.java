@@ -3,13 +3,12 @@ package ca.frar.jjjrmi.jsbuilder.code;
 import spoon.reflect.code.CtAssignment;
 
 public class JSAssignment extends AbstractJSCodeElement {
-
     private final JSCodeElement rhs;
     private final JSCodeElement lhs;
 
     public JSAssignment(CtAssignment ctAssignment) {
-        lhs = CodeFactory.generate(ctAssignment.getAssigned());
-        rhs = CodeFactory.generate(ctAssignment.getAssignment());
+        lhs = this.generate(ctAssignment.getAssigned());
+        rhs = this.generate(ctAssignment.getAssignment());
     }
 
     @Override

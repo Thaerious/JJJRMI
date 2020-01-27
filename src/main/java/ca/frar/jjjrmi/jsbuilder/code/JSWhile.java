@@ -6,8 +6,8 @@ public class JSWhile extends AbstractJSCodeElement {
     private final JSCodeElement body;
 
     public JSWhile(CtWhile ctWhile) {
-        expression = CodeFactory.generate(ctWhile.getLoopingExpression());
-        body = CodeFactory.generate(ctWhile.getBody());
+        expression = this.generate(ctWhile.getLoopingExpression());
+        body = this.generate(ctWhile.getBody());
     }
 
     @Override

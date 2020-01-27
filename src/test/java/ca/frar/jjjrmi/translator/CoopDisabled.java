@@ -2,10 +2,10 @@ package ca.frar.jjjrmi.translator;
 
 import ca.frar.jjjrm.test.jsportal.JSExec;
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
-import ca.frar.jjjrmi.test.testable.Foo;
-import ca.frar.jjjrmi.test.testable.HasInt;
-import ca.frar.jjjrmi.test.testable.Primitives;
-import ca.frar.jjjrmi.test.testable.SelfReferential;
+import ca.frar.jjjrmi.testable.Foo;
+import ca.frar.jjjrmi.testable.HasInt;
+import ca.frar.jjjrmi.testable.Primitives;
+import ca.frar.jjjrmi.testable.SelfReferential;
 import java.io.IOException;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;

@@ -1,14 +1,23 @@
 package ca.frar.jjjrmi.jsbuilder;
 
+import ca.frar.jjjrmi.jsbuilder.code.AbstractJSCodeElement;
 import ca.frar.jjjrmi.jsbuilder.code.JSCodeElement;
 import ca.frar.jjjrmi.jsbuilder.code.JSCodeSnippet;
+import ca.frar.jjjrmi.jsbuilder.code.JSElementList;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import spoon.reflect.declaration.CtType;
 
+/**
+ * A JS Method, does not do the parsing.
+ * @author Ed Armstrong
+ */
 public class JSMethodBuilder {
     private String name = "";
     private final List<JSParameter> parameters = new ArrayList<>();
-    private final List<JSCodeElement> elements = new ArrayList<>();
+    private JSElementList body = new JSElementList();
     private boolean isAsync = false;
     private boolean isStatic = false;
     private boolean invokeSuper = false;
@@ -22,6 +31,16 @@ public class JSMethodBuilder {
     public JSMethodBuilder() {
     }
 
+    /**
+     * Retrieve all js 'requires' from and all methods.
+     * @return 
+     */
+    public Set<CtType> getRequires() {
+        HashSet<CtType>set = new HashSet<>();
+        set.addAll(this.body.getRequires());
+        return set;
+    }    
+    
     void setInvokeSuper(boolean b) {
         this.invokeSuper = b;
     }
@@ -58,24 +77,24 @@ public class JSMethodBuilder {
         return null;
     }
 
+    public JSMethodBuilder setBody(JSElementList body) {
+        this.body = body;
+        return this;
+    }
+    
     public JSMethodBuilder setBody(String body) {
-        elements.clear();
-        elements.add(new JSCodeSnippet(body));
+        this.body = new JSElementList();
+        this.body.add(new JSCodeSnippet(body));
+        return this;
+    }
+    
+    public JSMethodBuilder appendToBody(String snippet) {
+        this.body.add(new JSCodeSnippet(snippet));
         return this;
     }
 
-    public JSMethodBuilder appendBody(String body) {
-        elements.add(new JSCodeSnippet(body));
-        return this;
-    }
-
-    public JSMethodBuilder appendBody(JSCodeElement element) {
-        elements.add(element);
-        return this;
-    }
-
-    public JSMethodBuilder prependBody(JSCodeElement element) {
-        elements.add(0, element);
+    public JSMethodBuilder appendToBody(JSCodeElement element) {
+        this.body.add(element);
         return this;
     }
 
@@ -105,7 +124,7 @@ public class JSMethodBuilder {
             if (i != parameters.size() - 1) builder.append(", ");
         }
 
-        builder.append(") {\n");
+        builder.append(") ");
 
         if (this.invokeSuper) {
             builder.append("\t\tif (super.").append(name).append(" !== undefined)");
@@ -117,11 +136,8 @@ public class JSMethodBuilder {
             builder.append(");\n");
         }
 
-        for (JSCodeElement element : elements) {
-            builder.append(JSFormatter.process(element.toString(), 2));
-        }
+        builder.append(JSFormatter.process(body.scoped(), 2).trim());
 
-        builder.append("\t}");
         return builder.toString();
     }
 
@@ -133,4 +149,38 @@ public class JSMethodBuilder {
         this.isGetter = b;
     }
 
+    public String toXML(int indent){        
+        StringBuilder builder = new StringBuilder();        
+        
+            for (int i = 0; i < indent; i++) builder.append("\t");
+            
+            builder.append("<").append(this.getClass().getSimpleName());
+            builder.append(" name=\"").append(this.getName()).append("\"");
+            builder.append(">\n");   
+            
+            builder.append(this.body.toXML(indent + 1));
+            
+            for (int i = 0; i < indent; i++) builder.append("\t");
+            builder.append("</").append(this.getClass().getSimpleName()).append(">\n");
+        
+        return builder.toString();
+    }
+    
+    public String parametersToXML(int indent){        
+        StringBuilder builder = new StringBuilder();        
+        
+            for (int i = 0; i < indent; i++) builder.append("\t");
+            
+            builder.append("<parameters>");
+            
+            for (JSCodeElement element : this.parameters){
+                builder.append(element.toXML(indent + 1));
+            }
+            
+            for (int i = 0; i < indent; i++) builder.append("\t");
+            builder.append("</parameters>");
+        
+        return builder.toString();
+    }    
+    
 }

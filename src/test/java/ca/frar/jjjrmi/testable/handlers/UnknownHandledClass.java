@@ -1,4 +1,4 @@
-package ca.frar.jjjrmi.test.testable.handlers;
+package ca.frar.jjjrmi.testable.handlers;
 import java.util.ArrayList;
 import ca.frar.jjjrmi.annotations.Handles;
 import ca.frar.jjjrmi.exceptions.DecoderException;

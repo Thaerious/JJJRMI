@@ -8,7 +8,7 @@ public class JSUnaryOperator extends AbstractJSCodeElement {
     private final UnaryOperatorKind kind;
 
     public JSUnaryOperator(CtUnaryOperator<?> ctUnaryOperator) {
-        this.operand = CodeFactory.generate(ctUnaryOperator.getOperand());
+        this.operand = this.generate(ctUnaryOperator.getOperand());
         kind = ctUnaryOperator.getKind();
     }
 

@@ -9,7 +9,7 @@ public class JSFieldWrite extends AbstractJSCodeElement {
 
     public JSFieldWrite(CtFieldWrite ctFieldWrite) {
         variable = ctFieldWrite.getVariable();
-        target = CodeFactory.generate(ctFieldWrite.getTarget());
+        target = this.generate(ctFieldWrite.getTarget());
     }
 
     @Override

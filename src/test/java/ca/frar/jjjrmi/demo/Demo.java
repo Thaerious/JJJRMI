@@ -1,8 +1,6 @@
 package ca.frar.jjjrmi.demo;
-
-import ca.frar.jjjrm.test.jsportal.JSExec;
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
-import ca.frar.jjjrmi.test.testable.gamecontroller.GameController;
+import ca.frar.jjjrmi.testable.gamecontroller.GameController;
 import ca.frar.jjjrmi.translator.EncodedJSON;
 import ca.frar.jjjrmi.translator.Translator;
 import java.io.IOException;

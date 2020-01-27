@@ -11,8 +11,8 @@ public class JSOperatorAssignment extends AbstractJSCodeElement {
     private final JSCodeElement lhs;
 
     public JSOperatorAssignment(CtOperatorAssignment ctOperatorAssignment) {
-        lhs = CodeFactory.generate(ctOperatorAssignment.getAssigned());
-        rhs = CodeFactory.generate(ctOperatorAssignment.getAssignment());
+        lhs = this.generate(ctOperatorAssignment.getAssigned());
+        rhs = this.generate(ctOperatorAssignment.getAssignment());
         kind = ctOperatorAssignment.getKind();
     }
 
