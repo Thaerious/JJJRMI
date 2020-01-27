@@ -1,9 +1,10 @@
 #!/bin/bash
 
-ROOTPATH=$( cd "$(dirname ./setup)"; cd .. ; pwd -P )
+ROOTPATH=$( cd "$(dirname ./$BASH_SOURCE)"; cd .. ; pwd -P )
 
 export PATH=$PATH:$ROOTPATH/bin
 export JJJRMI=$ROOTPATH
 
-echo "#!/bin/bash" > jjjrmi
-echo "java -classpath $ROOTPATH/target/dependency/*:$ROOTPATH/target/classes ca.frar.jjjrmi.CLI $@" >> jjjrmi
+touch $ROOTPATH/bin/jjjrmi
+echo "#!/bin/bash" > $ROOTPATH/bin/jjjrmi
+echo "java -classpath $ROOTPATH/target/dependency/*:$ROOTPATH/target/classes ca.frar.jjjrmi.CLI $@" >> $ROOTPATH/bin/jjjrmi
