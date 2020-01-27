@@ -45,6 +45,7 @@ public class CLI {
     public void parseArgs(String ... args){
         for (int i = 0; i < args.length; i++){
             String s = args[i];
+            System.out.println(s);
             switch(s){
                 case "--json":
                     generateJSON = true;
@@ -83,6 +84,7 @@ public class CLI {
      * @throws JSBuilderException
      */
     public void output() throws FileNotFoundException, JSBuilderException, IOException {
+        System.out.println(destination);
         LOGGER.info("Javascript Code Generator: Generating output");
         String rootPath;
         
