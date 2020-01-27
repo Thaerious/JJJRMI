@@ -60,19 +60,18 @@ public class AbstractJSCodeElement implements JSCodeElement {
     public String toXML(int indent, HashMap<String, String> attributes) {
         StringBuilder builder = new StringBuilder();
 
-        if (this.childElements.size() > 0) {
+        String nested = this.toXMLNested(indent + 1);
+        
+        if (nested != null && !nested.isEmpty()) {
             for (int i = 0; i < indent; i++) builder.append("\t");
             builder.append("<").append(this.getClass().getSimpleName());
-            
+
             for (String key : attributes.keySet()) {
                 builder.append(" ").append(key).append("=\"").append(attributes.get(key)).append("\"");
             }
-            
             builder.append(">\n");
-            
-            for (JSCodeElement element : this.childElements) {
-                builder.append(element.toXML(indent + 1));
-            }
+
+            builder.append(nested);
             
             for (int i = 0; i < indent; i++) builder.append("\t");
             builder.append("</").append(this.getClass().getSimpleName()).append(">\n");
@@ -81,6 +80,14 @@ public class AbstractJSCodeElement implements JSCodeElement {
             builder.append("<").append(this.getClass().getSimpleName()).append("/>\n");
         }
 
+        return builder.toString();
+    }
+
+    public String toXMLNested(int indent) {
+        StringBuilder builder = new StringBuilder();
+        for (JSCodeElement element : this.childElements) {
+            builder.append(element.toXML(indent));
+        }
         return builder.toString();
     }
 

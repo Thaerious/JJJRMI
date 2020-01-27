@@ -13,11 +13,9 @@ import ca.frar.jjjrmi.socket.JJJObject;
 import ca.frar.jjjrmi.utility.JJJOptionsHandler;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.apache.logging.log4j.Level;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
@@ -106,7 +104,10 @@ public class JSClassBuilder<T> {
         } else {
             LOGGER.log(VERBOSE, "Constructors found, generating js constructors.");
             for (CtConstructor<?> ctConstructor : vettedConstructors) {
-                new JSConstructorGenerator(ctClass, ctConstructor, this).run();
+//                new JSConstructorGenerator(ctClass, ctConstructor, this).run();
+                JSMethodBuilder jsMethodBuilder = new JSMethodGenerator("constructor", ctConstructor, ctConstructor).run();
+                this.constructor = jsMethodBuilder;
+                this.requireSet.addAll(jsMethodBuilder.getRequires());
             }
         }
 
@@ -114,7 +115,7 @@ public class JSClassBuilder<T> {
         Set<CtMethod<?>> allMethods = ctClass.getMethods();
         for (CtMethod<?> ctMethod : allMethods) {
             if (testGenerateMethod(ctClass, ctMethod)) {
-                JSMethodBuilder jsMethodBuilder = new JSMethodGenerator(ctMethod).run();
+                JSMethodBuilder jsMethodBuilder = new JSMethodGenerator(ctMethod.getSimpleName(), ctMethod, ctMethod).run();
                 this.methods.add(jsMethodBuilder);
                 this.requireSet.addAll(jsMethodBuilder.getRequires());
             }
@@ -352,6 +353,7 @@ public class JSClassBuilder<T> {
         builder.append(" name=\"").append(this.getQualifiedName()).append("\"");
         builder.append(">\n");
 
+        builder.append(constructor.toXML(indent + 1));
         for (JSMethodBuilder method : this.methods) {
             builder.append(method.toXML(indent + 1));
         }
