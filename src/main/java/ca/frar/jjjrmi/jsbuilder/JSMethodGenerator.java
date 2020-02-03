@@ -22,7 +22,6 @@ import spoon.reflect.declaration.ModifierKind;
  * @param <T>
  */
 public class JSMethodGenerator {
-
     final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");
     private final JSMethodBuilder jsMethodBuilder;
     private final NativeJS nativeJSAnno;

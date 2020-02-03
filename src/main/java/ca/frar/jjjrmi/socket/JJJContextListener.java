@@ -17,12 +17,10 @@ public class JJJContextListener implements ServletContextListener{
     
     @Override
     public void contextInitialized(ServletContextEvent event) {
-        LOGGER.debug("contextInitialized");
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent event) {
-        LOGGER.debug("contextDestroyed");
     }
     
 }

@@ -1,4 +1,5 @@
 package ca.frar.jjjrmi.socket;
+import static ca.frar.jjjrmi.Global.VERY_VERBOSE;
 import ca.frar.jjjrmi.exceptions.EncoderException;
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
 import ca.frar.jjjrmi.exceptions.ParameterCountException;
@@ -68,30 +69,25 @@ public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, S
         @Override
         public void onMessage(String message) {
             synchronized (socket) {
-                LOGGER.debug("JJJSocket.MsgHandler.onMessage() " + hashCode());
                 socket.processRequest(session, message);
             }
         }
     }
 
     public final void addObserver(JJJObserver observer) {
-        LOGGER.debug("JJJSocket.addObserver() " + hashCode());
         observers.add(observer);
     }
 
     public final void clearObservers() {
-        LOGGER.debug("JJJSocket.clearObservers() " + hashCode());
         observers.clear();
     }
 
     public final void removeObserver(JJJObserver observer) {
-        LOGGER.debug("JJJSocket.removeObserver() " + hashCode());
         observers.remove(observer);
     }
 
     @Override
     public final void forget(HasWebsockets forgettable) {
-        LOGGER.debug("JJJSocket.forget() " + hashCode());
         for (Session session : this.sessionTranslators.keySet()) {
             try {
                 Translator translator = getTranslator(session);
@@ -106,7 +102,6 @@ public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, S
 
     @SuppressWarnings("UseSpecificCatch")
     private void processRequest(Session session, String message) {
-        LOGGER.debug("JJJSocket.processRequest() " + hashCode());
         try {
             synchronized (this) {
                 Translator translator = getTranslator(session);
@@ -149,7 +144,6 @@ public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, S
      */
     @Override
     public final void onOpen(Session session, EndpointConfig ec) {
-        LOGGER.trace("JJJSocket.onOpen() " + hashCode());
         
         synchronized (this) {            
             Translator translator = new Translator();    
@@ -197,14 +191,12 @@ public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, S
     public abstract T retrieveRoot();
 
     private void sendObject(JJJMessage msg) throws InvalidJJJSessionException, JJJRMIException, IOException {
-        LOGGER.trace("JJJSocket.sendObject() " + hashCode());
         for (Session session : sessionTranslators.keySet()) {
             this.sendObject(session, msg);
         }
     }
 
     private Translator getTranslator(Session session) throws InvalidJJJSessionException, JJJRMIException, IOException {
-        LOGGER.trace("JJJSocket.getTranslator() " + hashCode());
         Translator translator = this.sessionTranslators.get(session);
 
         if (translator == null) {
@@ -220,7 +212,6 @@ public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, S
      * @param obj
      */
     private final void sendObject(Session session, JJJMessage msg) throws InvalidJJJSessionException, JJJRMIException, IOException {
-        LOGGER.trace("JJJSocket.sendObject() " + hashCode());
         JJJSendEvent<?> rmiSendEvent = new JJJSendEvent<>(session, msg);
         this.observers.send(rmiSendEvent);
         if (rmiSendEvent.isDefaultPrevented()) return;
@@ -228,7 +219,7 @@ public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, S
 
         synchronized (this) {
             try {
-                LOGGER.log(Level.forName("VERY-VERBOSE", 475), msg.getClass().getSimpleName());
+                LOGGER.log(VERY_VERBOSE, msg.getClass().getSimpleName());
                 EncodedJSON encoded = translator.encode(msg);
                 String exAsString = encoded.toString();
                 session.getBasicRemote().sendText(exAsString);
@@ -259,11 +250,6 @@ public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, S
 
     @Override
     public final void invokeClientMethod(Object source, String methodName, Object... args) {
-        LOGGER.trace("JJJSocket.invokeClientMethod()");
-        LOGGER.debug("  source: " + source.getClass().getSimpleName() + " " + source.hashCode());
-        LOGGER.debug("  methodName: " + methodName);
-        LOGGER.debug("  websocket: " + this.hashCode());
-                
         for (Session session : this.sessionTranslators.keySet()) {
             Translator translator;
             try {
@@ -282,17 +268,14 @@ public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, S
     }
 
     private final void handleException(Exception ex, MethodResponse methodResponse) throws JJJRMIException, IOException {
-        LOGGER.trace("JJJSocket.handleException(ex, methodResponse) " + hashCode());
         for (Session session : this.sessionTranslators.keySet()) this.handleException(session, ex, methodResponse);
     }
 
     public final void handleException(Exception ex) throws JJJRMIException, IOException {
-        LOGGER.trace("JJJSocket.handleException(ex)");
         for (Session session : this.sessionTranslators.keySet()) this.handleException(session, ex, null);
     }
 
     private void handleException(Session session, Exception ex, MethodResponse methodResponse) throws JJJRMIException, IOException {
-        LOGGER.trace("JJJSocket.handleException(seesion, ex, methodResponse) " + hashCode());
         JJJExceptionEvent exceptionEvent = new JJJExceptionEvent(session, ex);
         this.observers.exception(exceptionEvent);
         if (exceptionEvent.isDefaultPrevented()) return;
@@ -317,7 +300,6 @@ public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, S
     }
 
     private void onMethodRequest(Session session, MethodRequest request) throws SecurityException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, NoSuchFieldException, IOException, InvalidJJJSessionException, JJJRMIException {
-        LOGGER.trace("JJJSocket.onMethodRequest() " + hashCode());
         Translator translator = getTranslator(session);
         Object object = translator.getReferredObject(request.objectPTR);
 
@@ -336,7 +318,6 @@ public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, S
         Method method = methodBank.getMethod(object.getClass(), request.methodName);
 
         if (method == null) {
-            LOGGER.debug("Method '" + request.methodName + "' not found.");
             this.sendObject(new ServerSideExceptionMessage(request.uid, request.objectPTR, request.methodName, "methodNotFound", "Method " + request.methodName + " not found."));
             return;
         }
@@ -350,7 +331,6 @@ public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, S
             Object returnedFromInvoke;
 
             try {
-                LOGGER.trace("INVOKE " + request.methodName);
                 returnedFromInvoke = method.invoke(object, request.methodArguments);
                 sendObject(session, new MethodResponse(request.uid, request.objectPTR, request.methodName, returnedFromInvoke));
             } catch (IllegalAccessException | InvocationTargetException ex) {
@@ -379,12 +359,10 @@ public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, S
     @Override
     @OnClose
     public final void onClose(Session session, CloseReason cr) {
-        LOGGER.trace("JJJSocket.onClose() " + hashCode());
         this.close(session, cr.getReasonPhrase());
     }
     
     public final void close(Session session, String reason) {
-        LOGGER.trace("JJJSocket.close() " + hashCode() + " " + reason);
         LOGGER.log(VERBOSE, "Socket '" + this.getClass().getSimpleName() + "' closing session " + session.hashCode());
         
         Translator removedTranslator = this.sessionTranslators.remove(session);
@@ -403,7 +381,6 @@ public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, S
     @Override
     @OnError
     public final void onError(Session session, Throwable err) {
-        LOGGER.trace(String.format("JJJSocket.onError(%s)", err.getMessage()));
         Translator removedTranslator = this.sessionTranslators.remove(session);
 
         JJJExceptionEvent exceptionEvent = new JJJExceptionEvent(session, err);
@@ -420,7 +397,6 @@ public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, S
     @Override
     @SuppressWarnings("unchecked")
     public final Set<ServerEndpointConfig> getEndpointConfigs(Set<Class<? extends Endpoint>> set) {
-        LOGGER.trace("JJJSocket.getEndpointConfigs() " + hashCode());
         Set<ServerEndpointConfig> endpointConfigSet = new HashSet<>();
         String endpointName = "/" + this.getClass().getSimpleName();
         ServerEndpointConfig.Builder builder = ServerEndpointConfig.Builder.create(this.getClass(), endpointName);
@@ -431,12 +407,10 @@ public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, S
 
     @Override
     public final Set<Class<?>> getAnnotatedEndpointClasses(Set<Class<?>> set) {
-        LOGGER.trace("JJJSocket.getAnnotatedEndpointClasses() " + hashCode());
         return set;
     }
 
     public final Collection<Session> getSessions() {
-        LOGGER.trace("JJJSocket.getSessions() " + hashCode());
         Set<Session> keySet = this.sessionTranslators.keySet();
         return new ArrayList<>(keySet);
     }

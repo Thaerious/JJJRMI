@@ -1,4 +1,5 @@
 package ca.frar.jjjrmi.jsbuilder;
+
 import static ca.frar.jjjrmi.Global.LOGGER;
 import static ca.frar.jjjrmi.Global.VERBOSE;
 import static ca.frar.jjjrmi.Global.VERY_VERBOSE;
@@ -7,6 +8,7 @@ import ca.frar.jjjrmi.annotations.JSPrequel;
 import ca.frar.jjjrmi.annotations.JSRequire;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.annotations.SkipJS;
+import ca.frar.jjjrmi.exceptions.TypeDeclarationNotFoundWarning;
 import ca.frar.jjjrmi.jsbuilder.code.JSCodeElement;
 import ca.frar.jjjrmi.jsbuilder.code.JSFieldDeclaration;
 import ca.frar.jjjrmi.socket.JJJObject;
@@ -34,8 +36,7 @@ public class JSClassBuilder<T> {
     protected List<JSFieldDeclaration> staticFields = new ArrayList<>();
     protected List<JSCodeElement> sequel = new ArrayList<>();
     protected JSClassBuilder<?> container = null;
-//    protected HashMap<String, CtType> requires = new HashMap<>(); // js require statements
-    protected HashSet<CtType> requireSet = new HashSet<>(); // js require statements
+    protected HashSet<CtTypeReference> requireSet = new HashSet<>(); // js require statements
     protected ArrayList<JSClassBuilder> nested = new ArrayList<>();
 
     /* locally defined classes and enums (not fully implemented) */
@@ -79,7 +80,7 @@ public class JSClassBuilder<T> {
         } else {
             LOGGER.log(VERBOSE, "Setting JS superclass from Java superclass: " + supertype.getSimpleName());
             this.getHeader().setExtend(supertype.getSimpleName());
-            requireSet.add(supertype);
+            requireSet.add(supertype.getReference());
         }
 
         /* Constructor Generation */
@@ -107,7 +108,13 @@ public class JSClassBuilder<T> {
 //                new JSConstructorGenerator(ctClass, ctConstructor, this).run();
                 JSMethodBuilder jsMethodBuilder = new JSMethodGenerator("constructor", ctConstructor, ctConstructor).run();
                 this.constructor = jsMethodBuilder;
-                this.requireSet.addAll(jsMethodBuilder.getRequires());
+
+                try {
+                    this.requireSet.addAll(jsMethodBuilder.getRequires());
+                } catch (TypeDeclarationNotFoundWarning ex) {
+                    ex.setClass(this.getQualifiedName());
+                    throw ex;
+                }
             }
         }
 
@@ -233,7 +240,7 @@ public class JSClassBuilder<T> {
             }
         }
 
-        for (CtType anImport : this.requireSet) {
+        for (CtTypeReference anImport : this.requireSet) {
             builder.append("const ");
             builder.append(JSClassBuilder.requireString(anImport));
             builder.append("\n");
@@ -255,7 +262,6 @@ public class JSClassBuilder<T> {
     }
 
     private void appendRequire(StringBuilder builder, JSRequire jsRequire) {
-        LOGGER.debug("@JSRequire: " + jsRequire.name() + ", " + jsRequire.value() + ", " + jsRequire.postfix());
         builder.append("const ");
         builder.append(jsRequire.name());
         builder.append(" = require(\"");
@@ -317,9 +323,12 @@ public class JSClassBuilder<T> {
         return builder.toString();
     }
 
-    public static String requireString(CtType source) {
+    public static String requireString(CtTypeReference ref) {
+        CtType source = ref.getTypeDeclaration();
+        
         StringBuilder builder = new StringBuilder();
         builder.append(new JJJOptionsHandler(source).getName());
+
         builder.append(" = require(\"./");
 
         List<CtType> nestedChain = nestedChain(source);

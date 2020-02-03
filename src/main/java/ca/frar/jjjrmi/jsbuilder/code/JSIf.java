@@ -1,5 +1,6 @@
 package ca.frar.jjjrmi.jsbuilder.code;
 import spoon.reflect.code.CtIf;
+import spoon.reflect.code.CtStatement;
 
 public class JSIf extends AbstractJSCodeElement {
 
@@ -8,7 +9,7 @@ public class JSIf extends AbstractJSCodeElement {
     private final JSCodeElement elseStatement;
 
     public JSIf(CtIf ctIf) {
-        condition = this.generate(ctIf.getCondition());
+        condition = this.generate(ctIf.getCondition());        
         thenStatement = this.generate(ctIf.getThenStatement());
         elseStatement = this.generate(ctIf.getElseStatement());
     }

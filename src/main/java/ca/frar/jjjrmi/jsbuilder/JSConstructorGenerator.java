@@ -1,5 +1,6 @@
 package ca.frar.jjjrmi.jsbuilder;
 
+import static ca.frar.jjjrmi.Global.VERY_VERBOSE;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.annotations.Transient;
 import ca.frar.jjjrmi.jsbuilder.code.JSElementList;
@@ -73,12 +74,12 @@ public class JSConstructorGenerator {
             CtField<?> ctField = ctFieldRef.getFieldDeclaration();
             
             if (ctField == null) {
-                LOGGER.log(Level.forName("VERY-VERBOSE", 475), "ctField.getDeclaration() == null");
+                LOGGER.log(VERY_VERBOSE, "ctField.getDeclaration() == null");
                 continue;
             }
                         
             if (ctField.getAnnotation(Transient.class) != null){
-                LOGGER.log(Level.forName("VERY-VERBOSE", 475), "transient field: " + ctField.getSimpleName());
+                LOGGER.log(VERY_VERBOSE, "transient field: " + ctField.getSimpleName());
                 continue;
             }
             

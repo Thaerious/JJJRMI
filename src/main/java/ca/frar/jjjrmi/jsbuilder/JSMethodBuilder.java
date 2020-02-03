@@ -1,5 +1,6 @@
 package ca.frar.jjjrmi.jsbuilder;
 
+import ca.frar.jjjrmi.exceptions.TypeDeclarationNotFoundWarning;
 import ca.frar.jjjrmi.jsbuilder.code.AbstractJSCodeElement;
 import ca.frar.jjjrmi.jsbuilder.code.JSCodeElement;
 import ca.frar.jjjrmi.jsbuilder.code.JSCodeSnippet;
@@ -9,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.reference.CtTypeReference;
 
 /**
  * A JS Method, does not do the parsing.
@@ -35,9 +37,15 @@ public class JSMethodBuilder {
      * Retrieve all js 'requires' from and all methods.
      * @return 
      */
-    public Set<CtType> getRequires() {
-        HashSet<CtType>set = new HashSet<>();
-        set.addAll(this.body.getRequires());
+    public Set<CtTypeReference> getRequires() {
+        HashSet<CtTypeReference>set = new HashSet<>();
+        
+        try{
+            set.addAll(this.body.getRequires());
+        } catch (TypeDeclarationNotFoundWarning ex){
+            ex.setMethod(this.name);
+            throw ex;
+        }
         return set;
     }    
     

@@ -1,6 +1,8 @@
 package ca.frar.jjjrmi.jsbuilder.code;
-
 import ca.frar.jjjrmi.annotations.DoNotInvoke;
+import ca.frar.jjjrmi.socket.JJJObject;
+import ca.frar.jjjrmi.utility.JJJOptionsHandler;
+import java.util.List;
 import java.util.Set;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
@@ -9,16 +11,16 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtTypeReference;
 
 public class JSInvocation extends AbstractJSCodeElement {
-
+    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(JSInvocation.class);
     private final JSElementList arguments;
-    private final String name;
+    private String name;
     private final JSCodeElement target;
     private String specialCase = null;
     private final CtInvocation<?> invocation;
 
     public JSInvocation(CtInvocation<?> ctInvocation) {
         this.invocation = ctInvocation;
-        arguments = new JSElementList(ctInvocation.getArguments());
+        arguments = this.generateList(ctInvocation.getArguments());
         name = ctInvocation.getExecutable().getSimpleName();
         target = this.generate(ctInvocation.getTarget());
         checkForSpecialCase(ctInvocation);
@@ -48,13 +50,39 @@ public class JSInvocation extends AbstractJSCodeElement {
 
     public String toString() {
         if (specialCase != null) return specialCase;
-        if (checkInvocation()) {
+                
+        if (name.equals("<init>")){
+            if (checkForSuperclass()) return "super(" + arguments.inline() + ")";
+            else return "/* no super class */";
+        }
+        else if (checkInvocation()) {
             return target.toString() + "." + name + "(" + arguments.inline() + ")";
         } else {
             return "/* method invocation revoked */";
         }
     }
 
+    private boolean checkForSuperclass(){
+        CtType<?> type = this.invocation.getType().getDeclaration();        
+        
+        if (type == null){
+            return false;
+        }
+        
+        JJJOptionsHandler jjjOptions = new JJJOptionsHandler(type);
+        
+        if (jjjOptions.hasExtends()) {
+            return true;
+        }
+        
+        if (type.getSimpleName().equals(JJJObject.class.getSimpleName())) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+    
     private void checkForSpecialCase(CtInvocation<?> ctInvocation) {
         CtExpression<?> ctTarget = ctInvocation.getTarget();
         if (ctTarget != null) {

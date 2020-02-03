@@ -1,5 +1,6 @@
 package ca.frar.jjjrmi;
 import static ca.frar.jjjrmi.Global.LOGGER;
+import static ca.frar.jjjrmi.Global.VERY_VERBOSE;
 import ca.frar.jjjrmi.jsbuilder.JSBuilderException;
 import ca.frar.jjjrmi.jsbuilder.JSClassBuilder;
 import ca.frar.jjjrmi.jsbuilder.JSParser;
@@ -66,7 +67,7 @@ public class CLI {
                     destination = args[i + 1];
                     break;
                 case "--xml":
-                    if (args[i+1].charAt(0) != '-') xmlClass = args[i + 1];
+                    if (args.length >= i + 2 && args[i+1].charAt(0) != '-') xmlClass = args[i + 1];
                     printXML = true;
                     break;
             }
@@ -90,7 +91,6 @@ public class CLI {
      * @throws JSBuilderException
      */
     public void output() throws FileNotFoundException, JSBuilderException, IOException {
-        System.out.println(destination);
         LOGGER.info("Javascript Code Generator: Generating output");
         String rootPath;
         
@@ -100,23 +100,26 @@ public class CLI {
 
         for (JSClassBuilder<?> jsClassBuilder : jsParser.jsClassBuilders()) {
             LOGGER.info("file: " + jsClassBuilder.getSimpleName() + ".js");
-            Base.writeClass(jsParser, rootPath);
-            if (this.printXML && this.xmlClass.isEmpty()) System.out.println(jsClassBuilder.toXML(0));
-            else if (this.printXML && this.xmlClass.equals(jsClassBuilder.getSimpleName())) System.out.println(jsClassBuilder.toXML(0));
+            Base.writeClass(jsClassBuilder, rootPath);
+            
+            if (this.printXML){
+                if (this.xmlClass.isBlank()) System.out.println(jsClassBuilder.toXML(0));
+                else if (this.xmlClass.equals(jsClassBuilder.getSimpleName())) System.out.println(jsClassBuilder.toXML(0));
+            }
         }
 
         if (this.generatePackage == true) {
             LOGGER.info("Creating packageFile.js file.");
             this.buildPackageJS();
         } else {
-            LOGGER.log(Level.forName("VERY-VERBOSE", 475), "Skipping package js file.");
+            LOGGER.log(VERY_VERBOSE, "Skipping package js file.");
         }
 
         if (this.generateJSON == true) {
             LOGGER.info("Creating package.json file.");
             this.copyPackageJSON();
         } else {
-            LOGGER.log(Level.forName("VERY-VERBOSE", 475), "Skipping package json file.");
+            LOGGER.log(VERY_VERBOSE, "Skipping package json file.");
         }
     }
 

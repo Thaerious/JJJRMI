@@ -1,15 +1,12 @@
 package ca.frar.jjjrmi.utility;
 import ca.frar.jjjrmi.annotations.Generated;
 import ca.frar.jjjrmi.annotations.JJJ;
-import ca.frar.jjjrmi.annotations.ProcessLevel;
-import static ca.frar.jjjrmi.annotations.ProcessLevel.ANNOTATED;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 import ca.frar.jjjrmi.annotations.IsSocket;
 
 public class JJJOptionsHandler {
     private String jsExtends = "";
-    private ProcessLevel processLevel = ANNOTATED;
     private boolean retain = true;
     private String name = "";
     private boolean hasName = false;
@@ -51,7 +48,6 @@ public class JJJOptionsHandler {
         }
 
         this.jsExtends = jjj.jsExtends();
-        this.processLevel = jjj.processLevel();
         this.retain = jjj.retain();
         this.generateJS = jjj.generateJS();
     }
@@ -66,14 +62,6 @@ public class JJJOptionsHandler {
 
     public boolean hasExtends() {
         return !this.jsExtends.isEmpty();
-    }
-
-    public ProcessLevel processLevel() {
-        return this.processLevel;
-    }
-
-    public boolean isProcessLevel(ProcessLevel processLevel) {
-        return this.processLevel == processLevel;
     }
 
     public boolean retain() {
@@ -112,7 +100,6 @@ public class JJJOptionsHandler {
         StringBuilder builder = new StringBuilder();
         builder.append("@JJJ(");
         builder.append("jsExtends=").append(jsExtends).append(", ");
-        builder.append("processLevel=").append(processLevel).append(", ");
         builder.append("retain=").append(retain).append(", ");
         builder.append("name=").append(name).append(", ");
         builder.append("generateJS=").append(generateJS).append(", ");

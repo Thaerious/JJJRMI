@@ -8,16 +8,17 @@ package ca.frar.jjjrmi.jsbuilder.code;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import spoon.reflect.code.CtCodeElement;
-import spoon.reflect.declaration.CtType;
+import spoon.reflect.code.CtExpression;
+import spoon.reflect.reference.CtTypeReference;
 
 /**
  *
  * @author Ed Armstrong
  */
 public class AbstractJSCodeElement implements JSCodeElement {
-
     ArrayList<JSCodeElement> childElements = new ArrayList<>();
 
     public boolean isEmpty() {
@@ -41,14 +42,25 @@ public class AbstractJSCodeElement implements JSCodeElement {
         return generated;
     }
 
+    JSElementList generateList(List<CtExpression<?>> ctCodeElements) {
+        JSElementList jsElementList = new JSElementList();
+        
+        for (CtCodeElement ctCodeElement : ctCodeElements){
+            jsElementList.addCtCodeElement(ctCodeElement);
+        }
+
+        this.childElements.add(jsElementList);
+        return jsElementList;
+    }    
+    
     /**
      * Retrieve all js 'requires' from this and all child elements of this.
      *
      * @return
      */
     @Override
-    public Set<CtType> getRequires() {
-        HashSet<CtType> requires = new HashSet<>();
+    public Set<CtTypeReference> getRequires() {
+        HashSet<CtTypeReference> requires = new HashSet<>();
 
         for (JSCodeElement element : this.childElements) {
             requires.addAll(element.getRequires());

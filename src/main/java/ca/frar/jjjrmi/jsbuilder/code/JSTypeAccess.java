@@ -1,5 +1,7 @@
 package ca.frar.jjjrmi.jsbuilder.code;
 import ca.frar.jjjrmi.annotations.NativeJS;
+import java.util.HashSet;
+import java.util.Set;
 import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.reference.CtTypeReference;
 
@@ -11,6 +13,14 @@ public class JSTypeAccess extends AbstractJSCodeElement {
         accessedType = ctTypeAccess.getAccessedType();
     }
 
+    @Override
+    public Set<CtTypeReference> getRequires() {
+        HashSet<CtTypeReference> requires = new HashSet<>();
+        requires.addAll(super.getRequires());
+        requires.add(accessedType);        
+        return requires;
+    }    
+    
     @Override
     public String toString() {
         String name = accessedType.getQualifiedName();
