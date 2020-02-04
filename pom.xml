@@ -8,14 +8,6 @@
     
     <dependencies>
         <dependency>
-            <groupId>ca.frar</groupId>
-            <artifactId>jjjrmi-extension</artifactId>
-            <scope>system</scope>
-            <version>0.6.2</version>
-            <systemPath>${basedir}/../ext/target/jjjrmi-extension-0.6.2.jar</systemPath>
-        </dependency>        
-        
-        <dependency>
             <groupId>io.github.classgraph</groupId>
             <artifactId>classgraph</artifactId>
             <version>LATEST</version>

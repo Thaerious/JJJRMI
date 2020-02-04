@@ -105,7 +105,6 @@ public class JSClassBuilder<T> {
         } else {
             LOGGER.log(VERBOSE, "Constructors found, generating js constructors.");
             for (CtConstructor<?> ctConstructor : vettedConstructors) {
-//                new JSConstructorGenerator(ctClass, ctConstructor, this).run();
                 JSMethodBuilder jsMethodBuilder = new JSMethodGenerator("constructor", ctConstructor, ctConstructor).run();
                 this.constructor = jsMethodBuilder;
 
@@ -241,6 +240,8 @@ public class JSClassBuilder<T> {
         }
 
         for (CtTypeReference anImport : this.requireSet) {
+            if (anImport.getTypeDeclaration() == this.getCtClass()) continue;
+            
             builder.append("const ");
             builder.append(JSClassBuilder.requireString(anImport));
             builder.append("\n");
@@ -288,9 +289,6 @@ public class JSClassBuilder<T> {
         }
         builder.append("};\n");
         builder.append(sequelString());
-//        for (JSFieldDeclaration field : staticFields) {            
-//            builder.append(field.staticString(ctClass.getSimpleName())).append("\n");
-//        }
         return builder.toString();
     }
 
