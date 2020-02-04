@@ -245,8 +245,11 @@ public class JSClassBuilder<T> {
             if (anImport.isEnum() && new JJJOptionsHandler(anImport.getDeclaration()).hasJJJ()) continue;
             
             CtType<?> importType = ctClass.getSuperclass().getDeclaration();
-            if (importType == null && !checkExternalType(anImport.getSimpleName())) {
-                LOGGER.warn("unknown type in " + this.getSimpleName() + ": " + anImport.getSimpleName());
+            
+            if (importType == null){
+                if (checkExternalType(anImport.getSimpleName())){
+                    LOGGER.warn("unknown type in " + this.getSimpleName() + ": " + anImport.getSimpleName());
+                }
                 continue;
             }
 
