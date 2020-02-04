@@ -1,5 +1,6 @@
 package ca.frar.jjjrmi;
 import static ca.frar.jjjrmi.Global.LOGGER;
+import static ca.frar.jjjrmi.Global.VERBOSE;
 import static ca.frar.jjjrmi.Global.VERY_VERBOSE;
 import ca.frar.jjjrmi.jsbuilder.JSBuilderException;
 import ca.frar.jjjrmi.jsbuilder.JSClassBuilder;
@@ -13,6 +14,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import spoon.Launcher;
@@ -49,26 +52,37 @@ public class CLI {
             String s = args[i];
 
             switch(s){
+                case "-j":
                 case "--json":
                     generateJSON = true;
                     break;
+                case "-p":
                 case "--package":
                     generatePackage = true;
                     break;
-                case "-p":
+                case "-n":
+                case "--name":
                     if (args[i+1].charAt(0) != '-') packageName = args[i + 1];
                     packageSubDir = true;
                     break;
-                case "-i":                    
+                case "-i":   
+                case "--input":
                     source = args[i + 1];
                     break;
                 case "-o":
+                case "--output":
                     destination = args[i + 1];
                     break;
                 case "--xml":
                     if (args.length >= i + 2 && args[i+1].charAt(0) != '-') xmlClass = args[i + 1];
                     printXML = true;
                     break;
+                case "-v":
+                    Configurator.setRootLevel(VERBOSE);
+                    break;
+                case "-vv":
+                    Configurator.setRootLevel(VERY_VERBOSE);
+                    break;                    
             }
         }
     }
@@ -90,7 +104,7 @@ public class CLI {
      * @throws JSBuilderException
      */
     public void output() throws FileNotFoundException, JSBuilderException, IOException {
-        LOGGER.info("Javascript Code Generator: Generating output");
+        LOGGER.info("Javascript Code Generator: Generating output");        
         String rootPath;
         
         if (this.packageSubDir) rootPath =  String.format("%s/%s", destination, packageName);
@@ -98,6 +112,7 @@ public class CLI {
         new File(rootPath).mkdirs();
 
         for (JSClassBuilder<?> jsClassBuilder : jsParser.jsClassBuilders()) {
+            LOGGER.log(VERY_VERBOSE, "+------------------------------------------------------------------------------+");
             LOGGER.info("file: " + jsClassBuilder.getSimpleName() + ".js");
             Base.writeClass(jsClassBuilder, rootPath);
             

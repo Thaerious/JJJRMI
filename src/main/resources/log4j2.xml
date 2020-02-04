@@ -8,7 +8,8 @@
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">            
                 <!--<PatternLayout pattern="(%C{1}:%L) JJJ[%level{VERY_VERBOSE=Z, VERBOSE=V, WARN=W, DEBUG=D, ERROR=E, TRACE=T, INFO=I}] %d{HH:mm:ss} : %msg%n"/>-->
-                <PatternLayout pattern="JJJ[%level{VERY_VERBOSE=Z, VERBOSE=V, WARN=W, DEBUG=D, ERROR=E, TRACE=T, INFO=I}] %d{HH:mm:ss} : %msg%n"/>
+                <!--<PatternLayout pattern="JJJ[%level{VERY_VERBOSE=Z, VERBOSE=V, WARN=W, DEBUG=D, ERROR=E, TRACE=T, INFO=I}] %d{HH:mm:ss} : %msg%n"/>-->
+                <PatternLayout pattern="JJJ[%level{VERY_VERBOSE=Z, VERBOSE=V, WARN=W, DEBUG=D, ERROR=E, TRACE=T, INFO=I}] : %msg%n"/>
         </Console>
     </Appenders>
     <Loggers>

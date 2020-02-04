@@ -7,6 +7,7 @@ import ca.frar.jjjrmi.annotations.JJJ;
 import ca.frar.jjjrmi.annotations.JSPrequel;
 import ca.frar.jjjrmi.annotations.JSRequire;
 import ca.frar.jjjrmi.annotations.NativeJS;
+import ca.frar.jjjrmi.annotations.ServerSide;
 import ca.frar.jjjrmi.annotations.SkipJS;
 import ca.frar.jjjrmi.exceptions.TypeDeclarationNotFoundWarning;
 import ca.frar.jjjrmi.jsbuilder.code.JSCodeElement;
@@ -152,14 +153,8 @@ public class JSClassBuilder<T> {
     protected boolean testGenerateMethod(CtClass<?> ctClass, CtElement ctElement) {
         boolean skipJS = ctElement.getAnnotation(SkipJS.class) != null;
         boolean nativeJS = ctElement.getAnnotation(NativeJS.class) != null;
-
-        if (skipJS) {
-            return false;
-        }
-        if (nativeJS) {
-            return true;
-        }
-        return false;
+        boolean serverSide = ctElement.getAnnotation(ServerSide.class) != null;
+        return serverSide || nativeJS;
     }
 
     void addJJJMethods() {
@@ -241,21 +236,30 @@ public class JSClassBuilder<T> {
         }
 
         for (CtTypeReference anImport : this.requireSet) {
-            if (anImport.getTypeDeclaration() == this.getCtClass()) continue;
-            if (anImport.isEnum() && new JJJOptionsHandler(anImport.getDeclaration()).hasJJJ()) continue;
+            LOGGER.log(VERY_VERBOSE, String.format("Considering require '%s' in '%s'", anImport.getSimpleName(), this.getSimpleName()));
             
-            CtType<?> importType = ctClass.getSuperclass().getDeclaration();
+            if (anImport.getTypeDeclaration() == this.getCtClass()){
+                LOGGER.log(VERY_VERBOSE, "Omitting require for same class");
+                continue;
+            }
             
+            if (anImport.isEnum() && new JJJOptionsHandler(anImport.getDeclaration()).hasJJJ()){
+                LOGGER.log(VERY_VERBOSE, String.format("Generating require for annotated enum %s", anImport.getSimpleName()));
+                appendRequire(builder, anImport);
+                continue;
+            };
+            
+            CtType<?> importType = ctClass.getSuperclass().getDeclaration();            
             if (importType == null){
+                LOGGER.log(VERY_VERBOSE, String.format("Omitting require for unknow superclass ", ctClass.getSimpleName()));
                 if (checkExternalType(anImport.getSimpleName())){
                     LOGGER.warn("unknown type in " + this.getSimpleName() + ": " + anImport.getSimpleName());
                 }
                 continue;
             }
 
-            builder.append("const ");
-            builder.append(JSClassBuilder.requireString(anImport));
-            builder.append("\n");
+            LOGGER.log(VERY_VERBOSE, String.format("Generating require for %s", anImport.getSimpleName()));
+            appendRequire(builder, anImport);
         }
 
         builder.append(header.fullString(this.jjjOptions.getName()));
@@ -266,10 +270,7 @@ public class JSClassBuilder<T> {
             builder.append(this.jjjOptions.getName()).append(".").append(nestedClassBuilder.getSimpleName()).append(" = ").append(nestedClassBuilder.getSimpleName()).append(";");
         }
 
-        builder.append("\nif (typeof module !== \"undefined\") module.exports = ");
-        builder.append(this.ctClass.getSimpleName());
-        builder.append(";\n");
-
+        appendExport(builder);
         return builder.toString();
     }
 
@@ -288,7 +289,13 @@ public class JSClassBuilder<T> {
         }
         return false;
     }
-
+    
+    private void appendExport(StringBuilder builder) {
+        builder.append("\nif (typeof module !== \"undefined\") module.exports = ");
+        builder.append(this.getSimpleName());
+        builder.append(";\n");
+    }
+    
     private void appendRequire(StringBuilder builder, JSRequire jsRequire) {
         builder.append("const ");
         builder.append(jsRequire.name());
@@ -301,6 +308,23 @@ public class JSClassBuilder<T> {
         builder.append(";\n");
     }
 
+    public void appendRequire(StringBuilder builder, CtTypeReference ref) {
+        CtType source = ref.getTypeDeclaration();
+
+        builder.append("const ");
+        builder.append(new JJJOptionsHandler(source).getName());
+        builder.append(" = require(\"./");
+
+        List<CtType> nestedChain = nestedChain(source);
+        builder.append(new JJJOptionsHandler(nestedChain.remove(0)).getName());
+        builder.append("\")");
+        while (!nestedChain.isEmpty()) {
+            builder.append(".");
+            builder.append(new JJJOptionsHandler(nestedChain.remove(0)).getName());
+        }
+        builder.append(";\n");
+    }    
+    
     private void appendPrequel(StringBuilder builder, JSPrequel jsPrequel) {
         LOGGER.log(VERBOSE, "@JSPrequel: " + jsPrequel.value());
         builder.append(jsPrequel.value());
@@ -345,25 +369,6 @@ public class JSClassBuilder<T> {
             builder.insert(0, current.jjjOptions.getName());
             current = current.getContainer();
         }
-        return builder.toString();
-    }
-
-    public static String requireString(CtTypeReference ref) {
-        CtType source = ref.getTypeDeclaration();
-
-        StringBuilder builder = new StringBuilder();
-        builder.append(new JJJOptionsHandler(source).getName());
-
-        builder.append(" = require(\"./");
-
-        List<CtType> nestedChain = nestedChain(source);
-        builder.append(new JJJOptionsHandler(nestedChain.remove(0)).getName());
-        builder.append("\")");
-        while (!nestedChain.isEmpty()) {
-            builder.append(".");
-            builder.append(new JJJOptionsHandler(nestedChain.remove(0)).getName());
-        }
-        builder.append(";");
         return builder.toString();
     }
 
