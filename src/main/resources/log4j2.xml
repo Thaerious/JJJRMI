@@ -12,7 +12,7 @@
         </Console>
     </Appenders>
     <Loggers>
-        <Root level="VERY_VERBOSE">
+        <Root level="INFO">
             <AppenderRef ref="Console"/>
         </Root>    
     </Loggers>
