@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import org.apache.logging.log4j.Level;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import spoon.Launcher;
@@ -38,7 +37,7 @@ public class CLI {
     
     public static void main(String... args) throws MojoExecutionException, MojoFailureException, FileNotFoundException, JSBuilderException, IOException {
         CLI cli = new CLI();
-        System.out.println("JJJRMI CLI");
+        LOGGER.info("JJJRMI CLI");
         cli.parseArgs(args);
         cli.run();
         cli.output();

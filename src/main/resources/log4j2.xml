@@ -7,12 +7,12 @@
     </CustomLevels>        
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">            
-                <PatternLayout pattern="(%C{1}:%L) JJJ[%level{VERY_VERBOSE=Z, VERBOSE=V, WARN=W, DEBUG=D, ERROR=E, TRACE=T, INFO=I}] %d{HH:mm:ss} : %msg%n"/>
-                <!--<PatternLayout pattern="JJJ[%level{VERY_VERBOSE=Z, VERBOSE=V, WARN=W, DEBUG=D, ERROR=E, TRACE=T, INFO=I}] %d{HH:mm:ss} : %msg%n"/>-->
+                <!--<PatternLayout pattern="(%C{1}:%L) JJJ[%level{VERY_VERBOSE=Z, VERBOSE=V, WARN=W, DEBUG=D, ERROR=E, TRACE=T, INFO=I}] %d{HH:mm:ss} : %msg%n"/>-->
+                <PatternLayout pattern="JJJ[%level{VERY_VERBOSE=Z, VERBOSE=V, WARN=W, DEBUG=D, ERROR=E, TRACE=T, INFO=I}] %d{HH:mm:ss} : %msg%n"/>
         </Console>
     </Appenders>
     <Loggers>
-        <Root level="INFO">
+        <Root level="VERY_VERBOSE">
             <AppenderRef ref="Console"/>
         </Root>    
     </Loggers>

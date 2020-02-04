@@ -28,6 +28,7 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtTypeReference;
 
 public class JSClassBuilder<T> {
+
     protected JSHeaderBuilder header = new JSHeaderBuilder();
     protected JSMethodBuilder constructor = new JSMethodBuilder("constructor");
     protected final CtClass<T> ctClass;
@@ -241,7 +242,14 @@ public class JSClassBuilder<T> {
 
         for (CtTypeReference anImport : this.requireSet) {
             if (anImport.getTypeDeclaration() == this.getCtClass()) continue;
+            if (anImport.isEnum() && new JJJOptionsHandler(anImport.getDeclaration()).hasJJJ()) continue;
             
+            CtType<?> importType = ctClass.getSuperclass().getDeclaration();
+            if (importType == null && !checkExternalType(anImport.getSimpleName())) {
+                LOGGER.warn("unknown type in " + this.getSimpleName() + ": " + anImport.getSimpleName());
+                continue;
+            }
+
             builder.append("const ");
             builder.append(JSClassBuilder.requireString(anImport));
             builder.append("\n");
@@ -260,6 +268,22 @@ public class JSClassBuilder<T> {
         builder.append(";\n");
 
         return builder.toString();
+    }
+
+    /**
+     * Check if a require has been registered for this class.
+     *
+     * @return
+     */
+    private boolean checkExternalType(String name) {
+        for (CtAnnotation<?> ctAnnotation : ctClass.getAnnotations()) {
+            Annotation actualAnnotation = ctAnnotation.getActualAnnotation();
+            if (actualAnnotation instanceof JSRequire) {                
+                JSRequire jsRequire = (JSRequire) actualAnnotation;
+                if (jsRequire.name().equals(name)) return true;
+            }
+        }
+        return false;
     }
 
     private void appendRequire(StringBuilder builder, JSRequire jsRequire) {
@@ -323,7 +347,7 @@ public class JSClassBuilder<T> {
 
     public static String requireString(CtTypeReference ref) {
         CtType source = ref.getTypeDeclaration();
-        
+
         StringBuilder builder = new StringBuilder();
         builder.append(new JJJOptionsHandler(source).getName());
 

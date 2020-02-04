@@ -23,8 +23,7 @@ public class JSConstructorCall extends AbstractJSCodeElement {
     public Set<CtTypeReference> getRequires() {
         HashSet<CtTypeReference> requires = new HashSet<>();
         requires.addAll(super.getRequires());
-        requires.add(ctConstructorCall.getType());
-        
+        requires.add(ctConstructorCall.getType());        
         return requires;
     }
     

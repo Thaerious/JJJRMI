@@ -28,14 +28,13 @@ import spoon.reflect.CtModel;
 @Mojo(name = "generate-js", requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME)
 public class MOJO extends AbstractMojo {
 
-    private final Log LOGGER = super.getLog();
+    private final Log LOGGER = getLog();
     @Parameter private String source = "src/main/java";
     @Parameter private String destination = "target/jjjrmi";
     @Parameter private String packageName = "package";
     @Parameter private String version = "0.0.0";
     @Parameter private boolean generateJSON = true;
     @Parameter private boolean generatePackage = true;
-    @Parameter private boolean generateSocket = true;
     @Parameter private String packageFileName = "packageFile.js";
     @Parameter private String[] sourceClassPath = new String[0];
     @Parameter(defaultValue = "${project}", required = true, readonly = true) MavenProject project;
@@ -44,7 +43,7 @@ public class MOJO extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        this.debug();
+        this.info();
         this.init();
         this.run();
 
@@ -55,21 +54,20 @@ public class MOJO extends AbstractMojo {
         }
     }
 
-    public void debug() {
-        LOGGER.debug("source = "  + source);
-        LOGGER.debug("destination = " + destination);
-        LOGGER.debug("packageName = " + packageName);
-        LOGGER.debug("version = " + version);
-        LOGGER.debug("generateJSON = " + generateJSON);
-        LOGGER.debug("generatePackage = " + generatePackage);
-        LOGGER.debug("generateSocket = " + generateSocket);
-        LOGGER.debug("packageFileName = " + packageFileName);     
+    public void info() {
+        LOGGER.info("source = "  + source);
+        LOGGER.info("destination = " + destination);
+        LOGGER.info("packageName = " + packageName);
+        LOGGER.info("version = " + version);
+        LOGGER.info("generateJSON = " + generateJSON);
+        LOGGER.info("generatePackage = " + generatePackage);
+        LOGGER.info("packageFileName = " + packageFileName);     
         
         if (sourceClassPath.length == 0){
-            LOGGER.debug("sourceClassPath N/A");
+            LOGGER.info("sourceClassPath N/A");
         }
         for (int i = 0; i < sourceClassPath.length; i++){
-            LOGGER.debug("sourceClassPath[" + i + "] = " + sourceClassPath[i]);
+            LOGGER.info("sourceClassPath[" + i + "] = " + sourceClassPath[i]);
         }
     }
 
@@ -105,17 +103,11 @@ public class MOJO extends AbstractMojo {
         }
 
         if (this.generatePackage == true) {
-            LOGGER.info("Creating packageFile.js file.");
             this.buildPackageJS();
-        } else {
-            LOGGER.debug("Skipping package js file.");
         }
 
         if (this.generateJSON == true) {
-            LOGGER.info("Creating package.json file.");
             this.copyPackageJSON();
-        } else {
-            LOGGER.debug("Skipping package json file.");
         }
     }
 

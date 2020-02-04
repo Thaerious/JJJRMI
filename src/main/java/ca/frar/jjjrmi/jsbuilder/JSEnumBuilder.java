@@ -20,7 +20,6 @@ public class JSEnumBuilder <T extends Enum> extends JSClassBuilder<T>{
         CtEnum<?> ctEnum = (CtEnum<?>) getCtClass();
         List<CtEnumValue<?>> enumValues = ctEnum.getEnumValues();
 
-//        String formattedString = String.format("%s.valueArray = [];", getCtClass().getSimpleName());
         super.addSequel(new JSCodeSnippet(String.format("%s.valueArray = [];", getCtClass().getSimpleName())));
 
         for (CtEnumValue<?> value : enumValues) {
@@ -28,7 +27,6 @@ public class JSEnumBuilder <T extends Enum> extends JSClassBuilder<T>{
         }
 
         super.addSequel(new JSCodeSnippet(String.format("%s.values = function(){return %s.valueArray;};", getCtClass().getSimpleName(), getCtClass().getSimpleName())));
-
         return this;
     }
 

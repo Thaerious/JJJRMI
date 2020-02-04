@@ -184,14 +184,14 @@
                     <generateJSON>false</generateJSON>
                     <version>0.6.3</version>
                 </configuration>                
-                <!--                <executions>
+                <executions>
                     <execution>
                         <phase>install</phase>
                         <goals>
                             <goal>generate-js</goal>
                         </goals>
                     </execution>
-                </executions>-->
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
