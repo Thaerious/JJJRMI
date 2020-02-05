@@ -1,27 +1,26 @@
 package ca.frar.jjjrmi.socket;
+import ca.frar.jjjrmi.translator.encoder.EncodedResult;
 import static ca.frar.jjjrmi.Global.VERY_VERBOSE;
 import ca.frar.jjjrmi.exceptions.EncoderException;
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
 import ca.frar.jjjrmi.exceptions.ParameterCountException;
-import ca.frar.jjjrmi.translator.*;
-import ca.frar.jjjrmi.socket.observer.events.*;
-import ca.frar.jjjrmi.socket.observer.*;
 import ca.frar.jjjrmi.socket.message.*;
+import ca.frar.jjjrmi.socket.observer.*;
+import ca.frar.jjjrmi.socket.observer.events.*;
+import ca.frar.jjjrmi.translator.*;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import javax.websocket.*;
-import ca.frar.jjjrmi.translator.HasWebsockets;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import javax.servlet.ServletContext;
+import javax.websocket.*;
 import javax.websocket.server.ServerApplicationConfig;
 import javax.websocket.server.ServerEndpointConfig;
 import org.apache.logging.log4j.Level;
-import org.json.JSONException;
 
 /**
  * A basic JJJ Socket. It will have the address
@@ -220,7 +219,7 @@ public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, S
         synchronized (this) {
             try {
                 LOGGER.log(VERY_VERBOSE, msg.getClass().getSimpleName());
-                EncodedJSON encoded = translator.encode(msg);
+                EncodedResult encoded = translator.encode(msg);
                 String exAsString = encoded.toString();
                 session.getBasicRemote().sendText(exAsString);
 

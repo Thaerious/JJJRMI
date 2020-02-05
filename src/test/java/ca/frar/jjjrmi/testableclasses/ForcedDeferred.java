@@ -3,12 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ca.frar.jjjrmi.testable;
+package ca.frar.jjjrmi.testableclasses;
 
 /**
  *
  * @author Ed Armstrong
  */
-public class HasInt {
-    public int x = 0;
+public class ForcedDeferred {
+    HasInt hasInt1 = new HasInt();
+    HasInt hasInt2 = hasInt1;    
 }

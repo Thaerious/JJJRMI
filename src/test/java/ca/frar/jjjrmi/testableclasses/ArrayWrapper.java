@@ -3,13 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ca.frar.jjjrmi.testable;
+package ca.frar.jjjrmi.testableclasses;
 
 /**
  *
- * @author Ed Armstrong
+ * @author edward
  */
-public class ForcedDeferred {
-    HasInt hasInt1 = new HasInt();
-    HasInt hasInt2 = hasInt1;    
+public class ArrayWrapper {
+    public int[] arrayField = {1, 1, 2, 3, 5};
 }

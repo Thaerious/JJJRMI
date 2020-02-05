@@ -2,11 +2,12 @@ package ca.frar.jjjrmi.translator;
 
 import ca.frar.jjjrm.test.jsportal.JSExec;
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
-import ca.frar.jjjrmi.testable.Foo;
-import ca.frar.jjjrmi.testable.HasInt;
-import ca.frar.jjjrmi.testable.Primitives;
-import ca.frar.jjjrmi.testable.SelfReferential;
+import ca.frar.jjjrmi.testableclasses.Foo;
+import ca.frar.jjjrmi.testableclasses.HasInt;
+import ca.frar.jjjrmi.testableclasses.Primitives;
+import ca.frar.jjjrmi.testableclasses.SelfReferential;
 import java.io.IOException;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -20,7 +21,7 @@ public class CoopDisabled {
     @Test
     public void test_primative() throws JJJRMIException, IOException {
         Translator translator = new Translator();
-        EncodedJSON encodedJava = translator.encode(1);
+        JSONObject encodedJava = translator.encode(1).getAllObjects().get(0);
         JSExec jsExec = new JSExec();
         jsExec.start("src/test/js/Translator.js");
         jsExec.writeLine(encodedJava.toString());
@@ -42,7 +43,7 @@ public class CoopDisabled {
         Translator translator = new Translator();
         
         HasInt hasInt = new HasInt();
-        EncodedJSON encodedJava = translator.encode(hasInt);
+        JSONObject encodedJava = translator.encode(hasInt).getAllObjects().get(0);
         JSExec jsExec = new JSExec();
         jsExec.start("src/test/js/Translator.js");
         jsExec.writeLine(encodedJava.toString());
@@ -52,31 +53,6 @@ public class CoopDisabled {
         /* same objects */
         assertEquals(decoded, hasInt);
     }  
-    
-/**
-     * Test unknown class - no retain.
-     * By setting retain = false in the encoded json object.  The client will
-     * not keep a references, so that upon returning the object it will be a new
-     * instantiation.
-     */
-    @Test
-    public void test_unknown_class_no_retain() throws JJJRMIException, IOException {
-        Translator translator = new Translator();
-        
-        HasInt hasInt = new HasInt();
-        EncodedJSON encodedJava = translator.encode(hasInt);
-        encodedJava.setRetain(false);
-        
-        JSExec jsExec = new JSExec();
-        jsExec.start("src/test/js/Translator.js");
-        
-        jsExec.writeLine(encodedJava.toString());
-        String encodedJS = jsExec.stop();
-        Object decoded = translator.decode(encodedJS);
-        
-        /* diffreent objects */
-        assertNotEquals(decoded, hasInt);
-    }      
     
     /**
      * Test known class JS constructed.
@@ -115,7 +91,7 @@ public class CoopDisabled {
         Translator translator = new Translator();
         
         Foo foo = new Foo(8);
-        EncodedJSON encodedJava = translator.encode(foo);
+        JSONObject encodedJava = translator.encode(foo).getAllObjects().get(0);
         
         JSExec jsExec = new JSExec();
         jsExec.start("src/test/js/Translator.js");
@@ -143,7 +119,7 @@ public class CoopDisabled {
         Translator translator = new Translator();
         
         SelfReferential selfReferential = new SelfReferential();
-        EncodedJSON encodedJava = translator.encode(selfReferential);
+        JSONObject encodedJava = translator.encode(selfReferential);
         
         JSExec jsExec = new JSExec();
         jsExec.start("src/test/js/Translator.js");
@@ -170,7 +146,7 @@ public class CoopDisabled {
         Translator translator = new Translator();
         
         Primitives primitives = new Primitives();
-        EncodedJSON encodedJava = translator.encode(primitives);
+        JSONObject encodedJava = translator.encode(primitives);
         
         JSExec jsExec = new JSExec();
         jsExec.start("src/test/js/Translator.js");

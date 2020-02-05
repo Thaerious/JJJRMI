@@ -1,9 +1,10 @@
-package ca.frar.jjjrmi.translator;
+package ca.frar.jjjrmi.translator.encoder;
+import ca.frar.jjjrmi.translator.Constants;
+import org.json.JSONObject;
 
-public class EncodedPrimitive extends EncodedJSON{
+public class EncodedPrimitive extends JSONObject{
 
     public EncodedPrimitive(Object value) {
-        super(null);
         this.put(Constants.ValueParam, value);
 
         switch (value.getClass().getCanonicalName()) {

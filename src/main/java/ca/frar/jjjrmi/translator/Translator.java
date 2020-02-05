@@ -1,5 +1,7 @@
 package ca.frar.jjjrmi.translator;
 
+import ca.frar.jjjrmi.translator.encoder.EncodedResult;
+import ca.frar.jjjrmi.translator.encoder.EncodedObject;
 import ca.frar.jjjrmi.exceptions.TranslatorException;
 import ca.frar.jjjrmi.annotations.Handles;
 import ca.frar.jjjrmi.exceptions.DecoderException;
@@ -31,25 +33,14 @@ import org.json.JSONObject;
  *
  * @author edward
  */
-public final class Translator implements HasKeys{
+public final class Translator {
     final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");    
     private HashMap<String, Class <? extends AHandler<?>>> handlers = new HashMap<>();
     private ArrayList<Consumer<Object>> encodeListeners = new ArrayList<>();
     private ArrayList<Consumer<Object>> decodeListeners = new ArrayList<>();
-    private ArrayList<Decoder> deferred = new ArrayList<>();
     private final BiMap<String, Object> objectMap = new BiMap<>();
     private final ArrayList<String> tempReferences = new ArrayList<>();
     private int nextKey = 0;
-    
-    /**
-     * Defer action on the decoder. This is used when decoding a reference for
-     * which the object has not yet been encountered.
-     *
-     * @param decoder
-     */
-    void deferDecoding(Decoder decoder) {
-        this.deferred.add(decoder);
-    }
 
     public boolean removeByValue(Object obj) {
         if (!objectMap.containsValue(obj)) {
@@ -100,7 +91,7 @@ public final class Translator implements HasKeys{
      * @return
      * @throws NewHandlerException 
      */
-    AHandler<?> newHandler(Class<?> aClass, JSONObject json) throws NewHandlerException {
+    public AHandler<?> newHandler(Class<?> aClass, JSONObject json) throws NewHandlerException {
         if (!this.hasHandler(aClass)) throw new MissingHandlerException(aClass);
         
         try {
@@ -123,7 +114,7 @@ public final class Translator implements HasKeys{
      * @param reference
      * @param object
      */
-    void addTempReference(String reference, Object object) {
+    public void addTempReference(String reference, Object object) {
         this.objectMap.put(reference, object);
         this.tempReferences.add(reference);
     }
@@ -138,14 +129,25 @@ public final class Translator implements HasKeys{
         }
         this.tempReferences.clear();
     }
-
+    
+    /**
+     * Create a new reference with a new unique key.
+     * @param object
+     * @return 
+     */
+    public String allocReference(Object object){
+        String key = "S" + (nextKey++);
+        this.addReference(key, object);
+        return key;
+    }
+    
     /**
      * Add a reference to the this translator.
      *
      * @param reference
      * @param object
      */
-    void addReference(String reference, Object object) {
+    public void addReference(String reference, Object object) {
         this.objectMap.put(reference, object);
     }
 
@@ -221,11 +223,23 @@ public final class Translator implements HasKeys{
      * @param object
      * @return
      */
-    public final EncodedJSON encode(Object object) throws EncoderException {
-        LOGGER.trace("Translator.encode(" + object.getClass().getSimpleName() + ")");
-        EncodedJSON toJSON = new Encoder(object, this).encode();
-        this.clearTempReferences();
-        return toJSON;
+    public final EncodedResult encode(Object object) throws EncoderException {
+        EncodedResult encodedResult = new EncodedResult(this);
+        if (this.hasReferredObject(object)){
+            encodedResult.setRoot(this.getReference(object));
+            return encodedResult;
+        }
+        
+        try{            
+            EncodedObject encodedObject = new EncodedObject(object, encodedResult);
+            encodedResult.put(encodedObject);
+            encodedResult.setRoot(this.getReference(object));
+            encodedObject.encode();
+            this.clearTempReferences();
+            return encodedResult;
+        } catch (IllegalArgumentException | IllegalAccessException ex){
+            throw new EncoderException(ex, object);
+        }
     }
 
     /**
@@ -241,42 +255,25 @@ public final class Translator implements HasKeys{
      * @throws java.lang.NoSuchMethodException
      * @throws java.lang.reflect.InvocationTargetException
      */
-    final Object decode(JSONObject json) throws DecoderException {
-            ObjectWrapper wrapper = new ObjectWrapper();
+    final Object decodeJSON(EncodedResult encodedResult) throws DecoderException {
+            ArrayList<ObjectDecoder> list = new ArrayList<>();
+            for (JSONObject jsonObject : encodedResult.getAllObjects()){
+                list.add(new ObjectDecoder(jsonObject, this));
+            }
             
-            new Decoder(json, this, null).decode(
-                    obj -> {
-                        while (!this.deferred.isEmpty()) {
-                            this.deferred.remove(0).resume();
-                        }
-                        this.clearTempReferences();
-                        wrapper.object = obj;
-                    }
-            );
-            return wrapper.object;
+            ObjectDecoder firstDecoder = list.get(0);
+            
+            while (!list.isEmpty()){
+                ObjectDecoder decoder = list.remove(0);                
+                boolean decoded = decoder.decode();
+                if (!decoded) list.add(decoder);
+            }
+            
+            return firstDecoder.getObject();
     }
 
-    /**
-     * Translate a string into a JSON encoded object then to a POJO, returning
-     * the reference if it has previously been stored.
-     *
-     * @param json
-     * @return
-     * @throws ca.frar.jjjrmi.translator.DecoderException
-     */
-    public final Object decode(String json) throws DecoderException {
-        EncodedJSON jsonObject = new EncodedJSON(this, json);
-        return this.decode(jsonObject);
-    }
-
-    /**
-     * Returns the next available key.
-     *
-     * @return
-     */
-    @Override
-    public final synchronized String allocNextKey() {
-        return "S" + (nextKey++);
+    public final Object decode(String source) throws DecoderException{
+        return decodeJSON(new EncodedResult(this, source));
     }
     
     public void addEncodeListener(Consumer<Object> lst) {

@@ -5,6 +5,9 @@
  */
 package ca.frar.jjjrmi.translator;
 
+import ca.frar.jjjrmi.translator.encoder.EncodeHandler;
+import ca.frar.jjjrmi.translator.encoder.Encoder;
+import ca.frar.jjjrmi.translator.encoder.EncodedResult;
 import ca.frar.jjjrmi.exceptions.DecoderException;
 import ca.frar.jjjrmi.exceptions.EncoderException;
 import org.json.JSONObject;
@@ -15,12 +18,12 @@ import org.json.JSONObject;
  */
 abstract public class AHandler<T> implements RestoreHandler, EncodeHandler{
     private final JSONObject json;
-    private final Translator translator;
+    private final EncodedResult encodedResult;
     private final JSONObject fields;
 
-    public AHandler(JSONObject json, Translator translator){
+    public AHandler(JSONObject json, EncodedResult encodedResult){
         this.json = json;
-        this.translator = translator;
+        this.encodedResult = encodedResult;
         
         if (!this.json.has(Constants.FieldsParam)){
             this.json.put(Constants.FieldsParam, new JSONObject());
@@ -37,12 +40,12 @@ abstract public class AHandler<T> implements RestoreHandler, EncodeHandler{
 
     @Override
     public <T> T decodeField(String name) throws DecoderException {
-        return (T) this.translator.decode(fields.getJSONObject(name));
+        return (T) this.encodedResult.getTranslator().decode(fields.getJSONObject(name).toString());
     }
 
     @Override
     public void setField(String name, Object value) throws EncoderException {
-        EncodedJSON toJSON = new Encoder(value, translator).encode();
+        JSONObject toJSON = new Encoder(value, encodedResult).encode();
         this.fields.put(name, toJSON);
     }
     

@@ -1,4 +1,5 @@
 package ca.frar.jjjrmi.translator;
+import ca.frar.jjjrmi.translator.encoder.EncodeHandler;
 import ca.frar.jjjrmi.exceptions.DecoderException;
 import ca.frar.jjjrmi.exceptions.EncoderException;
 

@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ca.frar.jjjrmi.testable;
+package ca.frar.jjjrmi.testableclasses;
 
 /**
  *
  * @author Ed Armstrong
  */
-public class SelfReferential {
-    SelfReferential me = this;
+public class HasInt {
+    public int x = 0;
 }

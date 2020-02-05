@@ -1,17 +1,18 @@
 package ca.frar.jjjrmi.testable.handlers;
-import java.util.ArrayList;
 import ca.frar.jjjrmi.annotations.Handles;
 import ca.frar.jjjrmi.exceptions.DecoderException;
 import ca.frar.jjjrmi.exceptions.EncoderException;
 import ca.frar.jjjrmi.translator.AHandler;
+import ca.frar.jjjrmi.translator.encoder.EncodedResult;
 import ca.frar.jjjrmi.translator.Translator;
+import java.util.ArrayList;
 import org.json.JSONObject;
 
 @Handles("java.util.ArrayList")
 public class ArrayListHandler extends AHandler<ArrayList>{
 
-    public ArrayListHandler(JSONObject json, Translator translator){
-        super(json, translator);
+    public ArrayListHandler(JSONObject json, EncodedResult encodedResult){
+        super(json, encodedResult);
     }
         
     @Override

@@ -3,7 +3,8 @@ import ca.frar.jjjrmi.annotations.Handles;
 import ca.frar.jjjrmi.exceptions.DecoderException;
 import ca.frar.jjjrmi.exceptions.EncoderException;
 import ca.frar.jjjrmi.translator.AHandler;
-import ca.frar.jjjrmi.translator.EncodeHandler;
+import ca.frar.jjjrmi.translator.encoder.EncodeHandler;
+import ca.frar.jjjrmi.translator.encoder.EncodedResult;
 import ca.frar.jjjrmi.translator.RestoreHandler;
 import java.util.HashMap;
 import ca.frar.jjjrmi.translator.IHandler;
@@ -13,8 +14,8 @@ import org.json.JSONObject;
 @Handles("java.util.HashMap")
 public class HashMapHandler extends AHandler <HashMap<?,?>>{
     
-    public HashMapHandler(JSONObject json, Translator translator){
-        super(json, translator);
+    public HashMapHandler(JSONObject json, EncodedResult encodedResult){
+        super(json, encodedResult);
     }
     
     @Override

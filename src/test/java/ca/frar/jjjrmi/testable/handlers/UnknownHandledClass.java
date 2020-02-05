@@ -4,14 +4,15 @@ import ca.frar.jjjrmi.annotations.Handles;
 import ca.frar.jjjrmi.exceptions.DecoderException;
 import ca.frar.jjjrmi.exceptions.EncoderException;
 import ca.frar.jjjrmi.translator.AHandler;
+import ca.frar.jjjrmi.translator.encoder.EncodedResult;
 import ca.frar.jjjrmi.translator.Translator;
 import org.json.JSONObject;
 
 @Handles("not.a.class")
 public class UnknownHandledClass extends AHandler<ArrayList>{
 
-    public UnknownHandledClass(JSONObject json, Translator translator){
-        super(json, translator);
+    public UnknownHandledClass(JSONObject json, EncodedResult encodedResult){
+        super(json, encodedResult);
     }
         
     @Override

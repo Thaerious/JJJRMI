@@ -1,4 +1,4 @@
-package ca.frar.jjjrmi.testable;
+package ca.frar.jjjrmi.testableclasses;
 import ca.frar.jjjrmi.annotations.JJJ;
 
 @JJJ(retain = false)

@@ -1,42 +1,51 @@
 package ca.frar.jjjrmi.translator;
+import ca.frar.jjjrmi.exceptions.CompletedDecoderException;
 import ca.frar.jjjrmi.exceptions.DecoderException;
 import java.lang.reflect.Array;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-class RestoredArray implements IsRestorable {
+class ArrayDecoder {
+    private int index = 0;
     private final JSONObject json;
     private Class<?> componentClass;
+    private Object result;
     private final Translator translator;
     private final JSONArray elements;
-
-    RestoredArray(JSONObject json, Translator translator, Class<?> aClass) {
+    private boolean isStarted = false;
+    
+    ArrayDecoder(JSONObject json, Translator translator, Class<?> aClass) {
         this.json = json;
         this.translator = translator;
         this.elements = json.getJSONArray(Constants.ElementsParam);
         this.componentClass = aClass;
     }
 
-    @Override
-    public Object decode() throws DecoderException {
-        JSONArray jsonArray = json.getJSONArray(Constants.ElementsParam);
-        Object newInstance = this.instantiateArray(this.componentClass, jsonArray.length());
-        restore(newInstance);
-        return newInstance;
+    public boolean decode() throws DecoderException {
+        if (this.isComplete()) throw new CompletedDecoderException();
+        if (!isStarted) this.decodeSetup();
+        return restore();
     }
 
-    private void restore(Object arrayInstance) throws DecoderException {
-        for (int i = 0; i < elements.length(); i++) {
-            Object element = elements.get(i);
-            AtomicInteger atomicI = new AtomicInteger (i);
+    private void decodeSetup(){
+        isStarted = true;
+        JSONArray jsonArray = json.getJSONArray(Constants.ElementsParam);
+        result = this.instantiateArray(this.componentClass, jsonArray.length());
+    }
 
-            new Decoder((JSONObject) element, translator, componentClass).decode(
-                obj->{
-                    Array.set(arrayInstance, atomicI.get(), obj);
-                }
-            );
+    private boolean isComplete() {
+        return index >= elements.length();
+    }
+    
+    private boolean restore() throws DecoderException {
+        while(this.index < elements.length()){
+            Object element = elements.get(index);
+            boolean decoded = new Decoder((JSONObject) element, this.translator).decode();
+            if (!decoded) break;
         }
+        
+        return index >= elements.length();
     }
 
     private Object instantiateArray(Class<?> aClass, int size) {

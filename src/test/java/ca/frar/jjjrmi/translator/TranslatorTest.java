@@ -4,9 +4,9 @@ import ca.frar.jjjrmi.exceptions.MissingHandlerException;
 import ca.frar.jjjrmi.exceptions.NewHandlerException;
 import ca.frar.jjjrmi.exceptions.SeekHandlersException;
 import ca.frar.jjjrmi.exceptions.TranslatorException;
-import ca.frar.jjjrmi.testable.ForcedDeferred;
-import ca.frar.jjjrmi.testable.NoRetain;
-import ca.frar.jjjrmi.testable.Simple;
+import ca.frar.jjjrmi.testableclasses.ForcedDeferred;
+import ca.frar.jjjrmi.testableclasses.NoRetain;
+import ca.frar.jjjrmi.testableclasses.Simple;
 import ca.frar.jjjrmi.testable.handlers.ArrayListHandler;
 import ca.frar.jjjrmi.testable.handlers.WrongConstructorHandler;
 import java.io.IOException;
@@ -239,50 +239,6 @@ public class TranslatorTest {
         assertEquals(0, result.size());
     }
 
-    /**
-     * Test of clear method, of class Translator. Doesn't reset allocNextKey
-     */
-    @Test
-    public void testClear_01() {
-        Translator instance = new Translator();
-        instance.addReference("T0", new Simple());
-        instance.addTempReference("T1", new Simple());
-        String allocNextKey = instance.allocNextKey();
-        instance.clear();
-        Collection<Object> result = instance.getAllReferredObjects();
-        assertEquals("S1", instance.allocNextKey());
-    }
-
-    @Test
-    public void testAllocNextKey_First() {
-        Translator instance = new Translator();
-        assertEquals("S0", instance.allocNextKey());
-    }
-
-    @Test
-    public void testAllocNextKey_Second() {
-        Translator instance = new Translator();
-        instance.allocNextKey();
-        assertEquals("S1", instance.allocNextKey());
-    }
-
-    @Test
-    public void testAllocNextKey_Fifth() {
-        Translator instance = new Translator();
-        for (int i = 0; i < 4; i++) instance.allocNextKey();
-        assertEquals("S4", instance.allocNextKey());
-    }
-
-    /**
-     * next key increments
-     */
-    @Test
-    public void testEncode_nextKeyInc() throws JJJRMIException {
-        Translator instance = new Translator();
-        instance.encode(new Simple());
-        assertEquals("S1", instance.allocNextKey());
-    }
-
     @Test
     public void testEncode_hasRefObj() throws JJJRMIException {
         Translator instance = new Translator();
@@ -391,7 +347,7 @@ public class TranslatorTest {
         ArrayList<String> arrayList = new ArrayList<>();
         arrayList.add("ONE");
         arrayList.add("TWO");
-        EncodedJSON encode = translator.encode(arrayList);
+        JSONObject encode = translator.encode(arrayList);
 
         assertEquals("ca.frar.jjjrmi.testable.handlers.ArrayListHandler", encode.get(Constants.HandlerParam));
     }
@@ -401,20 +357,20 @@ public class TranslatorTest {
      */
     @Test
     public void test_use_handler_decode() throws JJJRMIException {
-        Translator translator = new Translator();
-        translator.setHandler(java.util.ArrayList.class, ArrayListHandler.class);
-        ArrayList<String> arrayList = new ArrayList<>();
-        arrayList.add("ONE");
-        arrayList.add("TWO");
-        EncodedJSON encode = translator.encode(arrayList);
-
-        translator.clear();
-        ArrayList<String> decode = (ArrayList<String>) translator.decode(encode);
-
-        assertEquals(ArrayList.class, decode.getClass());
-        assertEquals("ONE", decode.get(0));
-        assertEquals("TWO", decode.get(1));
-        assertEquals(2, decode.size());
+//        Translator translator = new Translator();
+//        translator.setHandler(java.util.ArrayList.class, ArrayListHandler.class);
+//        ArrayList<String> arrayList = new ArrayList<>();
+//        arrayList.add("ONE");
+//        arrayList.add("TWO");
+//        JSONObject encode = translator.encode(arrayList);
+//
+//        translator.clear();
+//        ArrayList<String> decode = (ArrayList<String>) translator.decode(encode);
+//
+//        assertEquals(ArrayList.class, decode.getClass());
+//        assertEquals("ONE", decode.get(0));
+//        assertEquals("TWO", decode.get(1));
+//        assertEquals(2, decode.size());
     }
 
     /**

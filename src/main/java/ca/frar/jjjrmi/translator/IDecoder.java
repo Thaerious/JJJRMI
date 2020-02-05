@@ -6,12 +6,14 @@
 package ca.frar.jjjrmi.translator;
 
 import ca.frar.jjjrmi.exceptions.DecoderException;
-import java.lang.reflect.InvocationTargetException;
+import ca.frar.jjjrmi.exceptions.IncompleteDecoderException;
 
 /**
  *
- * @author edward
+ * @author Ed Armstrong
  */
-interface IsRestorable {
-    Object decode() throws DecoderException;
+interface IDecoder {
+    Object getObject() throws IncompleteDecoderException;
+    boolean isComplete();
+    public boolean decode() throws DecoderException;
 }

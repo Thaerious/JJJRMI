@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ca.frar.jjjrmi.testable;
+package ca.frar.jjjrmi.testableclasses;
 
 /**
  *
- * @author edward
+ * @author Ed Armstrong
  */
-public class ArrayWrapper {
-    public int[] arrayField = {1, 1, 2, 3, 5};
+public class SelfReferential {
+    SelfReferential me = this;
 }
