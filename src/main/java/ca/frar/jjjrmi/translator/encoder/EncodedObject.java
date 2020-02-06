@@ -19,20 +19,19 @@ import org.json.JSONObject;
 public class EncodedObject extends JSONObject{    
     final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JSONObject");
     private final Object object;
-    private final EncodedFields fields;
+    protected final EncodedFields fields;
     private final EncodedResult encodedResult;
 
     public EncodedObject(Object object, EncodedResult encodedResult) throws EncoderException {        
-        LOGGER.trace("new EncodedObject(" + object.getClass().getSimpleName() + ", translator)");
         this.object = object;
         this.fields = new EncodedFields(object, encodedResult);
-        this.encodedResult = encodedResult;
-
+        this.encodedResult = encodedResult;        
+        
         this.put(Constants.KeyParam, encodedResult.getTranslator().allocReference(object));
         this.put(Constants.TypeParam, object.getClass().getName());
         this.put(Constants.FieldsParam, fields);
     }
-
+    
     /**
     Will only encode @JJJ annotated classes.
     @throws IllegalArgumentException

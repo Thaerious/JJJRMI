@@ -1,11 +1,10 @@
 package ca.frar.jjjrmi.demo;
-import ca.frar.jjjrmi.exceptions.EncoderException;
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
-import ca.frar.jjjrmi.testableclasses.Circular;
-import ca.frar.jjjrmi.testableclasses.SelfReferential;
-import ca.frar.jjjrmi.testableclasses.Simple;
-import ca.frar.jjjrmi.translator.encoder.EncodedResult;
+import ca.frar.jjjrmi.testableclasses.HasHandler;
+import ca.frar.jjjrmi.translator.encoder.AHandler;
+import ca.frar.jjjrmi.translator.HandlerFactory;
 import ca.frar.jjjrmi.translator.Translator;
+import ca.frar.jjjrmi.translator.encoder.EncodedResult;
 import java.io.IOException;
 
 public class Demo {
@@ -13,19 +12,8 @@ public class Demo {
     static Translator translator = new Translator();
     
     public static void main(String ... args) throws JJJRMIException, IOException{
-//        demo(new Simple());
-//        demo(new Primitives());
-//        demo(new Parent());
-//        demo(new SelfReferential());
-//        demo(new Circular());
-        
-        Simple simple = new Simple();
-        demo(simple);
-        demo(simple);
+        EncodedResult encoded = translator.encode(new HasHandler(2, 1.3f));
+        System.out.println(encoded.toString(2));
+        System.out.println(encoded.length());
     }    
-    
-    public static void demo(Object object) throws EncoderException{        
-        EncodedResult encodedJava = translator.encode(object);        
-        LOGGER.info(encodedJava.toString(2));
-    }
 }

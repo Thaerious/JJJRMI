@@ -1,4 +1,5 @@
 package ca.frar.jjjrmi.translator;
+import ca.frar.jjjrmi.translator.encoder.AHandler;
 import ca.frar.jjjrmi.exceptions.CompletedDecoderException;
 import ca.frar.jjjrmi.exceptions.DecoderException;
 import ca.frar.jjjrmi.exceptions.IncompleteDecoderException;
@@ -59,17 +60,17 @@ public class ObjectDecoder implements IDecoder{
         this.aClass = Class.forName(json.getString(Constants.TypeParam));        
         AHandler handler = null;
 
-        if (translator.hasHandler(this.aClass)) {
+//        if (translator.hasHandler(this.aClass)) {
             /* if handler, create new object with handler */
-            handler = translator.newHandler(this.aClass, this.json);
-            this.result = handler.instatiate();
-            handler.jjjDecode(this.result);
-        } else {
+//            handler = translator.newHandler(this.aClass, this.json);
+//            this.result = handler.instatiate();
+//            handler.jjjDecode(this.result);
+//        } else {
             /* create new object from description */
             Constructor<?> constructor = this.aClass.getDeclaredConstructor();
             constructor.setAccessible(true);
             this.result = constructor.newInstance();
-        }
+//        }
 
         if (new JJJOptionsHandler(this.aClass).retain()) {
             translator.addReference(json.get(Constants.KeyParam).toString(), this.result);

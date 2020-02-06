@@ -7,6 +7,11 @@
     <packaging>maven-plugin</packaging>
     
     <dependencies>
+        <dependency> 
+            <groupId>org.reflections</groupId> 
+            <artifactId>reflections</artifactId> 
+            <version>0.9.9-RC1</version> 
+        </dependency>        
         <dependency>
             <groupId>io.github.classgraph</groupId>
             <artifactId>classgraph</artifactId>
@@ -183,7 +188,7 @@
                     <generatePackage>false</generatePackage>
                     <generateJSON>false</generateJSON>
                     <version>0.6.3</version>
-                </configuration>                
+                </configuration>
                 <executions>
                     <execution>
                         <phase>install</phase>

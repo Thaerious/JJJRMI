@@ -1,5 +1,5 @@
 Compiling
----------
+=========
 mvn install
 mvn jjjrmi:generate-js
 
@@ -35,3 +35,19 @@ Generate the package file.
 Generate the json file.
 --json
 
+Running Tests
+-------------
+compile tests
+> mvn test-compile
+
+run a single test class
+> mvn -Dtest=UsersServiceImplTest test
+
+run a single test method
+> mvn -Dtest=UsersServiceImpl#testCreateUser test
+
+run tests by pattern
+> mvn -Dtest=UsersServiceImpl#testCreate* test
+
+generate coverage report (in target/sites/jacoco)
+> mvn jacoco report

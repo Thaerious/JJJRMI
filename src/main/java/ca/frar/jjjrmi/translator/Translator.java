@@ -1,5 +1,6 @@
 package ca.frar.jjjrmi.translator;
 
+import ca.frar.jjjrmi.translator.encoder.AHandler;
 import ca.frar.jjjrmi.translator.encoder.EncodedResult;
 import ca.frar.jjjrmi.translator.encoder.EncodedObject;
 import ca.frar.jjjrmi.exceptions.TranslatorException;
@@ -8,7 +9,9 @@ import ca.frar.jjjrmi.exceptions.DecoderException;
 import ca.frar.jjjrmi.exceptions.EncoderException;
 import ca.frar.jjjrmi.exceptions.MissingHandlerException;
 import ca.frar.jjjrmi.exceptions.NewHandlerException;
+import ca.frar.jjjrmi.exceptions.NullRootException;
 import ca.frar.jjjrmi.exceptions.SeekHandlersException;
+import ca.frar.jjjrmi.translator.encoder.EncodedReference;
 import ca.frar.jjjrmi.utility.BiMap;
 import io.github.classgraph.AnnotationInfo;
 import io.github.classgraph.ClassGraph;
@@ -21,6 +24,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.json.JSONObject;
 
 /**
@@ -28,14 +33,15 @@ import org.json.JSONObject;
  * will be tracked. These objects will be assigned a reference string which can
  * be used to retrieve the object. All reference strings assigned by the
  * Translator will start with the 'S' character (stands for Sever side).<br>
- * A Translator does not have to work on a JJJObject.  To control the behaviour
+ * A Translator does not have to work on a JJJObject. To control the behaviour
  * of the translator on an object use the @JJJ annotation.
  *
  * @author edward
  */
 public final class Translator {
-    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");    
-    private HashMap<String, Class <? extends AHandler<?>>> handlers = new HashMap<>();
+
+    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");
+    private HashMap<String, Class<? extends AHandler<?>>> handlers = new HashMap<>();
     private ArrayList<Consumer<Object>> encodeListeners = new ArrayList<>();
     private ArrayList<Consumer<Object>> decodeListeners = new ArrayList<>();
     private final BiMap<String, Object> objectMap = new BiMap<>();
@@ -48,60 +54,6 @@ public final class Translator {
         }
         this.objectMap.remove(objectMap.getKey(obj));
         return true;
-    }
-
-    public void seekHandlers() throws TranslatorException {
-        ClassGraph classGraph = new ClassGraph();
-        classGraph.enableAllInfo();
-        ScanResult scanResult = classGraph.scan();
-        
-        ClassInfoList allClasses = scanResult.getClassesWithAnnotation(Handles.class.getCanonicalName());
-
-        for (ClassInfo ci : allClasses){
-            try {
-                AnnotationInfo annotationInfo = ci.getAnnotationInfo(Handles.class.getCanonicalName());
-                String value = annotationInfo.getParameterValues().get("value").getValue().toString();
-                
-                Class<?> handler = ClassLoader.getSystemClassLoader().loadClass(ci.getName());
-                Class<?> handles = ClassLoader.getSystemClassLoader().loadClass(value);
-                
-                this.setHandler(handles, (Class<? extends AHandler<?>>) handler);
-            } catch (ClassNotFoundException ex) {
-                throw new SeekHandlersException(ex);
-            }
-        }
-    }
-    
-    public void setHandler(String className, Class <? extends AHandler<?>> handler) {
-        this.handlers.put(className, handler);
-    }    
-    
-    public void setHandler(Class<?> aClass, Class <? extends AHandler<?>> handler) {
-        this.handlers.put(aClass.getCanonicalName(), handler);
-    }
-
-    public boolean hasHandler(Class<?> aClass) {
-        return this.handlers.containsKey(aClass.getCanonicalName());
-    }
-
-    /**
-     * Instantiate a new Handler for 'aClass' associating it with 'json'.
-     * @param aClass
-     * @param json
-     * @return
-     * @throws NewHandlerException 
-     */
-    public AHandler<?> newHandler(Class<?> aClass, JSONObject json) throws NewHandlerException {
-        if (!this.hasHandler(aClass)) throw new MissingHandlerException(aClass);
-        
-        try {
-            Class<? extends AHandler<?>> handlerClass = this.handlers.get(aClass.getCanonicalName());
-            Constructor<? extends AHandler<?>> constructor = handlerClass.getConstructor(JSONObject.class, Translator.class);
-            AHandler<?> newInstance = constructor.newInstance(json, this);
-            return newInstance;
-        } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            throw new NewHandlerException(ex);
-        }
     }
 
     /**
@@ -129,18 +81,19 @@ public final class Translator {
         }
         this.tempReferences.clear();
     }
-    
+
     /**
      * Create a new reference with a new unique key.
+     *
      * @param object
-     * @return 
+     * @return
      */
-    public String allocReference(Object object){
+    public String allocReference(Object object) {
         String key = "S" + (nextKey++);
         this.addReference(key, object);
         return key;
     }
-    
+
     /**
      * Add a reference to the this translator.
      *
@@ -224,20 +177,42 @@ public final class Translator {
      * @return
      */
     public final EncodedResult encode(Object object) throws EncoderException {
+        if (object == null) throw new NullRootException();
         EncodedResult encodedResult = new EncodedResult(this);
-        if (this.hasReferredObject(object)){
+        
+        if (this.hasReferredObject(object)) {            
             encodedResult.setRoot(this.getReference(object));
             return encodedResult;
         }
-        
-        try{            
+        else if (HandlerFactory.getInstance().hasHandler(object.getClass())) {
+            encodeHandled(object, encodedResult);
+        } else {
+            encodeUnhandled(object, encodedResult);
+        }
+        return encodedResult;
+    }
+
+    private void encodeHandled(Object object, EncodedResult encodedResult) throws EncoderException {
+        try {
+            Class<? extends AHandler<?>> handlerClass = HandlerFactory.getInstance().getHandler(object.getClass());
+            AHandler<?> handler = handlerClass.getConstructor(EncodedResult.class).newInstance(encodedResult);            
+            EncodedObject encodedObject = handler.doEncode(object);
+            encodedResult.put(encodedObject);
+            encodedResult.setRoot(this.getReference(object));
+            this.clearTempReferences();
+        } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+            throw new EncoderException(ex, object);
+        }
+    }
+
+    private void encodeUnhandled(Object object, EncodedResult encodedResult) throws EncoderException {
+        try {
             EncodedObject encodedObject = new EncodedObject(object, encodedResult);
             encodedResult.put(encodedObject);
             encodedResult.setRoot(this.getReference(object));
             encodedObject.encode();
             this.clearTempReferences();
-            return encodedResult;
-        } catch (IllegalArgumentException | IllegalAccessException ex){
+        } catch (IllegalArgumentException | IllegalAccessException ex) {
             throw new EncoderException(ex, object);
         }
     }
@@ -256,26 +231,26 @@ public final class Translator {
      * @throws java.lang.reflect.InvocationTargetException
      */
     final Object decodeJSON(EncodedResult encodedResult) throws DecoderException {
-            ArrayList<ObjectDecoder> list = new ArrayList<>();
-            for (JSONObject jsonObject : encodedResult.getAllObjects()){
-                list.add(new ObjectDecoder(jsonObject, this));
-            }
-            
-            ObjectDecoder firstDecoder = list.get(0);
-            
-            while (!list.isEmpty()){
-                ObjectDecoder decoder = list.remove(0);                
-                boolean decoded = decoder.decode();
-                if (!decoded) list.add(decoder);
-            }
-            
-            return firstDecoder.getObject();
+        ArrayList<ObjectDecoder> list = new ArrayList<>();
+        for (JSONObject jsonObject : encodedResult.getAllObjects()) {
+            list.add(new ObjectDecoder(jsonObject, this));
+        }
+
+        ObjectDecoder firstDecoder = list.get(0);
+
+        while (!list.isEmpty()) {
+            ObjectDecoder decoder = list.remove(0);
+            boolean decoded = decoder.decode();
+            if (!decoded) list.add(decoder);
+        }
+
+        return firstDecoder.getObject();
     }
 
-    public final Object decode(String source) throws DecoderException{
+    public final Object decode(String source) throws DecoderException {
         return decodeJSON(new EncodedResult(this, source));
     }
-    
+
     public void addEncodeListener(Consumer<Object> lst) {
         this.encodeListeners.add(lst);
     }
@@ -290,5 +265,5 @@ public final class Translator {
 
     public void notifyDecode(Object object) {
         for (Consumer<Object> decodeListener : this.decodeListeners) decodeListener.accept(object);
-    }    
+    }
 }

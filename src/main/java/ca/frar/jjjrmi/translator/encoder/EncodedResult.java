@@ -5,8 +5,8 @@
  */
 package ca.frar.jjjrmi.translator.encoder;
 
+import ca.frar.jjjrmi.translator.Constants;
 import ca.frar.jjjrmi.translator.Translator;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import org.json.JSONArray;
@@ -20,19 +20,19 @@ import org.json.JSONObject;
  */
 public class EncodedResult extends JSONObject {
 
-    private final JSONArray objects;
+    private final JSONObject objects;
     private final Translator translator;
 
     public EncodedResult(Translator translator) {
         this.translator = translator;
-        this.objects = new JSONArray();
-        this.put("new-objects", this.objects);
+        this.objects = new JSONObject();
+        this.put(Constants.NewObjects, this.objects);
     }
 
     public EncodedResult(Translator translator, String source) {
         super(source);
         this.translator = translator;
-        this.objects = new JSONArray();
+        this.objects = new JSONObject();
     }
 
     /**
@@ -43,11 +43,11 @@ public class EncodedResult extends JSONObject {
     }
 
     public void setRoot(String rootKey){
-        this.put("root-object", rootKey);
+        this.put(Constants.RootObject, rootKey);
     }
 
-    public void put(JSONObject JSONObject) {
-        this.objects.put(JSONObject);
+    public void put(EncodedObject encodedObject) {
+        this.objects.put(encodedObject.getString(Constants.KeyParam), encodedObject);
     }
 
     /**
@@ -58,8 +58,8 @@ public class EncodedResult extends JSONObject {
     public List<JSONObject> getAllObjects() {
         LinkedList<JSONObject> list = new LinkedList<>();
 
-        for (Object json : this.objects) {
-            list.add((JSONObject) json);
+        for (String key : this.objects.keySet()){
+            list.add((JSONObject) this.objects.get(key));
         }
 
         return list;

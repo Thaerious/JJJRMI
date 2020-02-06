@@ -1,4 +1,5 @@
 package ca.frar.jjjrmi.socket;
+import ca.frar.jjjrmi.translator.encoder.AHandler;
 import ca.frar.jjjrmi.translator.encoder.EncodedResult;
 import static ca.frar.jjjrmi.Global.VERY_VERBOSE;
 import ca.frar.jjjrmi.exceptions.EncoderException;
@@ -146,9 +147,6 @@ public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, S
         
         synchronized (this) {            
             Translator translator = new Translator();    
-            for (String className : this.handlers.keySet()){
-                translator.setHandler(className, this.handlers.get(className));
-            }
             
             LOGGER.log(VERBOSE, "Socket '" + this.getClass().getSimpleName() + "' adding session " + session.hashCode());
             sessionTranslators.put(session, translator);
