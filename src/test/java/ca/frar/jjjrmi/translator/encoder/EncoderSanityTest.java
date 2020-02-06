@@ -132,7 +132,7 @@ public class EncoderSanityTest {
     }
     
     /**
-     * Encoded object contains an array of primitives.
+     * Encode a root object which has a handler.
      * @throws EncoderException
      */
     @Test
@@ -142,4 +142,18 @@ public class EncoderSanityTest {
         assertEquals(1, result.getAllObjects().size());
         assertTrue(result.has(Constants.RootObject));
     }    
+    
+    /**
+     * Encode non-root object which has a handler.
+     * @throws EncoderException
+     */
+    @Test
+    public void test_handler_as_field() throws EncoderException{
+        Translator translator = new Translator();
+        HasHandler hasHandler = new HasHandler(1, 2.3f);
+        Has<HasHandler> has = new Has<HasHandler>(hasHandler);
+        EncodedResult result = translator.encode(has);
+        assertEquals(2, result.getAllObjects().size());
+        assertTrue(result.has(Constants.RootObject));
+    }        
 }
