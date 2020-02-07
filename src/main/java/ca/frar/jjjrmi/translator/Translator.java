@@ -1,31 +1,18 @@
 package ca.frar.jjjrmi.translator;
 
 import ca.frar.jjjrmi.translator.encoder.AHandler;
+import ca.frar.jjjrmi.translator.decoder.ObjectDecoder;
 import ca.frar.jjjrmi.translator.encoder.EncodedResult;
 import ca.frar.jjjrmi.translator.encoder.EncodedObject;
-import ca.frar.jjjrmi.exceptions.TranslatorException;
-import ca.frar.jjjrmi.annotations.Handles;
 import ca.frar.jjjrmi.exceptions.DecoderException;
 import ca.frar.jjjrmi.exceptions.EncoderException;
-import ca.frar.jjjrmi.exceptions.MissingHandlerException;
-import ca.frar.jjjrmi.exceptions.NewHandlerException;
 import ca.frar.jjjrmi.exceptions.NullRootException;
-import ca.frar.jjjrmi.exceptions.SeekHandlersException;
-import ca.frar.jjjrmi.translator.encoder.EncodedReference;
 import ca.frar.jjjrmi.utility.BiMap;
-import io.github.classgraph.AnnotationInfo;
-import io.github.classgraph.ClassGraph;
-import io.github.classgraph.ClassInfo;
-import io.github.classgraph.ClassInfoList;
-import io.github.classgraph.ScanResult;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.json.JSONObject;
 
 /**
@@ -230,25 +217,26 @@ public final class Translator {
      * @throws java.lang.NoSuchMethodException
      * @throws java.lang.reflect.InvocationTargetException
      */
-    final Object decodeJSON(EncodedResult encodedResult) throws DecoderException {
+    public final Object decode(EncodedResult encodedResult) throws DecoderException {
         ArrayList<ObjectDecoder> list = new ArrayList<>();
-        for (JSONObject jsonObject : encodedResult.getAllObjects()) {
+        
+        for (JSONObject jsonObject : encodedResult.getAllObjects()){
+            String key = jsonObject.getString(Constants.KeyParam);
+            if (this.hasReference(key)) continue;
             list.add(new ObjectDecoder(jsonObject, this));
         }
-
-        ObjectDecoder firstDecoder = list.get(0);
-
-        while (!list.isEmpty()) {
-            ObjectDecoder decoder = list.remove(0);
-            boolean decoded = decoder.decode();
-            if (!decoded) list.add(decoder);
+        for (ObjectDecoder decoder : list){
+            decoder.makeReady();
         }
-
-        return firstDecoder.getObject();
+        for (ObjectDecoder decoder : list){
+            decoder.decode();        
+        }
+                
+        return this.getReferredObject(encodedResult.getRoot());
     }
 
     public final Object decode(String source) throws DecoderException {
-        return decodeJSON(new EncodedResult(this, source));
+        return decode(new EncodedResult(this, source));
     }
 
     public void addEncodeListener(Consumer<Object> lst) {

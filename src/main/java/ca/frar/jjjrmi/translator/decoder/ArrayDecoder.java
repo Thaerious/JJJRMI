@@ -1,6 +1,8 @@
-package ca.frar.jjjrmi.translator;
+package ca.frar.jjjrmi.translator.decoder;
 import ca.frar.jjjrmi.exceptions.CompletedDecoderException;
 import ca.frar.jjjrmi.exceptions.DecoderException;
+import ca.frar.jjjrmi.translator.Constants;
+import ca.frar.jjjrmi.translator.Translator;
 import java.lang.reflect.Array;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.json.JSONArray;
@@ -13,7 +15,6 @@ class ArrayDecoder {
     private Object result;
     private final Translator translator;
     private final JSONArray elements;
-    private boolean isStarted = false;
     
     ArrayDecoder(JSONObject json, Translator translator, Class<?> aClass) {
         this.json = json;
@@ -22,30 +23,15 @@ class ArrayDecoder {
         this.componentClass = aClass;
     }
 
-    public boolean decode() throws DecoderException {
-        if (this.isComplete()) throw new CompletedDecoderException();
-        if (!isStarted) this.decodeSetup();
-        return restore();
-    }
-
-    private void decodeSetup(){
-        isStarted = true;
+    public Object decode() throws DecoderException {
         JSONArray jsonArray = json.getJSONArray(Constants.ElementsParam);
-        result = this.instantiateArray(this.componentClass, jsonArray.length());
-    }
-
-    private boolean isComplete() {
-        return index >= elements.length();
-    }
-    
-    private boolean restore() throws DecoderException {
+        this.result = this.instantiateArray(this.componentClass, jsonArray.length());
+        
         while(this.index < elements.length()){
             Object element = elements.get(index);
-            boolean decoded = new Decoder((JSONObject) element, this.translator).decode();
-            if (!decoded) break;
+            new Decoder((JSONObject) element, this.translator).decode();
         }
-        
-        return index >= elements.length();
+        return this.result;
     }
 
     private Object instantiateArray(Class<?> aClass, int size) {

@@ -1,4 +1,4 @@
-package ca.frar.jjjrmi.translator;
+package ca.frar.jjjrmi.socket;
 
 import ca.frar.jjjrmi.annotations.DoNotInvoke;
 import ca.frar.jjjrmi.socket.InvokesMethods;

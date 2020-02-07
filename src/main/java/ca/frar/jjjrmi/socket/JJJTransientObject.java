@@ -2,7 +2,6 @@ package ca.frar.jjjrmi.socket;
 import ca.frar.jjjrmi.annotations.DoNotInvoke;
 import ca.frar.jjjrmi.annotations.JJJ;
 import ca.frar.jjjrmi.socket.InvokesMethods;
-import ca.frar.jjjrmi.translator.HasWebsockets;
 import java.util.Collection;
 import java.util.Collections;
 

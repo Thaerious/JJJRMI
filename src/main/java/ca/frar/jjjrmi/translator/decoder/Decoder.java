@@ -1,7 +1,9 @@
-package ca.frar.jjjrmi.translator;
+package ca.frar.jjjrmi.translator.decoder;
 import ca.frar.jjjrmi.exceptions.CompletedDecoderException;
 import ca.frar.jjjrmi.exceptions.DecoderException;
 import ca.frar.jjjrmi.exceptions.IncompleteDecoderException;
+import ca.frar.jjjrmi.translator.Constants;
+import ca.frar.jjjrmi.translator.Translator;
 import java.util.Scanner;
 import org.json.JSONObject;
 import static spoon.Launcher.LOGGER;
@@ -10,7 +12,7 @@ import static spoon.Launcher.LOGGER;
  * Use for decoding everything except objects.
  * @author Ed Armstrong
  */
-class Decoder implements IDecoder{
+class Decoder {
     private final JSONObject json;
     private final Translator translator;
     private Class<?> expectedType;
@@ -45,14 +47,14 @@ class Decoder implements IDecoder{
      * @return true if complete
      * @throws DecoderException 
      */
-    public boolean decode() throws DecoderException {
+    public void decode() throws DecoderException {
         if (this.isComplete()) throw new CompletedDecoderException();
         
         if (json.has(Constants.TypeParam) && json.getString(Constants.TypeParam).equals(Constants.NullValue)) {
             this.setObject(null);
         } else if (json.has(Constants.PointerParam)) {
             if (!translator.hasReference(json.get(Constants.PointerParam).toString())){
-                return false;
+                return;
             }
             Object referredObject = translator.getReferredObject(json.get(Constants.PointerParam).toString());
             this.setObject(referredObject);
@@ -71,42 +73,42 @@ class Decoder implements IDecoder{
             if (expectedType != null) switch (expectedType.getCanonicalName()) {
                 case "java.lang.String":
                     this.setObject(json.get(Constants.ValueParam).toString());
-                    return true;
+                    return;
                 case "boolean":
                 case "java.lang.Boolean":
                     this.setObject(json.getBoolean(Constants.ValueParam));
-                    return true;
+                    return;
                 case "byte":
                 case "java.lang.Byte":
                     Integer bite = json.getInt(Constants.ValueParam);
                     this.setObject(bite.byteValue());
-                    return true;
+                    return;
                 case "char":
                 case "java.lang.Character":
                     this.setObject(json.get(Constants.ValueParam).toString().charAt(0));
-                    return true;
+                    return;
                 case "short":
                 case "java.lang.Short":
                     Integer shirt = json.getInt(Constants.ValueParam);
                     this.setObject(shirt.shortValue());
-                    return true;
+                    return;
                 case "long":
                 case "java.lang.Long":
                     this.setObject(json.getLong(Constants.ValueParam));
-                    return true;
+                    return;
                 case "float":
                 case "java.lang.Float":
                     Double d = json.getDouble(Constants.ValueParam);
                     this.setObject(d.floatValue());
-                    return true;
+                    return;
                 case "double":
                 case "java.lang.Double":
                     this.setObject(json.getDouble(Constants.ValueParam));
-                    return true;
+                    return;
                 case "int":
                 case "java.lang.Integer":
                     this.setObject(json.getInt(Constants.ValueParam));
-                    return true;
+                    return;
             }
 
             /* expected type not found, refer to primitive type */
@@ -118,13 +120,13 @@ class Decoder implements IDecoder{
                 case "number":
                     if (scanner.hasNextInt()) this.setObject(scanner.nextInt());
                     if (scanner.hasNextDouble()) this.setObject(scanner.nextDouble());
-                    return true;
+                    return;
                 case "string":
                     this.setObject(value);
-                    return true;
+                    return;
                 case "boolean":
                     if (scanner.hasNextBoolean()) this.setObject(scanner.nextBoolean());
-                    return true;
+                    return;
             }
         } else if (json.has(Constants.ElementsParam)) {
             if (expectedType == null || !expectedType.isArray()) expectedType = Object[].class;
@@ -134,6 +136,5 @@ class Decoder implements IDecoder{
             LOGGER.warn(this.json.toString(2));
             throw new RuntimeException("Unknown JSON encoding");
         }
-        return true;
     }
 }

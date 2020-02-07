@@ -3,7 +3,7 @@ package ca.frar.jjjrmi.jsbuilder;
 import static ca.frar.jjjrmi.Global.VERY_VERBOSE;
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
 import ca.frar.jjjrmi.exceptions.JJJRMIWarning;
-import ca.frar.jjjrmi.translator.HasWebsockets;
+import ca.frar.jjjrmi.socket.HasWebsockets;
 import ca.frar.jjjrmi.utility.JJJOptionsHandler;
 import java.util.ArrayList;
 import org.apache.logging.log4j.Level;

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ca.frar.jjjrmi.translator.encoder;
+package ca.frar.jjjrmi.translator;
 
 import ca.frar.jjjrmi.exceptions.EncoderException;
 import ca.frar.jjjrmi.exceptions.NullRootException;
@@ -11,8 +11,7 @@ import ca.frar.jjjrmi.testableclasses.Has;
 import ca.frar.jjjrmi.testableclasses.HasHandler;
 import ca.frar.jjjrmi.testableclasses.Primitives;
 import ca.frar.jjjrmi.testableclasses.Simple;
-import ca.frar.jjjrmi.translator.Constants;
-import ca.frar.jjjrmi.translator.Translator;
+import ca.frar.jjjrmi.translator.encoder.EncodedResult;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 

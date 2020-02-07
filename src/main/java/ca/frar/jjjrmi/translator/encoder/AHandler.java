@@ -1,6 +1,10 @@
 package ca.frar.jjjrmi.translator.encoder;
 import ca.frar.jjjrmi.exceptions.DecoderException;
 import ca.frar.jjjrmi.exceptions.EncoderException;
+import ca.frar.jjjrmi.translator.encoder.EncodedFields;
+import ca.frar.jjjrmi.translator.encoder.EncodedObject;
+import ca.frar.jjjrmi.translator.encoder.EncodedResult;
+import ca.frar.jjjrmi.translator.encoder.Encoder;
 import org.json.JSONObject;
 
 /**

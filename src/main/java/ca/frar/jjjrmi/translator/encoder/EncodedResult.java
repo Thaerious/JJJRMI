@@ -46,6 +46,10 @@ public class EncodedResult extends JSONObject {
         this.put(Constants.RootObject, rootKey);
     }
 
+    public String getRoot(){
+        return this.getString(Constants.RootObject);
+    }    
+    
     public void put(EncodedObject encodedObject) {
         this.objects.put(encodedObject.getString(Constants.KeyParam), encodedObject);
     }
