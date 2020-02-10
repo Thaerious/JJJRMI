@@ -1,10 +1,14 @@
 package ca.frar.jjjrmi.translator.encoder;
+import static ca.frar.jjjrmi.Global.LOGGER;
+import ca.frar.jjjrmi.annotations.Transient;
 import ca.frar.jjjrmi.exceptions.DecoderException;
 import ca.frar.jjjrmi.exceptions.EncoderException;
-import ca.frar.jjjrmi.translator.encoder.EncodedFields;
-import ca.frar.jjjrmi.translator.encoder.EncodedObject;
-import ca.frar.jjjrmi.translator.encoder.EncodedResult;
-import ca.frar.jjjrmi.translator.encoder.Encoder;
+import ca.frar.jjjrmi.socket.JJJObject;
+import ca.frar.jjjrmi.translator.Constants;
+import ca.frar.jjjrmi.translator.Translator;
+import ca.frar.jjjrmi.translator.decoder.Decoder;
+import java.lang.reflect.Field;
+import java.util.HashMap;
 import org.json.JSONObject;
 
 /**
@@ -13,8 +17,8 @@ import org.json.JSONObject;
  */
 abstract public class AHandler<T> {
     private final EncodedResult encodedResult;
-    private EncodedFields fields;
-    private JSONObject jsonObject;
+    private JSONObject jsonFields;
+    private HashMap<String, Field> fields = new HashMap<>();
 
     public AHandler(EncodedResult encodedResult){
         this.encodedResult = encodedResult;        
@@ -22,23 +26,29 @@ abstract public class AHandler<T> {
     
     public final EncodedObject doEncode(Object object) throws EncoderException{
         EncodedObject encodedObject = new EncodedObject(object, encodedResult);
-        this.fields = encodedObject.fields;
-        this.jsonObject = encodedObject;        
+        this.jsonFields = encodedObject.fields;
         this.encode((T) object);
         return encodedObject;
     }
     
-    public final T doDecode(JSONObject json) throws DecoderException{
-        this.jsonObject = json;        
-        return this.decode();
+    public final T doDecode(Object t, JSONObject json) throws DecoderException{
+        this.jsonFields = json.getJSONObject(Constants.FieldsParam);
+        this.setupFields(t.getClass());
+        this.decode((T)t);
+        return (T)t;
     }
 
-    abstract public T decode() throws DecoderException;
+    abstract public T getInstance();
+    
+    abstract public void decode(T t) throws DecoderException;
 
     abstract public void encode(T object) throws EncoderException;
 
-    public <T> T decodeField(String name) throws DecoderException {        
-        return (T) this.encodedResult.getTranslator().decode(fields.getJSONObject(name).toString());
+    public final <T> T decodeField(String fieldName, Class<?> type) throws DecoderException {  
+        JSONObject jsonField = jsonFields.getJSONObject(fieldName);
+        Translator translator = encodedResult.getTranslator();
+        Object decoded = new Decoder(jsonField, translator, type).decode();
+        return (T) decoded;
     }
 
     /**
@@ -47,9 +57,20 @@ abstract public class AHandler<T> {
      * @param value
      * @throws EncoderException 
      */
-    public void setField(String field, Object value) throws EncoderException {
+    public final void encodeField(String field, Object value) throws EncoderException {
         JSONObject toJSON = new Encoder(value, this.encodedResult).encode();
-        this.fields.put(field, toJSON);
+        this.jsonFields.put(field, toJSON);
     }
     
+    private void setupFields(Class<?> aClass) {
+        Class<?> current = aClass;
+        while (current != Object.class && current != JJJObject.class) {
+            for (Field field : current.getDeclaredFields()) {
+                if (field.getAnnotation(Transient.class) != null) continue;
+                field.setAccessible(true);
+                this.fields.put(field.getName(), field);
+            }
+            current = current.getSuperclass();
+        }
+    }
 }

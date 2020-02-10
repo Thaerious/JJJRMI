@@ -27,19 +27,6 @@ public @interface JJJ {
     public String jsExtends() default "";
 
     /**
-     * Indicates which methods will be translated into JS code.
-     * <ul>
-     * <li>NONE, only those marked with NativeJS & !SkipJS
-     * <li>ANNOTATED, only those marked with (NativeJS | ServerSide) & !SkipJS
-     * (default)
-     * <li>ALL only those not marked with SkipJS
-     * </ul>
-     *
-     * @return
-     */
-    public ProcessLevel processLevel() default ProcessLevel.ANNOTATED;
-
-    /**
      * When set to true the client and server will retain a copy of objects of
      * this class. On subsequent sends the copy will be used. When set to false
      * the whole object is read and sent every time.
@@ -54,4 +41,16 @@ public @interface JJJ {
      * @return
      */
     boolean generateJS() default true;
+    
+    /**
+     * Process only the top level class
+     * @return 
+     */
+    boolean topLevel() default false;
+    
+    /**
+     * Add the __isTransient, __getCLass, and __isEnum methods.
+     * @return 
+     */
+    boolean insertJJJMethods() default true;    
 }

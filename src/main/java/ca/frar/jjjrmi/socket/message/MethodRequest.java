@@ -11,7 +11,7 @@ import java.lang.reflect.Parameter;
  * @author Ed Armstrong
  */
 @SuppressWarnings("PublicField")
-@JJJ(retain=false, processLevel=ProcessLevel.ALL)
+@JJJ(retain=false)
 public class MethodRequest extends ClientMessage{
     public String uid;
     public String objectPTR;

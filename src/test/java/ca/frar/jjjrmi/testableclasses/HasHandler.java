@@ -10,13 +10,16 @@ package ca.frar.jjjrmi.testableclasses;
  * @author Ed Armstrong
  */
 public class HasHandler {
-    int x;
-    float y;
-    float z;
+    public int x;
+    public float y;
+    public float z;
     
     public HasHandler(int x, float y){
         this.x = x;
         this.y = y;
         this.z = x * y;
     }
+    
+    public HasHandler(){
+    }    
 }

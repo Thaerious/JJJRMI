@@ -8,7 +8,7 @@ import static ca.frar.jjjrmi.socket.message.JJJMessageType.LOCAL;
  * Message from server to client to send a response to MethodRequest.
  * @author Ed Armstrong
  */
-@JJJ(retain=false, processLevel=ProcessLevel.ALL)
+@JJJ(retain=false)
 public final class MethodResponse extends JJJMessage{
 
     private String uid;

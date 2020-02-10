@@ -1,6 +1,8 @@
 package ca.frar.jjjrmi.translator.decoder;
 
 import static ca.frar.jjjrmi.Global.LOGGER;
+import ca.frar.jjjrmi.annotations.JJJ;
+import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.exceptions.DecoderException;
 import ca.frar.jjjrmi.translator.Constants;
 import ca.frar.jjjrmi.translator.Translator;
@@ -8,6 +10,7 @@ import java.lang.reflect.Array;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+@JJJ(insertJJJMethods=false)
 class ArrayDecoder {
     private final JSONObject json;
     private Class<?> componentClass;
@@ -15,6 +18,7 @@ class ArrayDecoder {
     private final Translator translator;
     private final JSONArray elements;
 
+    @NativeJS
     ArrayDecoder(JSONObject json, Translator translator, Class<?> componentClass) throws DecoderException {
         if (json == null) throw new NullPointerException();
         if (translator == null) throw new NullPointerException();
@@ -25,6 +29,7 @@ class ArrayDecoder {
         this.componentClass = translateComponentClass(componentClass);
     }
 
+    @NativeJS
     public Object decode() throws DecoderException {
         JSONArray jsonArray = json.getJSONArray(Constants.ElementsParam);
         int[] dims = new int[1];

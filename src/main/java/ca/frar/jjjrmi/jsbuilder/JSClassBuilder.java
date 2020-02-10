@@ -9,33 +9,39 @@ import ca.frar.jjjrmi.annotations.JSRequire;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.annotations.ServerSide;
 import ca.frar.jjjrmi.annotations.SkipJS;
+import ca.frar.jjjrmi.annotations.Transient;
 import ca.frar.jjjrmi.exceptions.TypeDeclarationNotFoundWarning;
 import ca.frar.jjjrmi.jsbuilder.code.JSCodeElement;
+import ca.frar.jjjrmi.jsbuilder.code.JSElementList;
 import ca.frar.jjjrmi.jsbuilder.code.JSFieldDeclaration;
 import ca.frar.jjjrmi.socket.JJJObject;
 import ca.frar.jjjrmi.utility.JJJOptionsHandler;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.apache.logging.log4j.Level;
+import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtEnum;
+import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 
 public class JSClassBuilder<T> {
-
     protected JSHeaderBuilder header = new JSHeaderBuilder();
     protected JSMethodBuilder constructor = new JSMethodBuilder("constructor");
     protected final CtClass<T> ctClass;
     protected final JJJOptionsHandler jjjOptions;
     protected List<JSMethodBuilder> methods = new ArrayList<>();
-    protected List<JSFieldDeclaration> staticFields = new ArrayList<>();
+    protected List<CtField<?>> staticFields = new ArrayList<>();
     protected List<JSCodeElement> sequel = new ArrayList<>();
     protected JSClassBuilder<?> container = null;
     protected HashSet<CtTypeReference> requireSet = new HashSet<>(); // js require statements
@@ -61,7 +67,7 @@ public class JSClassBuilder<T> {
 
     JSClassBuilder<T> build() {
         LOGGER.trace("JSClassBuilder.build()");
-        addJJJMethods();
+        if (jjjOptions.insertJJJMethods()) addJJJMethods();
         setHeader(new JSHeaderBuilder().setName(jjjOptions.getName()));
 
         /* determine superclass, first by jjjoptions then by extends */
@@ -143,6 +149,8 @@ public class JSClassBuilder<T> {
             }
         }
 
+        this.constructStaticFields();
+        
         return this;
     }
 
@@ -179,10 +187,6 @@ public class JSClassBuilder<T> {
         jsIsEnumMethod.setName("__isEnum");
         jsIsEnumMethod.appendToBody("return false;");
         addMethod(jsIsEnumMethod);
-    }
-
-    public void addStaticField(JSFieldDeclaration field) {
-        this.staticFields.add(field);
     }
 
     public void setHeader(JSHeaderBuilder header) {
@@ -249,8 +253,8 @@ public class JSClassBuilder<T> {
                 continue;
             };
             
-            CtType<?> importType = ctClass.getSuperclass().getDeclaration();            
-            if (importType == null){
+            CtTypeReference<?> superclass = ctClass.getSuperclass();
+            if (superclass == null || superclass.getDeclaration() == null){
                 LOGGER.log(VERY_VERBOSE, String.format("Omitting require for unknow superclass ", ctClass.getSimpleName()));
                 if (checkExternalType(anImport.getSimpleName())){
                     LOGGER.warn("unknown type in " + this.getSimpleName() + ": " + anImport.getSimpleName());
@@ -270,10 +274,21 @@ public class JSClassBuilder<T> {
             builder.append(this.jjjOptions.getName()).append(".").append(nestedClassBuilder.getSimpleName()).append(" = ").append(nestedClassBuilder.getSimpleName()).append(";");
         }
 
+        appendStaticFields(builder);
+        
         appendExport(builder);
         return builder.toString();
     }
 
+    private void appendStaticFields(StringBuilder builder){
+        for (CtField<?> ctField : this.staticFields){
+            builder.append(this.getSimpleName()).append(".").append(ctField.getSimpleName());
+            CtExpression<?> assignment = ctField.getAssignment();
+            builder.append(" = ").append(assignment);
+            builder.append(";\n");
+        }
+    }
+    
     /**
      * Check if a require has been registered for this class.
      *
@@ -402,4 +417,26 @@ public class JSClassBuilder<T> {
 
         return builder.toString();
     }
+    
+    private void constructStaticFields() {
+        Collection<CtFieldReference<?>> allFields = ctClass.getDeclaredFields();
+        
+        for (CtFieldReference<?> ctFieldRef : allFields) {
+            CtField<?> ctField = ctFieldRef.getFieldDeclaration();
+            
+            if (ctField == null) {
+                LOGGER.log(VERY_VERBOSE, "null static field initialization");
+                continue;
+            }
+                        
+            if (ctField.getAnnotation(Transient.class) != null){
+                LOGGER.log(VERY_VERBOSE, "transient static field: " + ctField.getSimpleName());
+                continue;
+            }
+            
+            if (ctFieldRef.getDeclaration() == null) continue;
+            this.staticFields.add(ctField);
+        }
+    }
+    
 }

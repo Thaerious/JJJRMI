@@ -5,7 +5,7 @@ import ca.frar.jjjrmi.annotations.ProcessLevel;
 import static ca.frar.jjjrmi.socket.message.JJJMessageType.REMOTE;
 import java.util.Arrays;
 
-@JJJ(retain=false, processLevel=ProcessLevel.ALL)
+@JJJ(retain=false)
 public class ClientRequestMessage extends JJJMessage{
     private String ptr;
     private String methodName;

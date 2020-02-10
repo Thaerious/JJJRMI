@@ -39,7 +39,25 @@ public class JSParser extends AbstractProcessor<CtClass<?>> {
 
     @Override
     public void process(CtClass<?> ctClass) {
-        LOGGER.trace("JSParser.process(" + ctClass.getSimpleName() + ")");
+        if (test(ctClass)) {
+            JSClassBuilder<?> jsClassBuilder = makeBuilder(ctClass).build();
+            jsClassBuilders.addClass(jsClassBuilder);
+        }
+    }
+
+    private JSClassBuilder<?> makeBuilder(CtClass<?> ctClass){
+        if (ctClass.isEnum()){
+            return new JSEnumBuilder<>((CtEnum<?>) ctClass);
+        } 
+        else if (new JJJOptionsHandler(ctClass).isSocket()){
+            return new JSSocketBuilder(ctClass, packageFileName);
+        }
+        else {
+            return new JSClassBuilder<>(ctClass); 
+        }
+    }
+    
+    public boolean test(CtClass<?> ctClass) {
         JJJOptionsHandler jjjOptions = new JJJOptionsHandler(ctClass);
         this.sourceClasses.add(ctClass);
 
@@ -50,49 +68,40 @@ public class JSParser extends AbstractProcessor<CtClass<?>> {
         if (ctClass.isEnum() && jjjOptions.hasJJJ()) {
             LOGGER.log(VERY_VERBOSE, "+------------------------------------------------------------------------------+");
             LOGGER.log(VERY_VERBOSE, "(+) Building javascript enumeration class: " + ctClass.getQualifiedName());
-            JSClassBuilder<?> jsClassBuilder = new JSEnumBuilder<>((CtEnum<?>) ctClass).build();
-            jsClassBuilders.addClass(jsClassBuilder);
-            return;
+            return true;
         }
 
         /* socket class */
         if (jjjOptions.isSocket()) {
             LOGGER.log(VERY_VERBOSE, "+------------------------------------------------------------------------------+");
             LOGGER.log(VERY_VERBOSE, "(+) Building jjjrmi socket: " + ctClass.getQualifiedName());
-            JSClassBuilder jsSocketBuilder = new JSSocketBuilder(ctClass, packageFileName).build();
-            jsClassBuilders.addClass(jsSocketBuilder);
+            return true;
         }
 
         /* POJO class */
-        if (!isSubtype) {
-            LOGGER.log(VERY_VERBOSE, "(-) " + ctClass.getQualifiedName() + " is not subtype of JJJObject");
-            return;
-        }
         if (!jjjOptions.generateJS()) {
             LOGGER.log(VERY_VERBOSE, "(-) " + ctClass.getQualifiedName() + " has option generateJS=false");
-            return;
+            return false;
         }
-        if (jjjOptions.isGenerated()) {
-            LOGGER.log(VERY_VERBOSE, "(-) " + ctClass.getQualifiedName() + " has @Generated");
-            return;
-        }
+        
         if (ctClass.isEnum() && ctClass.getDeclaringType() != null) {
             LOGGER.log(VERY_VERBOSE, "(-) " + ctClass.getQualifiedName() + " inner type");
-            return;
+            return false;
         }
-        if (!jjjOptions.hasJJJ()) {
-            LOGGER.log(VERY_VERBOSE, "+------------------------------------------------------------------------------+");
-            LOGGER.log(Level.forName("VERBOSE", 475), "(+) " + ctClass.getQualifiedName());
-        } else {
+        
+        if (jjjOptions.hasJJJ()) {
             LOGGER.log(VERY_VERBOSE, "+------------------------------------------------------------------------------+");
             LOGGER.log(Level.forName("VERBOSE", 475), "(+) " + ctClass.getQualifiedName() + "@JJJ");
+            return true;
         }
 
-        if (ctClass.getDeclaringType() != null) LOGGER.log(Level.forName("VERBOSE", 450), "declaring " + ctClass.getDeclaringType().getSimpleName());
-
-        JSClassBuilder<?> jsClassBuilder = new JSClassBuilder<>(ctClass).build();
-        LOGGER.log(VERY_VERBOSE, "+------------------------------------------------------------------------------+");
-        jsClassBuilders.addClass(jsClassBuilder);
+        if (!isSubtype) {
+            LOGGER.log(VERY_VERBOSE, "(-) " + ctClass.getQualifiedName() + " is not subtype of JJJObject");
+            return false;
+        }
+        
+        LOGGER.log(VERY_VERBOSE, "(-) " + ctClass.getQualifiedName() + " unknown reason");
+        return false;
     }
 
     public Iterable<JSClassBuilder<?>> jsClassBuilders() {

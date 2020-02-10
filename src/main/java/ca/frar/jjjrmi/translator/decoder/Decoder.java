@@ -1,8 +1,7 @@
 package ca.frar.jjjrmi.translator.decoder;
-
-import static ca.frar.jjjrmi.Global.LOGGER;
+import ca.frar.jjjrmi.annotations.JJJ;
+import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.exceptions.DecoderException;
-import ca.frar.jjjrmi.exceptions.MissingReferenceException;
 import ca.frar.jjjrmi.exceptions.UnknownEncodingException;
 import ca.frar.jjjrmi.translator.Constants;
 import ca.frar.jjjrmi.translator.Translator;
@@ -14,13 +13,14 @@ import org.json.JSONObject;
  *
  * @author Ed Armstrong
  */
-class Decoder {
-
+@JJJ(insertJJJMethods=false)
+public class Decoder {
     private final JSONObject json;
     private final Translator translator;
     private Class<?> expectedType = null;
 
-    Decoder(JSONObject json, Translator translator, Class<?> expectedType) {
+    @NativeJS
+    public Decoder(JSONObject json, Translator translator, Class<?> expectedType) {
         this.json = json;
         this.translator = translator;
         this.expectedType = expectedType;
@@ -32,6 +32,7 @@ class Decoder {
      * @return true if complete
      * @throws DecoderException
      */
+    @NativeJS
     public Object decode() throws DecoderException {
         if (json.has(Constants.TypeParam) && json.getString(Constants.TypeParam).equals(Constants.NullValue)) {
             return null;

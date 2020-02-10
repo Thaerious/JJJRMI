@@ -1,55 +1,37 @@
 package ca.frar.jjjrmi.utility;
-import ca.frar.jjjrmi.annotations.Generated;
 import ca.frar.jjjrmi.annotations.JJJ;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 import ca.frar.jjjrmi.annotations.IsSocket;
 
 public class JJJOptionsHandler {
+
+    private IsSocket isSocket;
+
+    private final JJJ jjj;
     private String jsExtends = "";
     private boolean retain = true;
     private String name = "";
     private boolean hasName = false;
     private boolean generateJS = true;
-    private boolean hasJJJ = true;
     private boolean generated = false;
-    private boolean isSocket = false;
     
     public JJJOptionsHandler(Object object) {
-        JJJ jjj = object.getClass().getAnnotation(JJJ.class);        
-        this.generated = object.getClass().getAnnotation(Generated.class) != null;
-        setup(object.getClass().getSimpleName(), jjj);
-        if (object.getClass().getAnnotation(IsSocket.class) != null) this.isSocket = true;
+        jjj = object.getClass().getAnnotation(JJJ.class);        
+        name = object.getClass().getSimpleName();
+        isSocket = object.getClass().getAnnotation(IsSocket.class);
     }
 
     public JJJOptionsHandler(Class<?> aClass) {
-        JJJ jjj = aClass.getAnnotation(JJJ.class);
-        this.generated = aClass.getAnnotation(Generated.class) != null;
-        setup(aClass.getSimpleName(), jjj);
-        if (aClass.getAnnotation(IsSocket.class) != null) this.isSocket = true;
+        jjj = aClass.getAnnotation(JJJ.class);
+        name = aClass.getSimpleName();
+        isSocket = aClass.getAnnotation(IsSocket.class);
     }
 
-    public JJJOptionsHandler(CtType<?> CtType) {
-        JJJ jjj = CtType.getAnnotation(JJJ.class);
-        this.generated = CtType.getAnnotation(Generated.class) != null;
-        setup(CtType.getSimpleName(), jjj);        
-        if (CtType.getAnnotation(IsSocket.class) != null) this.isSocket = true;
-    }
-    
-    private void setup(String name, JJJ jjj) {
-        this.name = name;
-
-        if (jjj == null){
-            this.hasJJJ = false;
-            return;
-        } else if (!jjj.name().isEmpty()){
-            this.name = jjj.name();
-            this.hasName = true;
-        }
-
-        this.jsExtends = jjj.jsExtends();
-        this.retain = jjj.retain();
-        this.generateJS = jjj.generateJS();
+    public JJJOptionsHandler(CtType<?> ctType) {
+        jjj = ctType.getAnnotation(JJJ.class);
+        name = ctType.getSimpleName();
+        isSocket = ctType.getAnnotation(IsSocket.class);
     }
     
     /**
@@ -57,23 +39,32 @@ public class JJJOptionsHandler {
      * @return 
      */
     public String getExtends() {
-        return this.jsExtends;
+        return jjj.jsExtends();
     }
 
     public boolean hasExtends() {
-        return !this.jsExtends.isEmpty();
+        return jjj != null && !this.jsExtends.isEmpty();
     }
 
+    public boolean topLevel(){
+        return jjj != null && jjj.topLevel();
+    }
+
+    public boolean insertJJJMethods(){
+        return jjj != null && jjj.insertJJJMethods();
+    }
+    
     public boolean retain() {
-        return this.retain;
+        return jjj != null && jjj.retain();
     }
 
     public boolean hasName(){
-        return this.hasName;
+        return jjj != null && !jjj.name().isEmpty();
     }
 
     public String getName() {
-        return this.name;
+        if (hasName()) return jjj.name();
+        return name;
     }
 
     public static String getName(CtClass<?> ctClass){
@@ -81,19 +72,15 @@ public class JJJOptionsHandler {
     }
     
     public boolean generateJS() {
-        return this.generateJS;
-    }
-
-    public boolean isGenerated(){
-        return this.generated;
+        return jjj != null && jjj.generateJS();
     }
 
     public boolean hasJJJ(){
-        return this.hasJJJ;
+        return this.jjj != null;
     }
 
     public boolean isSocket(){
-        return this.isSocket;
+        return this.isSocket != null;
     }
     
     public String toString(){
@@ -103,7 +90,6 @@ public class JJJOptionsHandler {
         builder.append("retain=").append(retain).append(", ");
         builder.append("name=").append(name).append(", ");
         builder.append("generateJS=").append(generateJS).append(", ");
-        builder.append("hasJJJ=").append(hasJJJ).append(", ");
         builder.append("generated=").append(generated);
         builder.append(")");
         return builder.toString();

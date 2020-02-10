@@ -23,14 +23,20 @@ public class IsHandler extends AHandler<HasHandler>{
     }
 
     @Override
-    public HasHandler decode() throws DecoderException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public HasHandler getInstance() {
+        return new HasHandler();
+    }
+    
+    @Override
+    public void decode(HasHandler hasHandler) throws DecoderException {
+        hasHandler.x = this.decodeField("a", Integer.class);
+        hasHandler.y = this.decodeField("b", Float.class);
+        hasHandler.z = hasHandler.x + hasHandler.y;
     }
 
     @Override
     public void encode(HasHandler object) throws EncoderException {
-        this.setField("a", object.x);
-        this.setField("b", object.y);
+        this.encodeField("a", object.x);
+        this.encodeField("b", object.y);
     }
-    
 }

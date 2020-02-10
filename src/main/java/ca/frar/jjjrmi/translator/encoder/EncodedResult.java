@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 package ca.frar.jjjrmi.translator.encoder;
-
+import ca.frar.jjjrmi.annotations.JJJ;
 import ca.frar.jjjrmi.translator.Constants;
 import ca.frar.jjjrmi.translator.Translator;
 import java.util.LinkedList;
@@ -18,6 +18,7 @@ import org.json.JSONObject;
  *
  * @author Ed Armstrong
  */
+@JJJ(insertJJJMethods=false)
 public class EncodedResult extends JSONObject {
 
     private final JSONObject objects;

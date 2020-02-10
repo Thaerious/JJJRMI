@@ -6,6 +6,7 @@ import ca.frar.jjjrmi.exceptions.MissingReferenceException;
 import ca.frar.jjjrmi.translator.encoder.EncodedResult;
 import ca.frar.jjjrmi.testableclasses.ArrayWrapper;
 import ca.frar.jjjrmi.testableclasses.Has;
+import ca.frar.jjjrmi.testableclasses.HasHandler;
 import ca.frar.jjjrmi.testableclasses.MissingConstructor;
 import ca.frar.jjjrmi.testableclasses.Primitives;
 import ca.frar.jjjrmi.testableclasses.PrimitivesExtended;
@@ -222,5 +223,19 @@ public class TranslatorCorrectnessTest {
         Has<Double> decoded = (Has<Double>) translator.decode(encoded);
         assertTrue(5.1 == decoded.get());
     }          
+    
+    /**
+     * Has handler z = x * y, after decode z = x + y;
+     * @throws JJJRMIException 
+     */
+    @Test
+    public void test_handler() throws JJJRMIException {
+        Translator translator = new Translator();
+        HasHandler object = new HasHandler(2, 5);
+        EncodedResult encoded = translator.encode(object);
+        translator.clear();
+        HasHandler decoded = (HasHandler) translator.decode(encoded);
+        assertEquals(7, decoded.z);
+    }         
 
 }

@@ -86,10 +86,7 @@ public class JSConstructorGenerator {
             if (ctFieldRef.getDeclaration() == null) continue;
             JSFieldDeclaration jsFieldDeclaration = new JSFieldDeclaration(ctFieldRef.getDeclaration());
             if (jsFieldDeclaration.hasAssignment()) {
-                if (jsFieldDeclaration.isStatic()) {
-                    LOGGER.log(Level.forName("VERBOSE", 450), "static field: " + ctField.getSimpleName());
-                    jsClassBuilder.addStaticField(jsFieldDeclaration);
-                } else {
+                if (!jsFieldDeclaration.isStatic()){
                     LOGGER.log(Level.forName("VERBOSE", 450), "local field: " + ctField.getSimpleName());
                     jsElementList.add(jsFieldDeclaration);
                 }
