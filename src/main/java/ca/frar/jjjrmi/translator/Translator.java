@@ -1,12 +1,14 @@
 package ca.frar.jjjrmi.translator;
 
+import static ca.frar.jjjrmi.Global.LOGGER;
 import ca.frar.jjjrmi.translator.encoder.AHandler;
 import ca.frar.jjjrmi.translator.decoder.ObjectDecoder;
 import ca.frar.jjjrmi.translator.encoder.EncodedResult;
 import ca.frar.jjjrmi.translator.encoder.EncodedObject;
 import ca.frar.jjjrmi.exceptions.DecoderException;
 import ca.frar.jjjrmi.exceptions.EncoderException;
-import ca.frar.jjjrmi.exceptions.NullRootException;
+import ca.frar.jjjrmi.exceptions.MissingReferenceException;
+import ca.frar.jjjrmi.exceptions.RootException;
 import ca.frar.jjjrmi.utility.BiMap;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -35,6 +37,11 @@ public final class Translator {
     private final ArrayList<String> tempReferences = new ArrayList<>();
     private int nextKey = 0;
 
+    /**
+     * Remove the referred object from the translator.
+     * @param obj
+     * @return 
+     */
     public boolean removeByValue(Object obj) {
         if (!objectMap.containsValue(obj)) {
             return false;
@@ -117,7 +124,10 @@ public final class Translator {
      * @param reference
      * @return
      */
-    public Object getReferredObject(String reference) {
+    public Object getReferredObject(String reference) throws MissingReferenceException {
+        if (!objectMap.containsKey(reference)) {
+            throw new MissingReferenceException();
+        }
         return objectMap.get(reference);
     }
 
@@ -164,14 +174,13 @@ public final class Translator {
      * @return
      */
     public final EncodedResult encode(Object object) throws EncoderException {
-        if (object == null) throw new NullRootException();
+        if (object == null) throw new RootException();
         EncodedResult encodedResult = new EncodedResult(this);
-        
-        if (this.hasReferredObject(object)) {            
+
+        if (this.hasReferredObject(object)) {
             encodedResult.setRoot(this.getReference(object));
             return encodedResult;
-        }
-        else if (HandlerFactory.getInstance().hasHandler(object.getClass())) {
+        } else if (HandlerFactory.getInstance().hasHandler(object.getClass())) {
             encodeHandled(object, encodedResult);
         } else {
             encodeUnhandled(object, encodedResult);
@@ -182,7 +191,7 @@ public final class Translator {
     private void encodeHandled(Object object, EncodedResult encodedResult) throws EncoderException {
         try {
             Class<? extends AHandler<?>> handlerClass = HandlerFactory.getInstance().getHandler(object.getClass());
-            AHandler<?> handler = handlerClass.getConstructor(EncodedResult.class).newInstance(encodedResult);            
+            AHandler<?> handler = handlerClass.getConstructor(EncodedResult.class).newInstance(encodedResult);
             EncodedObject encodedObject = handler.doEncode(object);
             encodedResult.put(encodedObject);
             encodedResult.setRoot(this.getReference(object));
@@ -208,30 +217,25 @@ public final class Translator {
      * Translate a JSON encoded object to a POJO, returning the reference if it
      * has previously been stored.
      *
-     * @param json
-     * @return
-     * @throws java.lang.ClassNotFoundException
-     * @throws java.lang.InstantiationException
-     * @throws java.lang.IllegalAccessException
-     * @throws java.lang.NoSuchFieldException
-     * @throws java.lang.NoSuchMethodException
-     * @throws java.lang.reflect.InvocationTargetException
+     * @param encodedResult current encode context
+     * @return a new object
+     * @throws ca.frar.jjjrmi.exceptions.DecoderException
      */
     public final Object decode(EncodedResult encodedResult) throws DecoderException {
         ArrayList<ObjectDecoder> list = new ArrayList<>();
-        
-        for (JSONObject jsonObject : encodedResult.getAllObjects()){
+
+        for (JSONObject jsonObject : encodedResult.getAllObjects()) {
             String key = jsonObject.getString(Constants.KeyParam);
             if (this.hasReference(key)) continue;
             list.add(new ObjectDecoder(jsonObject, this));
         }
-        for (ObjectDecoder decoder : list){
+        for (ObjectDecoder decoder : list) {
             decoder.makeReady();
         }
-        for (ObjectDecoder decoder : list){
-            decoder.decode();        
+        for (ObjectDecoder decoder : list) {
+            decoder.decode();
         }
-                
+
         return this.getReferredObject(encodedResult.getRoot());
     }
 
@@ -253,5 +257,14 @@ public final class Translator {
 
     public void notifyDecode(Object object) {
         for (Consumer<Object> decodeListener : this.decodeListeners) decodeListener.accept(object);
+    }
+
+    /**
+     * Determine the number of referenced objects.
+     *
+     * @return
+     */
+    public int size() {
+        return objectMap.size();
     }
 }

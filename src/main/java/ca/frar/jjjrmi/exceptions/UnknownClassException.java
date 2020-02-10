@@ -3,12 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ca.frar.jjjrmi.testableclasses;
+package ca.frar.jjjrmi.exceptions;
 
 /**
  *
  * @author Ed Armstrong
  */
-public class HasInt {
-    public int x = 0;
+public class UnknownClassException extends DecoderException{
+    
+    public UnknownClassException(String className){
+        super("Unknown class while decoding: " + className);
+    }
+    
 }

@@ -1,39 +1,37 @@
 package ca.frar.jjjrmi.translator.decoder;
 
+import static ca.frar.jjjrmi.Global.LOGGER;
+import ca.frar.jjjrmi.annotations.Transient;
 import ca.frar.jjjrmi.translator.decoder.Decoder;
 import ca.frar.jjjrmi.translator.encoder.AHandler;
-import ca.frar.jjjrmi.exceptions.CompletedDecoderException;
 import ca.frar.jjjrmi.exceptions.DecoderException;
-import ca.frar.jjjrmi.exceptions.IncompleteDecoderException;
-import ca.frar.jjjrmi.exceptions.TranslatorException;
+import ca.frar.jjjrmi.exceptions.MissingConstructorException;
+import ca.frar.jjjrmi.exceptions.UnknownClassException;
+import ca.frar.jjjrmi.socket.JJJObject;
 import ca.frar.jjjrmi.translator.Constants;
 import ca.frar.jjjrmi.translator.Translator;
 import ca.frar.jjjrmi.utility.JJJOptionsHandler;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.json.JSONObject;
 
 public class ObjectDecoder {
-
     private Class<?> aClass;
     private final JSONObject json;
     private final Translator translator;
     private Object result;
     private List<String> fieldNames;
+    private HashMap<String, Field> fields = new HashMap<>();
 
     public ObjectDecoder(JSONObject json, Translator translator) {
         this.json = json;
         this.translator = translator;
-    }
-
-    /**
-     * When complete, will retrieve the result of the decoding.
-     */
-    public Object getObject() throws IncompleteDecoderException {
-        return this.result;
     }
 
     /**
@@ -42,6 +40,10 @@ public class ObjectDecoder {
     public void makeReady() throws DecoderException {
         try {
             this.aClass = Class.forName(json.getString(Constants.TypeParam));
+            if (this.aClass == null){
+                throw new UnknownClassException(json.getString(Constants.TypeParam));
+            }
+            this.setupFields();
             AHandler handler = null;
 
             //        if (translator.hasHandler(this.aClass)) {
@@ -50,7 +52,7 @@ public class ObjectDecoder {
             //            this.result = handler.instatiate();
             //            handler.jjjDecode(this.result);
             //        } else {
-            /* create new object from description */
+            /* create new object from description */            
             Constructor<?> constructor = this.aClass.getDeclaredConstructor();
             constructor.setAccessible(true);
             this.result = constructor.newInstance();
@@ -63,8 +65,10 @@ public class ObjectDecoder {
             }
 
             fieldNames = new LinkedList<>(json.getJSONObject(Constants.FieldsParam).keySet());
-        } catch (SecurityException | NoSuchMethodException | ClassNotFoundException | InvocationTargetException | InstantiationException | IllegalAccessException ex) {
+        } catch (SecurityException | ClassNotFoundException | InvocationTargetException | InstantiationException | IllegalAccessException ex) {
             throw new DecoderException(ex);
+        } catch (NoSuchMethodException ex) {
+            throw new MissingConstructorException(this.aClass);
         }
     }
 
@@ -73,33 +77,27 @@ public class ObjectDecoder {
      */
     public final void decode() throws DecoderException {
         for (String fieldName : this.fieldNames){
-            Field field = getJavaField(aClass, fieldName);
-            if (field == null) throw new DecoderException("Could not find field '" + fieldName + "' in object '" + aClass.getCanonicalName() + "'");
-            JSONObject fields = this.json.getJSONObject(Constants.FieldsParam);
-            new Decoder(fields.getJSONObject(fieldName), translator).decode();
-        }
-    }
-
-    private Field getJavaField(Class<?> aClass, String name) {
-        while (aClass != Object.class) {
-            for (Field field : aClass.getDeclaredFields()) {
-                if (field.getName().equals(name)) return field;
+            try {
+                Field field = this.fields.get(fieldName);
+                if (field == null) throw new DecoderException("Could not find field '" + fieldName + "' in object '" + aClass.getCanonicalName() + "'");
+                JSONObject fields = this.json.getJSONObject(Constants.FieldsParam);
+                Object fieldValue = new Decoder(fields.getJSONObject(fieldName), translator, field.getType()).decode();
+                field.set(result, fieldValue);
+            } catch (IllegalArgumentException | IllegalAccessException ex) {
+                throw new DecoderException(ex);
             }
-            aClass = aClass.getSuperclass();
         }
-        return null;
     }
 
-    public String getType() {
-        return json.getString(Constants.TypeParam);
-    }
-
-    @Override
-    public String toString() {
-        return json.toString();
-    }
-
-    public String toString(int indent) {
-        return json.toString(indent);
+    private void setupFields() {
+        Class<?> current = aClass;
+        while (current != Object.class && current != JJJObject.class) {
+            for (Field field : current.getDeclaredFields()) {
+                if (field.getAnnotation(Transient.class) != null) continue;
+                field.setAccessible(true);
+                this.fields.put(field.getName(), field);
+            }
+            current = current.getSuperclass();
+        }
     }
 }

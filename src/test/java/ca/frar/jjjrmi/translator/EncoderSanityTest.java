@@ -6,7 +6,7 @@
 package ca.frar.jjjrmi.translator;
 
 import ca.frar.jjjrmi.exceptions.EncoderException;
-import ca.frar.jjjrmi.exceptions.NullRootException;
+import ca.frar.jjjrmi.exceptions.RootException;
 import ca.frar.jjjrmi.testableclasses.Has;
 import ca.frar.jjjrmi.testableclasses.HasHandler;
 import ca.frar.jjjrmi.testableclasses.Primitives;
@@ -80,7 +80,7 @@ public class EncoderSanityTest {
         Translator translator = new Translator();
         Object object = null;
 
-        assertThrows(NullRootException.class, () -> {
+        assertThrows(RootException.class, () -> {
             EncodedResult result = translator.encode(object);
         });
     }

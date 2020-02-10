@@ -14,9 +14,24 @@ public class Primitives {
     public float f = (float) 1.2;
     public int i = -1;
     
+    public Primitives(){}
+    
+    public Primitives(int x){
+        string = "alpha" + x;
+        bt = x % 2 == 0;
+        bf = !bt;
+        bite = (byte) x;
+        car = (char) x;
+        shrt = (short) (100 * x);
+        loooong = (long)Integer.MAX_VALUE * (long)x;
+        duble = 1.2 * x;
+        f = (float) 1.2 * x;
+        i = x;        
+    }
+    
     @Override
     public boolean equals(Object obj){
-        if (obj.getClass() != Primitives.class) return false;
+        if (obj.getClass() != this.getClass()) return false;
         Primitives that = (Primitives)obj;
         if (!this.string.equals(that.string)) return false;
         if (this.bt != that.bt) return false;
@@ -28,5 +43,20 @@ public class Primitives {
         if (this.duble != that.duble) return false;
         if (this.i != that.i) return false;
         return true;
+    }
+    
+    public String toString(){
+        StringBuilder builder = new StringBuilder();
+        builder.append(string).append("\n");
+        builder.append(bt).append("\n");
+        builder.append(bf).append("\n");
+        builder.append(bite).append("\n");
+        builder.append(car).append("\n");
+        builder.append(shrt).append("\n");
+        builder.append(loooong).append("\n");
+        builder.append(duble).append("\n");
+        builder.append(f).append("\n");
+        builder.append(i).append("\n");
+        return builder.toString();
     }
 }

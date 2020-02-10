@@ -1,140 +1,89 @@
 package ca.frar.jjjrmi.translator.decoder;
-import ca.frar.jjjrmi.exceptions.CompletedDecoderException;
+
+import static ca.frar.jjjrmi.Global.LOGGER;
 import ca.frar.jjjrmi.exceptions.DecoderException;
-import ca.frar.jjjrmi.exceptions.IncompleteDecoderException;
+import ca.frar.jjjrmi.exceptions.MissingReferenceException;
+import ca.frar.jjjrmi.exceptions.UnknownEncodingException;
 import ca.frar.jjjrmi.translator.Constants;
 import ca.frar.jjjrmi.translator.Translator;
-import java.util.Scanner;
 import org.json.JSONObject;
-import static spoon.Launcher.LOGGER;
 
 /**
  * Use for decoding everything except objects.
+ *
  * @author Ed Armstrong
  */
 class Decoder {
+
     private final JSONObject json;
     private final Translator translator;
-    private Class<?> expectedType;
-    private Object result;
-    private boolean complete = false;
+    private Class<?> expectedType = null;
 
-    Decoder(JSONObject json, Translator translator) {
-        if (json.keySet().isEmpty()) throw new RuntimeException();
+    Decoder(JSONObject json, Translator translator, Class<?> expectedType) {
         this.json = json;
         this.translator = translator;
-    }
-
-    private void setObject(Object object){
-        this.result = object;
-        this.complete = true;
-    }
-    
-    /**
-     * When complete, will retrieve the result of the decoding.
-     */
-    public Object getObject() throws IncompleteDecoderException{
-        if (!this.isComplete()) throw new IncompleteDecoderException();
-        return this.result;
-    }
-    
-    public boolean isComplete(){
-        return this.complete;
+        this.expectedType = expectedType;
     }
 
     /**
      * Decode the json.
+     *
      * @return true if complete
-     * @throws DecoderException 
+     * @throws DecoderException
      */
-    public void decode() throws DecoderException {
-        if (this.isComplete()) throw new CompletedDecoderException();
-        
+    public Object decode() throws DecoderException {
+        LOGGER.debug(json);
+        LOGGER.debug(json.has(Constants.PointerParam));
         if (json.has(Constants.TypeParam) && json.getString(Constants.TypeParam).equals(Constants.NullValue)) {
-            this.setObject(null);
+            return null;
         } else if (json.has(Constants.PointerParam)) {
-            if (!translator.hasReference(json.get(Constants.PointerParam).toString())){
-                return;
-            }
-            Object referredObject = translator.getReferredObject(json.get(Constants.PointerParam).toString());
-            this.setObject(referredObject);
+            return translator.getReferredObject(json.get(Constants.PointerParam).toString());
         } else if (json.has(Constants.EnumParam)) {
-            Class<? extends Enum> aClass;
             try {
+                Class<? extends Enum> aClass;
                 aClass = (Class<? extends Enum>) this.getClass().getClassLoader().loadClass((String) json.get(Constants.EnumParam));
+                String value = json.get(Constants.ValueParam).toString();
+                Enum valueOf = Enum.valueOf(aClass, value);
+                return valueOf;
             } catch (ClassNotFoundException ex) {
                 throw new DecoderException(ex);
             }
-            String value = json.get(Constants.ValueParam).toString();
-            Enum valueOf = Enum.valueOf(aClass, value);
-            this.setObject(valueOf);
         } else if (json.has(Constants.ValueParam)) {
             /* the value is a primative, check expected type */
-            if (expectedType != null) switch (expectedType.getCanonicalName()) {
+            switch (expectedType.getCanonicalName()) {
                 case "java.lang.String":
-                    this.setObject(json.get(Constants.ValueParam).toString());
-                    return;
+                    return json.get(Constants.ValueParam).toString();
                 case "boolean":
                 case "java.lang.Boolean":
-                    this.setObject(json.getBoolean(Constants.ValueParam));
-                    return;
+                    return json.getBoolean(Constants.ValueParam);
                 case "byte":
                 case "java.lang.Byte":
                     Integer bite = json.getInt(Constants.ValueParam);
-                    this.setObject(bite.byteValue());
-                    return;
+                    return bite.byteValue();
                 case "char":
                 case "java.lang.Character":
-                    this.setObject(json.get(Constants.ValueParam).toString().charAt(0));
-                    return;
+                    return json.get(Constants.ValueParam).toString().charAt(0);
                 case "short":
                 case "java.lang.Short":
                     Integer shirt = json.getInt(Constants.ValueParam);
-                    this.setObject(shirt.shortValue());
-                    return;
+                    return shirt.shortValue();
                 case "long":
                 case "java.lang.Long":
-                    this.setObject(json.getLong(Constants.ValueParam));
-                    return;
+                    return json.getLong(Constants.ValueParam);
                 case "float":
                 case "java.lang.Float":
                     Double d = json.getDouble(Constants.ValueParam);
-                    this.setObject(d.floatValue());
-                    return;
+                    return d.floatValue();
                 case "double":
                 case "java.lang.Double":
-                    this.setObject(json.getDouble(Constants.ValueParam));
-                    return;
+                    return json.getDouble(Constants.ValueParam);
                 case "int":
                 case "java.lang.Integer":
-                    this.setObject(json.getInt(Constants.ValueParam));
-                    return;
+                    return json.getInt(Constants.ValueParam);
             }
-
-            /* expected type not found, refer to primitive type */
-            String primitive = json.get(Constants.PrimitiveParam).toString();
-            String value = json.get(Constants.ValueParam).toString();
-            Scanner scanner = new Scanner(value);
-
-            switch (primitive) {
-                case "number":
-                    if (scanner.hasNextInt()) this.setObject(scanner.nextInt());
-                    if (scanner.hasNextDouble()) this.setObject(scanner.nextDouble());
-                    return;
-                case "string":
-                    this.setObject(value);
-                    return;
-                case "boolean":
-                    if (scanner.hasNextBoolean()) this.setObject(scanner.nextBoolean());
-                    return;
-            }
-        } else if (json.has(Constants.ElementsParam)) {
-            if (expectedType == null || !expectedType.isArray()) expectedType = Object[].class;
-            Object array = new ArrayDecoder(json, translator, expectedType).decode();
-            this.setObject(array);
-        } else {
-            LOGGER.warn(this.json.toString(2));
-            throw new RuntimeException("Unknown JSON encoding");
+        } else if (ArrayDecoder.test(json)) {
+            return new ArrayDecoder(json, translator, expectedType).decode();
         }
+        throw new UnknownEncodingException(json);
     }
 }

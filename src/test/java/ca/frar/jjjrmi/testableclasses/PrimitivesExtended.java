@@ -5,26 +5,18 @@
  */
 package ca.frar.jjjrmi.testableclasses;
 
-import ca.frar.jjjrmi.socket.JJJObject;
-
 /**
  *
  * @author Ed Armstrong
  */
-public class Has <T> extends JJJObject{
-    private T t;
-    
-    private Has(){}
-    
-    public Has(T t){
-        this.t = t;
+public class PrimitivesExtended extends Primitives{
+
+    public PrimitivesExtended(){
+        super();
     }
     
-    public void set(T t){
-        this.t = t;
+    public PrimitivesExtended(int i) {
+        super(i);
     }
     
-    public T get(){
-        return t;
-    }
 }

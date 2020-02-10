@@ -1,10 +1,8 @@
 package ca.frar.jjjrmi.translator.decoder;
-import ca.frar.jjjrmi.exceptions.CompletedDecoderException;
 import ca.frar.jjjrmi.exceptions.DecoderException;
 import ca.frar.jjjrmi.translator.Constants;
 import ca.frar.jjjrmi.translator.Translator;
 import java.lang.reflect.Array;
-import java.util.concurrent.atomic.AtomicInteger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -26,10 +24,12 @@ class ArrayDecoder {
     public Object decode() throws DecoderException {
         JSONArray jsonArray = json.getJSONArray(Constants.ElementsParam);
         this.result = this.instantiateArray(this.componentClass, jsonArray.length());
+        translator.addTempReference(json.get(Constants.KeyParam).toString(), this.result);
         
-        while(this.index < elements.length()){
-            Object element = elements.get(index);
-            new Decoder((JSONObject) element, this.translator).decode();
+        for (int i = 0; i < elements.length(); i++){ 
+            JSONObject element = elements.getJSONObject(i);
+            Object decoded = new Decoder(element , this.translator, this.componentClass).decode();
+            Array.set(this.result, i, decoded);
         }
         return this.result;
     }
@@ -70,5 +70,9 @@ class ArrayDecoder {
         }
 
         return Array.newInstance(this.componentClass, dims);
+    }
+    
+    public static boolean test(JSONObject json){
+        return json.has(Constants.ElementsParam);
     }
 }

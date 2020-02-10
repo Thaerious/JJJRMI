@@ -3,13 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ca.frar.jjjrmi.testableclasses;
+package ca.frar.jjjrmi.exceptions;
 
 /**
  *
  * @author Ed Armstrong
  */
-public class ForcedDeferred {
-    Has<Integer> hasInt1 = new Has<>(5);
-    Has<Integer> hasInt2 = hasInt1;    
+public class MissingReferenceException extends DecoderException {
+
+    public MissingReferenceException() {
+        super("Reference not found.");
+    }
+    
 }

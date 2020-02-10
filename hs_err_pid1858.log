@@ -1,0 +1,21 @@
+#
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  SIGSEGV (0xb) at pc=0x00007f762135c5e4, pid=1858, tid=1879
+#
+# JRE version: OpenJDK Runtime Environment (13.0.2+8) (build 13.0.2+8)
+# Java VM: OpenJDK 64-Bit Server VM (13.0.2+8, mixed mode, sharing, tiered, compressed oops, g1 gc, linux-amd64)
+# Problematic frame:
+# V  [libjvm.so+0xdea5e4]  GangWorker::loop()+0x34
+#
+# Core dump will be written. Default location: core.1858 (may not exist)
+#
+# If you would like to submit a bug report, please visit:
+#   http://bugreport.java.com/bugreport/crash.jsp
+#
+
+---------------  S U M M A R Y ------------
+
+Command Line: -javaagent:/home/edward/.m2/repository/org/jacoco/org.jacoco.agent/0.8.4/org.jacoco.agent-0.8.4-runtime.jar=destfile=/mnt/d/project/trunk/jjj/rmi/target/jacoco.exec /mnt/d/project/trunk/jjj/rmi/target/surefire/surefirebooter15295825405962126415.jar /mnt/d/project/trunk/jjj/rmi/target/surefire/surefire15148448588891657266tmp /mnt/d/project/trunk/jjj/rmi/target/surefire/surefire_017155713692113848638tmp
+
+Host: Intel(R) Core(TM) i7-6700 CPU @ 3.40GHz, 8 cores, 15G, 

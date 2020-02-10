@@ -11,20 +11,6 @@ import ca.frar.jjjrmi.socket.JJJObject;
  *
  * @author Ed Armstrong
  */
-public class Has <T> extends JJJObject{
-    private T t;
-    
-    private Has(){}
-    
-    public Has(T t){
-        this.t = t;
-    }
-    
-    public void set(T t){
-        this.t = t;
-    }
-    
-    public T get(){
-        return t;
-    }
+public class MissingConstructor extends JJJObject{
+    public MissingConstructor(int i){}
 }

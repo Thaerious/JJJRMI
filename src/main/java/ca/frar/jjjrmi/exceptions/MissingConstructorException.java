@@ -9,10 +9,10 @@ package ca.frar.jjjrmi.exceptions;
  *
  * @author Ed Armstrong
  */
-public class NullRootException extends EncoderException{
-    
-    public NullRootException(){
-        super("Root object must be non-null");
+public class MissingConstructorException extends DecoderException{
+
+    public MissingConstructorException(Class<?> aClass) {
+        super(aClass.getName() + " is missing the no argument constructor");
     }
     
 }

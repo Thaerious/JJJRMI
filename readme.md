@@ -50,4 +50,5 @@ run tests by pattern
 > mvn -Dtest=UsersServiceImpl#testCreate* test
 
 generate coverage report (in target/sites/jacoco)
-> mvn jacoco report
+> mvn jacoco:report
+
