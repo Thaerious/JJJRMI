@@ -6,6 +6,7 @@ import ca.frar.jjjrmi.exceptions.MissingReferenceException;
 import ca.frar.jjjrmi.exceptions.UnknownEncodingException;
 import ca.frar.jjjrmi.translator.Constants;
 import ca.frar.jjjrmi.translator.Translator;
+import java.util.Scanner;
 import org.json.JSONObject;
 
 /**
@@ -32,8 +33,6 @@ class Decoder {
      * @throws DecoderException
      */
     public Object decode() throws DecoderException {
-        LOGGER.debug(json);
-        LOGGER.debug(json.has(Constants.PointerParam));
         if (json.has(Constants.TypeParam) && json.getString(Constants.TypeParam).equals(Constants.NullValue)) {
             return null;
         } else if (json.has(Constants.PointerParam)) {
@@ -81,8 +80,23 @@ class Decoder {
                 case "java.lang.Integer":
                     return json.getInt(Constants.ValueParam);
             }
+
+            /* expected type not found, refer to primitive type */
+            String primitive = json.get(Constants.PrimitiveParam).toString();
+            String value = json.get(Constants.ValueParam).toString();
+            Scanner scanner = new Scanner(value);
+
+            switch (primitive) {
+                case "number":
+                    if (scanner.hasNextInt()) return scanner.nextInt();
+                    if (scanner.hasNextDouble()) return scanner.nextDouble();
+                case "string":
+                    return value;
+                case "boolean":
+                    if (scanner.hasNextBoolean()) return scanner.nextBoolean();
+            }
         } else if (ArrayDecoder.test(json)) {
-            return new ArrayDecoder(json, translator, expectedType).decode();
+            return new ArrayDecoder(json, translator, expectedType.getComponentType()).decode();
         }
         throw new UnknownEncodingException(json);
     }

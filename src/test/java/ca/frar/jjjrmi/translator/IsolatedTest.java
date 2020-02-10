@@ -1,13 +1,9 @@
 package ca.frar.jjjrmi.translator;
+import ca.frar.jjjrmi.exceptions.DecoderException;
+import ca.frar.jjjrmi.exceptions.EncoderException;
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
 import ca.frar.jjjrmi.translator.encoder.EncodedResult;
-import ca.frar.jjjrmi.testableclasses.ArrayWrapper;
 import ca.frar.jjjrmi.testableclasses.Has;
-import ca.frar.jjjrmi.testableclasses.Primitives;
-import ca.frar.jjjrmi.testableclasses.PrimitivesExtended;
-import ca.frar.jjjrmi.testableclasses.Simple;
-import static ca.frar.jjjrmi.translator.TranslatorCorrectnessTest.LOGGER;
-import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,17 +13,19 @@ import static org.junit.jupiter.api.Assertions.*;
 public class IsolatedTest {
     final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");
  
+    public static void main(String ... args) throws JJJRMIException{
+        new IsolatedTest().test();
+    }
+    
     @Test
-    public void test_reference_as_field() throws JJJRMIException {
+    public void test() throws EncoderException, DecoderException {
         Translator translator = new Translator();
-        Simple simple = new Simple();
-        Has<Simple> has1 = new Has<>(simple);
-        translator.encode(has1);
-        Has<Simple> has2 = new Has<>(simple);
-        EncodedResult encoded = translator.encode(has2); 
-        translator.removeByValue(has2);
-        Has<Simple> decoded = (Has<Simple>) translator.decode(encoded);
-        assertEquals(has1.get(), decoded.get());
-    }    
+        boolean[] array = new boolean[0];
+        Has<boolean[]> object = new Has<>(array);
+        EncodedResult encoded = translator.encode(object);
+        translator.clear();
+        Has<Object[]> decoded = (Has<Object[]>) translator.decode(encoded);
+        assertEquals(0, decoded.get().length);
+    }  
     
 }

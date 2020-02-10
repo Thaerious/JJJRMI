@@ -1,6 +1,5 @@
 package ca.frar.jjjrmi.translator.decoder;
 
-import static ca.frar.jjjrmi.Global.LOGGER;
 import ca.frar.jjjrmi.annotations.Transient;
 import ca.frar.jjjrmi.translator.decoder.Decoder;
 import ca.frar.jjjrmi.translator.encoder.AHandler;
@@ -17,8 +16,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.json.JSONObject;
 
 public class ObjectDecoder {

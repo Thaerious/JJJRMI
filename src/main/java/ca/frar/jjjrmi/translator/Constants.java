@@ -22,6 +22,7 @@ public class Constants {
     public final static String HandlerParam = "handler";
     public final static String RootObject = "root-object";
     public final static String NewObjects = "new-objects";
+    public final static String ComponentTypeParam = "component-type";
 
     private Constants(){};
 }

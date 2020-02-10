@@ -12,8 +12,9 @@ public class Demo {
     static Translator translator = new Translator();
     
     public static void main(String ... args) throws JJJRMIException, IOException{
-        EncodedResult encoded = translator.encode(new HasHandler(2, 1.3f));
-        System.out.println(encoded.toString(2));
-        System.out.println(encoded.length());
+        Object[] arrayO = new Object[2];
+        arrayO[0] = 0;
+        arrayO[1] = 1;
+        Integer[] arrayI = (Integer[]) arrayO;
     }    
 }

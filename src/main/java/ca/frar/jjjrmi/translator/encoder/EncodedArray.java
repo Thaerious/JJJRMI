@@ -16,6 +16,7 @@ public class EncodedArray extends JSONObject{
         this.elements = new JSONArray();
         this.put(Constants.KeyParam, encodedResult.getTranslator().allocReference(object));
         this.put(Constants.RetainParam, false);
+//        this.put(Constants.ComponentTypeParam, object.getClass().getComponentType().getCanonicalName());
         encodedResult.getTranslator().addTempReference(this.get(Constants.KeyParam).toString(), object);
         this.put(Constants.ElementsParam, elements);
         encode();

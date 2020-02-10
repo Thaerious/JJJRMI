@@ -8,7 +8,7 @@ add /target/jjjrmi/jjjrmi to any npm dependencies
 Command Line Interface
 ----------------------
 Copy dependencies to the target directory.
-> mvn install dependency:copy-dependencies 
+> mvn dependency:copy-dependencies 
 
 Run setup.  This must be run everytime a new shell is started.  It does not change
 the path in .bashrc
@@ -27,7 +27,7 @@ directories.
 Set output path.
 
 set package name default "package".  Will out files to subdirectory in the output directory.
--p [package_name]
+-n [package_name]
 
 Generate the package file.
 --package

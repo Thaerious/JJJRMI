@@ -179,21 +179,48 @@ public class TranslatorCorrectnessTest {
         Has<boolean[]> object = new Has<>(array);
         EncodedResult encoded = translator.encode(object);
         translator.clear();
-        translator.decode(encoded);
+        Has<Object[]> decoded = (Has<Object[]>) translator.decode(encoded);
+        assertEquals(0, decoded.get().length);
     }
-            
-//    /**
-//     * This test depends on the encoding to run.
-//     */
-//    @Test
-//    public void test_missing_root_reference() throws JJJRMIException {
-//        assertThrows(MissingReferenceException.class, () -> {
-//            Translator translator = new Translator();
-//            MissingConstructor object = new MissingConstructor(5);
-//            translator.encode(object);
-//            EncodedResult encoded = translator.encode(object);
-//            encoded.setRoot("BROKEN");
-//            translator.decode(encoded);
-//        });
-//    }
+   
+    @Test
+    public void test_string_generic() throws JJJRMIException {
+        Translator translator = new Translator();
+        Has<String> object = new Has<>("i am string");
+        EncodedResult encoded = translator.encode(object);
+        translator.clear();
+        Has<String> decoded = (Has<String>) translator.decode(encoded);
+        assertEquals("i am string", decoded.get());
+    }   
+    
+    @Test
+    public void test_int_generic() throws JJJRMIException {
+        Translator translator = new Translator();
+        Has<Integer> object = new Has<>(5);
+        EncodedResult encoded = translator.encode(object);
+        translator.clear();
+        Has<Integer> decoded = (Has<Integer>) translator.decode(encoded);
+        assertTrue(5 == decoded.get());
+    }       
+    
+    @Test
+    public void test_bool_generic() throws JJJRMIException {
+        Translator translator = new Translator();
+        Has<Boolean> object = new Has<>(true);
+        EncodedResult encoded = translator.encode(object);
+        translator.clear();
+        Has<Boolean> decoded = (Has<Boolean>) translator.decode(encoded);
+        assertTrue(decoded.get());
+    }  
+    
+    @Test
+    public void test_double_generic() throws JJJRMIException {
+        Translator translator = new Translator();
+        Has<Double> object = new Has<>(5.1);
+        EncodedResult encoded = translator.encode(object);
+        translator.clear();
+        Has<Double> decoded = (Has<Double>) translator.decode(encoded);
+        assertTrue(5.1 == decoded.get());
+    }          
+
 }
