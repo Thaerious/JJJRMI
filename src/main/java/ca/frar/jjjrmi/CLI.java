@@ -1,4 +1,5 @@
 package ca.frar.jjjrmi;
+
 import static ca.frar.jjjrmi.Global.LOGGER;
 import static ca.frar.jjjrmi.Global.VERBOSE;
 import static ca.frar.jjjrmi.Global.VERY_VERBOSE;
@@ -6,6 +7,7 @@ import ca.frar.jjjrmi.jsbuilder.JSBuilderException;
 import ca.frar.jjjrmi.jsbuilder.JSClassBuilder;
 import ca.frar.jjjrmi.jsbuilder.JSParser;
 import ca.frar.stream.TemplateVariableReader;
+import edu.emory.mathcs.backport.java.util.Arrays;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -14,7 +16,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import org.apache.logging.log4j.Level;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import static org.apache.logging.log4j.Level.DEBUG;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -23,21 +28,23 @@ import spoon.reflect.CtModel;
 
 /**
  * See jjjrmi script in root directory.
+ *
  * @author Ed Armstrong
  */
 public class CLI {
-    private String source = ".";
-    private String destination = ".";
+
+    private ArrayList<String> sources = new ArrayList<>();
+    private String sourceDir = "./";
+    private String destination = "";
     private String packageName = "package";
     private String version = "0.0.0";
-    private boolean generateJSON = false; /* generate the package.json file */
-    private boolean generatePackage = false; /* generate the package file */
-    private boolean packageSubDir = false; /* place files in package subdirectory */
+    private boolean generateJSON = false; // generate the package.json file
+    private boolean generatePackage = false; // generate the package file
     private String packageFileName = "packageFile";
     private boolean printXML = false;
     private JSParser jsParser;
     private String xmlClass = "";
-    
+
     public static void main(String... args) throws MojoExecutionException, MojoFailureException, FileNotFoundException, JSBuilderException, IOException {
         CLI cli = new CLI();
         LOGGER.info("JJJRMI CLI");
@@ -45,51 +52,73 @@ public class CLI {
         cli.run();
         cli.output();
     }
-    
-    
-    public void parseArgs(String ... args){
-        for (int i = 0; i < args.length; i++){
-            String s = args[i];
 
-            switch(s){
-                case "-j":
-                case "--json":
-                    generateJSON = true;
-                    break;
-                case "-p":
-                case "--package":
-                    generatePackage = true;
-                    break;
-                case "-n":
-                case "--name":
-                    if (args[i+1].charAt(0) != '-') packageName = args[i + 1];
-                    packageSubDir = true;
-                    break;
-                case "-i":   
-                case "--input":
-                    source = args[i + 1];
-                    break;
-                case "-o":
-                case "--output":
-                    destination = args[i + 1];
-                    break;
-                case "--xml":
-                    if (args.length >= i + 2 && args[i+1].charAt(0) != '-') xmlClass = args[i + 1];
-                    printXML = true;
-                    break;
-                case "-v":
-                    Configurator.setRootLevel(VERBOSE);
-                    break;
-                case "-vv":
-                    Configurator.setRootLevel(VERY_VERBOSE);
-                    break;                    
-            }
+    public void parseArgs(String... args) {
+        @SuppressWarnings("unchecked")
+        List<String> argList = new LinkedList<>();
+        for (String s : args) argList.add(s);
+        
+        while (!argList.isEmpty()) {
+            parse(argList);
+        }
+        
+        if (sources.isEmpty()) sources.add("");
+    }
+
+    public void parse(List<String> argList) {
+        String s = argList.remove(0);
+
+        switch (s) {
+            case "-j":
+            case "--json":
+                generateJSON = true;
+                break;
+            case "-p":
+            case "--package":
+                generatePackage = true;
+                break;
+            case "-n":
+            case "--name":
+                packageName = argList.remove(0);
+                break;
+            case "-i":
+            case "--input":
+                while(!argList.isEmpty() && argList.get(0).charAt(0) != '-'){
+                    sources.add(argList.remove(0));
+                }
+                break;
+            case "-d":
+            case "--dir":
+                sourceDir = argList.remove(0);
+                if (!sourceDir.endsWith("/")){
+                    sourceDir = sourceDir + "/";
+                }
+                break;
+            case "-o":
+            case "--output":
+                destination = argList.remove(0);
+                break;
+            case "--xml":
+                xmlClass = argList.remove(0);
+                printXML = true;
+                break;
+            case "-v":
+                Configurator.setRootLevel(VERBOSE);
+                break;
+            case "-vv":
+                Configurator.setRootLevel(VERY_VERBOSE);
+                break;
+            case "-vvv":
+                Configurator.setRootLevel(DEBUG);
+                break;
         }
     }
 
     public void run() throws MojoExecutionException, MojoFailureException, FileNotFoundException {
         Launcher launcher = new Launcher();
-        launcher.addInputResource(source);
+        for (String s : sources){
+            launcher.addInputResource(this.sourceDir + s);
+        }
         jsParser = new JSParser();
         jsParser.setPackageFileName(packageFileName);
         launcher.buildModel();
@@ -104,19 +133,21 @@ public class CLI {
      * @throws JSBuilderException
      */
     public void output() throws FileNotFoundException, JSBuilderException, IOException {
-        LOGGER.info("Javascript Code Generator: Generating output");        
+        LOGGER.info("Javascript Code Generator: Generating output");
         String rootPath;
         
-        if (this.packageSubDir) rootPath =  String.format("%s/%s", destination, packageName);
-        else rootPath =  String.format("%s", destination);
+        if (destination.isEmpty()) rootPath = String.format("target/jjjrmi/%s", packageName);
+        else rootPath = String.format("%s", destination);
+        
+        LOGGER.log(VERY_VERBOSE, "Root Path: " + destination);
         new File(rootPath).mkdirs();
 
         for (JSClassBuilder<?> jsClassBuilder : jsParser.jsClassBuilders()) {
             LOGGER.log(VERY_VERBOSE, "+------------------------------------------------------------------------------+");
             LOGGER.info("file: " + jsClassBuilder.getSimpleName() + ".js");
             Base.writeClass(jsClassBuilder, rootPath);
-            
-            if (this.printXML){
+
+            if (this.printXML) {
                 if (this.xmlClass.isBlank()) System.out.println(jsClassBuilder.toXML(0));
                 else if (this.xmlClass.equals(jsClassBuilder.getSimpleName())) System.out.println(jsClassBuilder.toXML(0));
             }

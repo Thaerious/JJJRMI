@@ -1,7 +1,7 @@
 package ca.frar.jjjrmi.demo;
 
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
-import ca.frar.jjjrmi.testableclasses.HasHandler;
+import ca.frar.jjjrmi.testclasses.HasHandler;
 import ca.frar.jjjrmi.translator.encoder.AHandler;
 import ca.frar.jjjrmi.translator.HandlerFactory;
 import ca.frar.jjjrmi.translator.Translator;

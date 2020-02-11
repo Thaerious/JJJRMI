@@ -1,13 +1,14 @@
 package ca.frar.jjjrmi.utility;
+
 import ca.frar.jjjrmi.annotations.JJJ;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 import ca.frar.jjjrmi.annotations.IsSocket;
+import spoon.reflect.reference.CtTypeReference;
 
 public class JJJOptionsHandler {
 
     private IsSocket isSocket;
-
     private final JJJ jjj;
     private String jsExtends = "";
     private boolean retain = true;
@@ -15,9 +16,9 @@ public class JJJOptionsHandler {
     private boolean hasName = false;
     private boolean generateJS = true;
     private boolean generated = false;
-    
+
     public JJJOptionsHandler(Object object) {
-        jjj = object.getClass().getAnnotation(JJJ.class);        
+        jjj = object.getClass().getAnnotation(JJJ.class);
         name = object.getClass().getSimpleName();
         isSocket = object.getClass().getAnnotation(IsSocket.class);
     }
@@ -33,10 +34,24 @@ public class JJJOptionsHandler {
         name = ctType.getSimpleName();
         isSocket = ctType.getAnnotation(IsSocket.class);
     }
-    
+
+    public JJJOptionsHandler(CtTypeReference<?> ctTypeReference) {
+        if (ctTypeReference.getDeclaration() != null) {
+            CtType<?> ctType = ctTypeReference.getDeclaration();
+            jjj = ctType.getAnnotation(JJJ.class);
+            name = ctType.getSimpleName();
+            isSocket = ctType.getAnnotation(IsSocket.class);
+        } else {
+            jjj = null;
+            name = ctTypeReference.getSimpleName();
+            isSocket = null;            
+        }
+    }
+
     /**
      * The object that the JS object will extend.
-     * @return 
+     *
+     * @return
      */
     public String getExtends() {
         return jjj.jsExtends();
@@ -46,19 +61,19 @@ public class JJJOptionsHandler {
         return jjj != null && !this.jsExtends.isEmpty();
     }
 
-    public boolean topLevel(){
+    public boolean topLevel() {
         return jjj != null && jjj.topLevel();
     }
 
-    public boolean insertJJJMethods(){
-        return jjj != null && jjj.insertJJJMethods();
-    }
-    
-    public boolean retain() {
-        return jjj != null && jjj.retain();
+    public boolean insertJJJMethods() {
+        return jjj == null || jjj.insertJJJMethods();
     }
 
-    public boolean hasName(){
+    public boolean retain() {
+        return jjj == null || jjj.retain();
+    }
+
+    public boolean hasName() {
         return jjj != null && !jjj.name().isEmpty();
     }
 
@@ -67,23 +82,23 @@ public class JJJOptionsHandler {
         return name;
     }
 
-    public static String getName(CtClass<?> ctClass){
+    public static String getName(CtClass<?> ctClass) {
         return new JJJOptionsHandler(ctClass).getName();
     }
-    
+
     public boolean generateJS() {
-        return jjj != null && jjj.generateJS();
+        return jjj == null || jjj.generateJS();
     }
 
-    public boolean hasJJJ(){
+    public boolean hasJJJ() {
         return this.jjj != null;
     }
 
-    public boolean isSocket(){
+    public boolean isSocket() {
         return this.isSocket != null;
     }
-    
-    public String toString(){
+
+    public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("@JJJ(");
         builder.append("jsExtends=").append(jsExtends).append(", ");

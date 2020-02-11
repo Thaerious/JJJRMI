@@ -64,16 +64,17 @@ public class JSParser extends AbstractProcessor<CtClass<?>> {
         CtTypeReference<Object> jjjObjectType = ctClass.getFactory().Type().get(HasWebsockets.class).getReference();
         boolean isSubtype = ctClass.isSubtypeOf(jjjObjectType);
 
+        LOGGER.log(VERY_VERBOSE, "+------------------------------------------------------------------------------+");
+        LOGGER.log(VERY_VERBOSE, "(?) Considering class: " + ctClass.getQualifiedName());
+        
         /* enum class */
-        if (ctClass.isEnum() && jjjOptions.hasJJJ()) {
-            LOGGER.log(VERY_VERBOSE, "+------------------------------------------------------------------------------+");
+        if (ctClass.isEnum() && jjjOptions.hasJJJ()) {            
             LOGGER.log(VERY_VERBOSE, "(+) Building javascript enumeration class: " + ctClass.getQualifiedName());
             return true;
         }
 
         /* socket class */
         if (jjjOptions.isSocket()) {
-            LOGGER.log(VERY_VERBOSE, "+------------------------------------------------------------------------------+");
             LOGGER.log(VERY_VERBOSE, "(+) Building jjjrmi socket: " + ctClass.getQualifiedName());
             return true;
         }
@@ -90,7 +91,6 @@ public class JSParser extends AbstractProcessor<CtClass<?>> {
         }
         
         if (jjjOptions.hasJJJ()) {
-            LOGGER.log(VERY_VERBOSE, "+------------------------------------------------------------------------------+");
             LOGGER.log(Level.forName("VERBOSE", 475), "(+) " + ctClass.getQualifiedName() + "@JJJ");
             return true;
         }
@@ -99,9 +99,10 @@ public class JSParser extends AbstractProcessor<CtClass<?>> {
             LOGGER.log(VERY_VERBOSE, "(-) " + ctClass.getQualifiedName() + " is not subtype of JJJObject");
             return false;
         }
-        
-        LOGGER.log(VERY_VERBOSE, "(-) " + ctClass.getQualifiedName() + " unknown reason");
-        return false;
+        else {
+            LOGGER.log(VERY_VERBOSE, "(+) " + ctClass.getQualifiedName() + " is subtype of JJJObject");
+            return true;
+        }
     }
 
     public Iterable<JSClassBuilder<?>> jsClassBuilders() {

@@ -1,0 +1,26 @@
+"use strict";
+class Constants {};
+Constants.KeyParam = "key";
+Constants.FlagParam = "flags";
+Constants.TypeParam = "type";
+Constants.PrimitiveParam = "primitive";
+Constants.ValueParam = "value";
+Constants.FieldsParam = "fields";
+Constants.NameParam = "name";
+Constants.ElementsParam = "elements";
+Constants.DepthParam = "depth";
+Constants.PointerParam = "ptr";
+Constants.EnumParam = "enum";
+Constants.CustomType = "@custom";
+Constants.TransientValue = "trans";
+Constants.NullValue = "null";
+Constants.PrimativeTypeString = "string";
+Constants.PrimativeTypeNumber = "number";
+Constants.PrimativeTypeBoolean = "boolean";
+Constants.RetainParam = "retain";
+Constants.HandlerParam = "handler";
+Constants.RootObject = "root-object";
+Constants.NewObjects = "new-objects";
+Constants.ComponentTypeParam = "component-type";
+
+if (typeof module !== "undefined") module.exports = Constants;

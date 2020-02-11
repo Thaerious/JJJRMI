@@ -1,11 +1,13 @@
 package ca.frar.jjjrmi.translator.encoder;
 import ca.frar.jjjrmi.annotations.JJJ;
+import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.translator.Constants;
 import org.json.JSONObject;
 
 @JJJ(insertJJJMethods=false)
 public class EncodedPrimitive extends JSONObject{
 
+    @NativeJS
     public EncodedPrimitive(Object value) {
         this.put(Constants.ValueParam, value);
 

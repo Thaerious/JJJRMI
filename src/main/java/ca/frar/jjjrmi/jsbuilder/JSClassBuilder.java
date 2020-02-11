@@ -1,5 +1,4 @@
 package ca.frar.jjjrmi.jsbuilder;
-
 import static ca.frar.jjjrmi.Global.LOGGER;
 import static ca.frar.jjjrmi.Global.VERBOSE;
 import static ca.frar.jjjrmi.Global.VERY_VERBOSE;
@@ -12,8 +11,6 @@ import ca.frar.jjjrmi.annotations.SkipJS;
 import ca.frar.jjjrmi.annotations.Transient;
 import ca.frar.jjjrmi.exceptions.TypeDeclarationNotFoundWarning;
 import ca.frar.jjjrmi.jsbuilder.code.JSCodeElement;
-import ca.frar.jjjrmi.jsbuilder.code.JSElementList;
-import ca.frar.jjjrmi.jsbuilder.code.JSFieldDeclaration;
 import ca.frar.jjjrmi.socket.JJJObject;
 import ca.frar.jjjrmi.utility.JJJOptionsHandler;
 import java.lang.annotation.Annotation;
@@ -22,7 +19,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.apache.logging.log4j.Level;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
@@ -253,14 +249,15 @@ public class JSClassBuilder<T> {
                 continue;
             };
             
-            CtTypeReference<?> superclass = ctClass.getSuperclass();
-            if (superclass == null || superclass.getDeclaration() == null){
-                LOGGER.log(VERY_VERBOSE, String.format("Omitting require for unknow superclass ", ctClass.getSimpleName()));
-                if (checkExternalType(anImport.getSimpleName())){
-                    LOGGER.warn("unknown type in " + this.getSimpleName() + ": " + anImport.getSimpleName());
-                }
-                continue;
-            }
+// I don't know why I did this, leaving it for now.
+//            CtTypeReference<?> superclass = ctClass.getSuperclass();
+//            if (superclass == null || superclass.getDeclaration() == null){
+//                LOGGER.log(VERY_VERBOSE, String.format("Omitting require for unknown superclass ", ctClass.getSimpleName()));
+//                if (checkExternalType(anImport.getSimpleName())){
+//                    LOGGER.warn("unknown type in " + this.getSimpleName() + ": " + anImport.getSimpleName());
+//                }
+//                continue;
+//            }
 
             LOGGER.log(VERY_VERBOSE, String.format("Generating require for %s", anImport.getSimpleName()));
             appendRequire(builder, anImport);
@@ -324,20 +321,24 @@ public class JSClassBuilder<T> {
     }
 
     public void appendRequire(StringBuilder builder, CtTypeReference ref) {
-        CtType source = ref.getTypeDeclaration();
+        JJJOptionsHandler jjjOptionsHandler = new JJJOptionsHandler(ref);
 
         builder.append("const ");
-        builder.append(new JJJOptionsHandler(source).getName());
+        builder.append(jjjOptionsHandler.getName());
         builder.append(" = require(\"./");
-
-        List<CtType> nestedChain = nestedChain(source);
-        builder.append(new JJJOptionsHandler(nestedChain.remove(0)).getName());
+        builder.append(jjjOptionsHandler.getName());
         builder.append("\")");
-        while (!nestedChain.isEmpty()) {
-            builder.append(".");
-            builder.append(new JJJOptionsHandler(nestedChain.remove(0)).getName());
-        }
         builder.append(";\n");
+        
+//        List<CtType> nestedChain = nestedChain(source);
+//        builder.append(new JJJOptionsHandler(nestedChain.remove(0)).getName());
+//        builder.append("\")");
+//        
+//        while (!nestedChain.isEmpty()) {
+//            builder.append(".");
+//            builder.append(new JJJOptionsHandler(nestedChain.remove(0)).getName());
+//        }
+        
     }    
     
     private void appendPrequel(StringBuilder builder, JSPrequel jsPrequel) {
@@ -416,12 +417,15 @@ public class JSClassBuilder<T> {
         builder.append("</").append(this.getClass().getSimpleName()).append(">\n");
 
         return builder.toString();
+                
     }
     
     private void constructStaticFields() {
         Collection<CtFieldReference<?>> allFields = ctClass.getDeclaredFields();
         
         for (CtFieldReference<?> ctFieldRef : allFields) {
+            if (!ctFieldRef.isStatic()) continue;
+            
             CtField<?> ctField = ctFieldRef.getFieldDeclaration();
             
             if (ctField == null) {

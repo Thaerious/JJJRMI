@@ -3,7 +3,7 @@ import ca.frar.jjjrmi.exceptions.DecoderException;
 import ca.frar.jjjrmi.exceptions.EncoderException;
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
 import ca.frar.jjjrmi.translator.encoder.EncodedResult;
-import ca.frar.jjjrmi.testableclasses.Has;
+import ca.frar.jjjrmi.testclasses.Has;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 

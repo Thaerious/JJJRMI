@@ -5,6 +5,7 @@
  */
 package ca.frar.jjjrmi.translator.encoder;
 import ca.frar.jjjrmi.annotations.JJJ;
+import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.translator.Constants;
 import ca.frar.jjjrmi.translator.Translator;
 import java.util.LinkedList;
@@ -20,16 +21,16 @@ import org.json.JSONObject;
  */
 @JJJ(insertJJJMethods=false)
 public class EncodedResult extends JSONObject {
-
     private final JSONObject objects;
     private final Translator translator;
-
+    
     public EncodedResult(Translator translator) {
         this.translator = translator;
         this.objects = new JSONObject();
         this.put(Constants.NewObjects, this.objects);
     }
 
+    @NativeJS
     public EncodedResult(Translator translator, String source) {
         super(source);
         this.translator = translator;
@@ -39,18 +40,22 @@ public class EncodedResult extends JSONObject {
     /**
      * @return the translator
      */
+    @NativeJS
     public Translator getTranslator() {
         return translator;
     }
 
+    @NativeJS
     public void setRoot(String rootKey){
         this.put(Constants.RootObject, rootKey);
     }
 
+    @NativeJS
     public String getRoot(){
         return this.getString(Constants.RootObject);
     }    
     
+    @NativeJS
     public void put(EncodedObject encodedObject) {
         this.objects.put(encodedObject.getString(Constants.KeyParam), encodedObject);
     }
@@ -60,6 +65,7 @@ public class EncodedResult extends JSONObject {
      *
      * @return
      */
+    @NativeJS
     public List<JSONObject> getAllObjects() {
         LinkedList<JSONObject> list = new LinkedList<>();
 

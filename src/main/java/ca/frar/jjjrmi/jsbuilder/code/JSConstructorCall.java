@@ -4,6 +4,7 @@ import ca.frar.jjjrmi.utility.JJJOptionsHandler;
 import java.util.HashSet;
 import java.util.Set;
 import spoon.reflect.code.CtConstructorCall;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtTypeReference;
 
 public class JSConstructorCall extends AbstractJSCodeElement {
@@ -21,21 +22,29 @@ public class JSConstructorCall extends AbstractJSCodeElement {
     
     @Override
     public Set<CtTypeReference> getRequires() {
+        LOGGER.debug("JSConstructorCall.getRequires");
         HashSet<CtTypeReference> requires = new HashSet<>();
         requires.addAll(super.getRequires());
-        requires.add(ctConstructorCall.getType());        
+        requires.add(ctConstructorCall.getType()); 
+        LOGGER.debug("requires.add " + ctConstructorCall.getType());
         return requires;
     }
     
 
     @Override
     public String toString() {
-        JJJOptionsHandler jjjOptionsHandler = new JJJOptionsHandler(ctConstructorCall.getType().getTypeDeclaration());
+        CtTypeReference constType = ctConstructorCall.getType();
+        CtType constTypeDec = constType.getTypeDeclaration();
                 
         StringBuilder builder = new StringBuilder();
         builder.append("new ");
-        if (!jjjOptionsHandler.getClass().isEnum()){
-            builder.append(jjjOptionsHandler.getName());
+        if (constType.isEnum()){
+            if (constTypeDec != null){
+                JJJOptionsHandler jjjOpt = new JJJOptionsHandler(constTypeDec);
+                builder.append(jjjOpt.getName());
+            } else {
+                builder.append(constType.getSimpleName());
+            }
         } else {        
             builder.append(name);
         }
