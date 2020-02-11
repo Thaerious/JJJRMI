@@ -135,7 +135,7 @@ public final class Translator {
     @NativeJS
     public Object getReferredObject(String reference) throws MissingReferenceException {
         if (!objectMap.containsKey(reference)) {
-            throw new MissingReferenceException();
+            throw new MissingReferenceException(reference);
         }
         return objectMap.get(reference);
     }

@@ -15,4 +15,8 @@ public class MissingReferenceException extends DecoderException {
         super("Reference not found.");
     }
     
+    public MissingReferenceException(String reference) {
+        super("Reference not found: " + reference);
+    }    
+    
 }

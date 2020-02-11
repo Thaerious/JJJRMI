@@ -70,7 +70,8 @@ public class JJJOptionsHandler {
     }
 
     public boolean retain() {
-        return jjj == null || jjj.retain();
+        if (jjj == null) return false;
+        return jjj.retain();
     }
 
     public boolean hasName() {
