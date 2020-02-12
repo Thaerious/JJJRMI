@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "jjjrmi": "file:../../main/js",
     "readline": "^1.3.0"
   }
 }

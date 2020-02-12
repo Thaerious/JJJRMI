@@ -34,7 +34,7 @@ public class EncodedResult extends JSONObject {
     public EncodedResult(Translator translator, String source) {
         super(source);
         this.translator = translator;
-        this.objects = new JSONObject();
+        this.objects = this.getJSONObject(Constants.NewObjects);
     }
 
     /**

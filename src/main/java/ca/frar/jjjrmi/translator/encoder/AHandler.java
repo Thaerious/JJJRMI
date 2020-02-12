@@ -1,5 +1,7 @@
 package ca.frar.jjjrmi.translator.encoder;
 import static ca.frar.jjjrmi.Global.LOGGER;
+import ca.frar.jjjrmi.annotations.JJJ;
+import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.annotations.Transient;
 import ca.frar.jjjrmi.exceptions.DecoderException;
 import ca.frar.jjjrmi.exceptions.EncoderException;
@@ -15,15 +17,18 @@ import org.json.JSONObject;
  *
  * @author Ed Armstrong
  */
+@JJJ(insertJJJMethods=false)
 abstract public class AHandler<T> {
     private final EncodedResult encodedResult;
     private JSONObject jsonFields;
     private HashMap<String, Field> fields = new HashMap<>();
 
+    @NativeJS
     public AHandler(EncodedResult encodedResult){
         this.encodedResult = encodedResult;        
     }
     
+    @NativeJS
     public final EncodedObject doEncode(Object object) throws EncoderException{
         EncodedObject encodedObject = new EncodedObject(object, encodedResult);
         this.jsonFields = encodedObject.fields;
@@ -31,6 +36,7 @@ abstract public class AHandler<T> {
         return encodedObject;
     }
     
+    @NativeJS
     public final T doDecode(Object t, JSONObject json) throws DecoderException{
         this.jsonFields = json.getJSONObject(Constants.FieldsParam);
         this.setupFields(t.getClass());
@@ -44,6 +50,7 @@ abstract public class AHandler<T> {
 
     abstract public void encode(T object) throws EncoderException;
 
+    @NativeJS
     public final <T> T decodeField(String fieldName, Class<?> type) throws DecoderException {  
         JSONObject jsonField = jsonFields.getJSONObject(fieldName);
         Translator translator = encodedResult.getTranslator();
@@ -57,6 +64,7 @@ abstract public class AHandler<T> {
      * @param value
      * @throws EncoderException 
      */
+    @NativeJS
     public final void encodeField(String field, Object value) throws EncoderException {
         JSONObject toJSON = new Encoder(value, this.encodedResult).encode();
         this.jsonFields.put(field, toJSON);

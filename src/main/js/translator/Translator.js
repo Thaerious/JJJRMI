@@ -2,7 +2,10 @@
 const BiMap = require("./BiMap");
 const EncodedResult = require("./EncodedResult");
 const HandlerFactory = require("./HandlerFactory");
-const EncodedObject = require("./EncodedObject");
+const Constants = require("./Constants");
+const EncodedObject = require("./Encoder").EncodedObject;
+const ObjectDecoder = require("./ObjectDecoder");
+const ClassRegistry = require("./ClassRegistry");
 
 class Translator {
     constructor() {
@@ -12,6 +15,7 @@ class Translator {
         this.objectMap = new BiMap();
         this.tempReferences = [];
         this.nextKey = 0;
+        this.classRegistry = new ClassRegistry();
     }
     addReference(reference, object) {
         this.objectMap.put(reference, object);
@@ -26,10 +30,8 @@ class Translator {
         return key;
     }
     clear() {
-        let values = this.objectMap.values().toArray();
-        this.objectMap.clear();
-        this.tempReferences.clear();
-        return values;
+        this.objectMap = new BiMap();
+        this.tempReferences = [];
     }
     clearTempReferences() {
         for (let ref of this.tempReferences) {
@@ -38,12 +40,12 @@ class Translator {
         this.tempReferences = [];
     }
     decode(encodedResult) {
-        let list = new ArrayList();
+        let list = [];
         for (let jsonObject of encodedResult.getAllObjects()) {
-            let key = jsonObject.getString(Constants.KeyParam);
+            let key = jsonObject[Constants.KeyParam];
             if (this.hasReference(key)) continue;
 
-            list.add(new ObjectDecoder(encodedResult, jsonObject, this));
+            list.push(new ObjectDecoder(encodedResult, jsonObject, this));
         }
         for (let decoder of list) {
             decoder.makeReady();
@@ -56,7 +58,7 @@ class Translator {
     encode(object) {
         if (object === null) throw new Error("ca.frar.jjjrmi.exceptions.RootException");
         let encodedResult = new EncodedResult(this);
-        
+
         if (this.hasReferredObject(object)) {
             encodedResult.setRoot(this.getReference(object));
             return encodedResult;
@@ -69,17 +71,12 @@ class Translator {
         return encodedResult;
     }
     encodeHandled(object, encodedResult) {
-        try {
-            let handlerClass = HandlerFactory.getInstance().getHandler(object.constructor.__getClass());
-            let handler = handlerClass.getConstructor(EncodedResult.class).newInstance(encodedResult);
-            let encodedObject = handler.doEncode(object);
-            encodedResult.put(encodedObject);
-            encodedResult.setRoot(this.getReference(object));
-            this.clearTempReferences();
-        } catch (ex) {
-            throw new Error("ca.frar.jjjrmi.exceptions.EncoderException");
-        }
-
+        let handlerClass = HandlerFactory.getInstance().getHandler(object.constructor.__getClass());
+        let handler = new handlerClass(encodedResult);
+        let encodedObject = handler.doEncode(object);
+        encodedResult.put(encodedObject);
+        encodedResult.setRoot(this.getReference(object));
+        this.clearTempReferences();
     }
     encodeUnhandled(object, encodedResult) {
         let encodedObject = new EncodedObject(object, encodedResult);
@@ -112,11 +109,9 @@ class Translator {
         this.objectMap.remove(this.objectMap.getKey(obj));
         return true;
     }
-    
-    notifyEncode(object){
+    notifyEncode(object) {
     }
-    
-    notifyDecode(object){
+    notifyDecode(object) {
     }
 }
 ;

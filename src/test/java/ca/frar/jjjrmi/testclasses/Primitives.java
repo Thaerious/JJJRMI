@@ -23,7 +23,7 @@ public class Primitives {
         bite = (byte) x;
         car = (char) x;
         shrt = (short) (100 * x);
-        loooong = (long)Integer.MAX_VALUE * (long)x;
+        loooong = 0x7fffffff * (long)x;
         duble = 1.2 * x;
         f = (float) 1.2 * x;
         i = x;        

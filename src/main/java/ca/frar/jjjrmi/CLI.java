@@ -84,7 +84,9 @@ public class CLI {
             case "-i":
             case "--input":
                 while(!argList.isEmpty() && argList.get(0).charAt(0) != '-'){
-                    sources.add(argList.remove(0));
+                    String className = argList.remove(0);
+                    if (!className.endsWith(".java")) className += ".java";
+                    sources.add(className);
                 }
                 break;
             case "-d":

@@ -13,7 +13,6 @@ import ca.frar.jjjrmi.socket.JJJObject;
  * @author Ed Armstrong
  */
 public class HasNone extends JJJObject{
-
     private final None none;
     
     @NativeJS

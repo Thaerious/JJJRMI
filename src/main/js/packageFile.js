@@ -1,8 +1,7 @@
 "use strict";
 
 let JJJRMI = {
-    JJJRMISocket : require("./JJJRMISocket"),
-    Logger : require("./Logger")
+    Translator : require("./translator/Translator")
 };
 
 module.exports = JJJRMI;

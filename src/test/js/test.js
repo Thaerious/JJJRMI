@@ -1,3 +1,4 @@
 "use strict";
-console.log("Hello World");
 
+require("./test1");
+require("./test2");

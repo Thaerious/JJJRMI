@@ -1,7 +1,7 @@
 "use strict";
 const Constants = require("./Constants");
 const HandlerFactory = require("./HandlerFactory");
-const JJJObject = require("./JJJObject");
+const EncodedResult = require("./EncodedResult");
 
 class ObjectDecoder {
     constructor(encodedResult, json, translator) {

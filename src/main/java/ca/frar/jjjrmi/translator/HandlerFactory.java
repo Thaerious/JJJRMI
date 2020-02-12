@@ -5,8 +5,10 @@
  */
 package ca.frar.jjjrmi.translator;
 
+import static ca.frar.jjjrmi.Global.VERY_VERBOSE;
 import ca.frar.jjjrmi.translator.encoder.AHandler;
 import ca.frar.jjjrmi.annotations.Handles;
+import static ca.frar.jjjrmi.translator.Translator.LOGGER;
 import java.util.HashMap;
 import java.util.Set;
 import org.reflections.Reflections;
@@ -31,12 +33,14 @@ public class HandlerFactory {
         for (Class<?> aClass : annotated){
             Handles handles = aClass.getAnnotation(Handles.class);
             if (AHandler.class.isAssignableFrom(aClass)){
+                LOGGER.log(VERY_VERBOSE, "adding handler " + aClass.getSimpleName() + " for class " + handles.value());
                 classMap.put(handles.value(), (Class<? extends AHandler<?>>) aClass);
             }
         }
     }
     
     public boolean hasHandler(Class<?> aClass){
+        if (aClass == null) throw new NullPointerException();
         return this.classMap.containsKey(aClass.getName());
     }
 

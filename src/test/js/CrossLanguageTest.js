@@ -4,21 +4,29 @@ const Translator = require("../../main/js/translator/Translator");
 const None = require("./testclasses/None");
 const HasNone = require("./testclasses/HasNone");
 const Primitives = require("./testclasses/Primitives");
-const HasHandler = require("./testclasses/HasHandler");
 const readline = require("readline");
 
-class TranslatorCorrectnessTest {
-    
-    test_has_handler(){
+class CrossLanguageTest {
+    get_none() {
         let translator = new Translator();
-        let object = new HasHandler(2, 5);
+        let object = new None();
         let encoded = translator.encode(object);
-        translator.clear();
-        let decoded = translator.decode(encoded);
-        assertEquals(7, decoded.z);
+        console.log(encoded.toString(2));
+    }
+    get_has_none() {
+        let translator = new Translator();
+        let object = new HasNone();
+        let encoded = translator.encode(object);
+        console.log(encoded.toString(2));
+    }
+    get_primitives() {
+        let translator = new Translator();
+        let object = new Primitives();
+        let encoded = translator.encode(object);
+        console.log(encoded.toString(2));
     }
 }
-const test = new TranslatorCorrectnessTest();
+const test = new CrossLanguageTest();
 
 if (process.argv.length === 2) {
     let rl = readline.createInterface({
@@ -35,4 +43,4 @@ if (process.argv.length === 2) {
     test[process.argv[2]]();
 }
 
-module.exports = TranslatorCorrectnessTest;
+module.exports = CrossLanguageTest;

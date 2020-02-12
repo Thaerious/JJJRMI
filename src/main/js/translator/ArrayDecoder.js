@@ -1,5 +1,4 @@
 "use strict";
-const Array = require("./Array");
 const Constants = require("./Constants");
 class ArrayDecoder {
 	constructor(json, translator, componentClass) {

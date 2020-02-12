@@ -10,8 +10,8 @@ class EncodedResult {
     }
     getAllObjects() {
         let list = [];
-        for (let key of this.json[Constants.NewObjects]) {
-            list.push(this.objects[key]);
+        for (let key in this.json[Constants.NewObjects]) {
+            list.push(this.json[Constants.NewObjects][key]);
         }
         return list;
     }

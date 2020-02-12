@@ -5,11 +5,13 @@
  */
 package ca.frar.jjjrmi.testclasses;
 
+import ca.frar.jjjrmi.socket.JJJObject;
+
 /**
  *
  * @author Ed Armstrong
  */
-public class HasHandler {
+public class HasHandler extends JJJObject{
     public int x;
     public float y;
     public float z;

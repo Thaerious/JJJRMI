@@ -238,8 +238,8 @@ public final class Translator {
      */
     @NativeJS
     public final Object decode(EncodedResult encodedResult) throws DecoderException {
-        ArrayList<ObjectDecoder> list = new ArrayList<>();
-
+        ArrayList<ObjectDecoder> list = new ArrayList<>();        
+        
         for (JSONObject jsonObject : encodedResult.getAllObjects()) {
             String key = jsonObject.getString(Constants.KeyParam);
             if (this.hasReference(key)) continue;

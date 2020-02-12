@@ -4,6 +4,7 @@ import ca.frar.jjjrmi.exceptions.EncoderException;
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
 import ca.frar.jjjrmi.translator.encoder.EncodedResult;
 import ca.frar.jjjrmi.testclasses.Has;
+import ca.frar.jjjrmi.testclasses.HasHandler;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,18 +15,17 @@ public class IsolatedTest {
     final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");
  
     public static void main(String ... args) throws JJJRMIException{
-        new IsolatedTest().test();
+        new IsolatedTest().test_run();
     }
     
     @Test
-    public void test() throws EncoderException, DecoderException {
+    public void test_run() throws JJJRMIException {
         Translator translator = new Translator();
-        boolean[] array = new boolean[0];
-        Has<boolean[]> object = new Has<>(array);
+        HasHandler object = new HasHandler(2, 5);
         EncodedResult encoded = translator.encode(object);
         translator.clear();
-        Has<Object[]> decoded = (Has<Object[]>) translator.decode(encoded);
-        assertEquals(0, decoded.get().length);
-    }  
+        HasHandler decoded = (HasHandler) translator.decode(encoded);
+        assertEquals(7, decoded.z);
+    }    
     
 }

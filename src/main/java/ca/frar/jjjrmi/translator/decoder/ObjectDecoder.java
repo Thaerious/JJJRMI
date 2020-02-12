@@ -1,5 +1,6 @@
 package ca.frar.jjjrmi.translator.decoder;
 
+import static ca.frar.jjjrmi.Global.LOGGER;
 import ca.frar.jjjrmi.annotations.JJJ;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.annotations.Transient;
@@ -50,7 +51,6 @@ public class ObjectDecoder {
             if (this.aClass == null) {
                 throw new UnknownClassException(json.getString(Constants.TypeParam));
             }
-
             if (HandlerFactory.getInstance().hasHandler(this.aClass)) {
                 Class<? extends AHandler<?>> handlerClass = HandlerFactory.getInstance().getHandler(this.aClass);
                 this.handler = handlerClass.getConstructor(EncodedResult.class).newInstance(this.encodedResult);

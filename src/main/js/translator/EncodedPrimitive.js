@@ -2,8 +2,8 @@
 const Constants = require("./Constants");
 class EncodedPrimitive {
     constructor(value) {
-        this.json[Constants.PrimitiveParam] = typeof value;
-        this.json[Constants.ValueParam] = value;
+        this[Constants.PrimitiveParam] = typeof value;
+        this[Constants.ValueParam] = value;
     }
 }
 

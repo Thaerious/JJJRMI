@@ -6,6 +6,8 @@
 package ca.frar.jjjrmi.testclasses;
 
 import ca.frar.jjjrmi.annotations.Handles;
+import ca.frar.jjjrmi.annotations.JJJ;
+import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.exceptions.DecoderException;
 import ca.frar.jjjrmi.exceptions.EncoderException;
 import ca.frar.jjjrmi.translator.encoder.AHandler;
@@ -15,18 +17,21 @@ import ca.frar.jjjrmi.translator.encoder.EncodedResult;
  *
  * @author Ed Armstrong
  */
-@Handles("ca.frar.jjjrmi.testableclasses.HasHandler")
+@Handles("ca.frar.jjjrmi.testclasses.HasHandler")
+@JJJ
 public class IsHandler extends AHandler<HasHandler>{
 
     public IsHandler(EncodedResult encodedResult) {
         super(encodedResult);
     }
 
+    @NativeJS
     @Override
     public HasHandler getInstance() {
         return new HasHandler();
     }
     
+    @NativeJS
     @Override
     public void decode(HasHandler hasHandler) throws DecoderException {
         hasHandler.x = this.decodeField("a", Integer.class);
@@ -34,6 +39,7 @@ public class IsHandler extends AHandler<HasHandler>{
         hasHandler.z = hasHandler.x + hasHandler.y;
     }
 
+    @NativeJS
     @Override
     public void encode(HasHandler object) throws EncoderException {
         this.encodeField("a", object.x);
