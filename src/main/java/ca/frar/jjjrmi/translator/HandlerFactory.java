@@ -5,23 +5,24 @@
  */
 package ca.frar.jjjrmi.translator;
 
+import static ca.frar.jjjrmi.Global.LOGGER;
 import static ca.frar.jjjrmi.Global.VERY_VERBOSE;
 import ca.frar.jjjrmi.translator.encoder.AHandler;
 import ca.frar.jjjrmi.annotations.Handles;
-import ca.frar.jjjrmi.socket.JJJObject;
-import static ca.frar.jjjrmi.translator.Translator.LOGGER;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 import org.reflections.Reflections;
+import org.reflections.scanners.SubTypesScanner;
+import org.reflections.scanners.TypeAnnotationsScanner;
 
 /**
  *
  * @author Ed Armstrong
  */
-public class HandlerFactory {
-    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(HandlerFactory.class);
+public class HandlerFactory {    
     private static HandlerFactory instance = null;
-    private final Reflections reflections;   
     private final HashMap<String, Class<? extends AHandler<?>>> classMap = new HashMap<>();
     
     public static HandlerFactory getInstance(){
@@ -29,18 +30,21 @@ public class HandlerFactory {
         return instance;
     }
     
-    public HandlerFactory(){
-        reflections = new Reflections("ca.frar");
-        Set<Class<? extends JJJObject>> annotated = reflections.getSubTypesOf(JJJObject.class);
-        for (Class<?> aClass : annotated){
+    private HandlerFactory(){
+        SubTypesScanner subTypesScanner = new SubTypesScanner(false);  
+        TypeAnnotationsScanner typeAnnotationsScanner = new TypeAnnotationsScanner();
+        Reflections reflections = new Reflections("", subTypesScanner, typeAnnotationsScanner);
+        Set<Class<?>> classes = reflections.getTypesAnnotatedWith(Handles.class);           
+        
+        for (Class<?> aClass : classes){
             LOGGER.debug(aClass);
-//            Handles handles = aClass.getAnnotation(Handles.class);
-//            if (AHandler.class.isAssignableFrom(aClass)){
-//                LOGGER.log(VERY_VERBOSE, "adding handler " + aClass.getSimpleName() + " for class " + handles.value());
-//                classMap.put(handles.value(), (Class<? extends AHandler<?>>) aClass);
-//            }
+            Handles handles = aClass.getAnnotation(Handles.class);
+            if (AHandler.class.isAssignableFrom(aClass)){
+                LOGGER.log(VERY_VERBOSE, "adding handler " + aClass.getSimpleName() + " for class " + handles.value());
+                classMap.put(handles.value(), (Class<? extends AHandler<?>>) aClass);
+            }
         }
-        LOGGER.debug("number of classes: " + annotated.size());
+        LOGGER.debug("number of classes: " + classMap.size());
     }
     
     public boolean hasHandler(Class<?> aClass){
@@ -50,5 +54,10 @@ public class HandlerFactory {
 
     public <T> Class<? extends AHandler<?>> getHandler(Class<T> aClass){
         return this.classMap.get(aClass.getName());
+    }
+    
+    public List<Class<? extends AHandler<?>>> getAllHandlers(){
+        Collection<Class<? extends AHandler<?>>> values = classMap.values();
+        return List.copyOf(values);
     }
 }

@@ -11,6 +11,8 @@ import ca.frar.jjjrmi.translator.Translator;
 import ca.frar.jjjrmi.translator.decoder.Decoder;
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.json.JSONObject;
 
 /**
@@ -23,8 +25,6 @@ abstract public class AHandler<T> {
     private JSONObject jsonFields;
     private HashMap<String, Field> fields = new HashMap<>();
     private T instance;
-
-
     
     @NativeJS
     public AHandler(EncodedResult encodedResult){
@@ -64,7 +64,15 @@ abstract public class AHandler<T> {
         Field field = this.fields.get(pojoFieldName);
         JSONObject jsonField = jsonFields.getJSONObject(jsonFieldName);
         Translator translator = encodedResult.getTranslator();
-        Object decoded = new Decoder(jsonField, translator, field.getType()).decode();
+        Class<?> type = field.getType();
+        Object decoded = new Decoder(jsonField, translator, type).decode();
+        
+        try {
+            field.set(this.instance, decoded);
+        } catch (IllegalArgumentException | IllegalAccessException ex) {
+            throw new DecoderException(ex);
+        }
+        
         return (T) decoded;
     }
 

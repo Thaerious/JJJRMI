@@ -18,6 +18,10 @@ public class IsolatedTest {
         new IsolatedTest().test_run();
     }
     
+    /**
+     * Has handler z = x * y, after decode z = x + y;
+     * @throws JJJRMIException 
+     */
     @Test
     public void test_run() throws JJJRMIException {
         Translator translator = new Translator();
@@ -26,6 +30,6 @@ public class IsolatedTest {
         translator.clear();
         HasHandler decoded = (HasHandler) translator.decode(encoded);
         assertEquals(7, decoded.z);
-    }    
+    }      
     
 }

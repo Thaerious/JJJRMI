@@ -5,6 +5,7 @@
  */
 package ca.frar.jjjrmi.testclasses;
 
+import static ca.frar.jjjrmi.Global.LOGGER;
 import ca.frar.jjjrmi.annotations.Handles;
 import ca.frar.jjjrmi.annotations.JJJ;
 import ca.frar.jjjrmi.annotations.NativeJS;
@@ -37,7 +38,7 @@ public class IsHandler extends AHandler<HasHandler>{
         this.decodeField("a", "x");
         this.decodeField("b", "y");        
         hasHandler.z = hasHandler.x + hasHandler.y;
-        System.out.println(hasHandler.x + ", " + hasHandler.y + ", " + hasHandler.z);
+        LOGGER.debug(hasHandler.x + ", " + hasHandler.y + ", " + hasHandler.z);
     }
 
     @NativeJS
