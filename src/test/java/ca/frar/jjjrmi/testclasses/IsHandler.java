@@ -34,9 +34,10 @@ public class IsHandler extends AHandler<HasHandler>{
     @NativeJS
     @Override
     public void decode(HasHandler hasHandler) throws DecoderException {
-        hasHandler.x = this.decodeField("a", Integer.class);
-        hasHandler.y = this.decodeField("b", Float.class);
+        this.decodeField("a", "x");
+        this.decodeField("b", "y");        
         hasHandler.z = hasHandler.x + hasHandler.y;
+        System.out.println(hasHandler.x + ", " + hasHandler.y + ", " + hasHandler.z);
     }
 
     @NativeJS

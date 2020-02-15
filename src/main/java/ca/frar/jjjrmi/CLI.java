@@ -16,9 +16,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import static org.apache.logging.log4j.Level.DEBUG;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -33,7 +39,8 @@ import spoon.reflect.CtModel;
  */
 public class CLI {
 
-    private ArrayList<String> sources = new ArrayList<>();
+    private HashSet<String> includes = new HashSet<>();
+    private HashSet<String> excludes = new HashSet<>();
     private String sourceDir = "./";
     private String destination = "";
     private String packageName = "package";
@@ -57,12 +64,10 @@ public class CLI {
         @SuppressWarnings("unchecked")
         List<String> argList = new LinkedList<>();
         for (String s : args) argList.add(s);
-        
+
         while (!argList.isEmpty()) {
             parse(argList);
         }
-        
-        if (sources.isEmpty()) sources.add("");
     }
 
     public void parse(List<String> argList) {
@@ -82,22 +87,31 @@ public class CLI {
                 packageName = argList.remove(0);
                 break;
             case "-i":
-            case "--input":
-                while(!argList.isEmpty() && argList.get(0).charAt(0) != '-'){
+            case "--include":
+                while (!argList.isEmpty() && argList.get(0).charAt(0) != '-') {
                     String className = argList.remove(0);
                     if (!className.endsWith(".java")) className += ".java";
-                    sources.add(className);
+                    includes.add(className);
+                }
+                break;
+            case "-e":
+            case "--exclude":
+                while (!argList.isEmpty() && argList.get(0).charAt(0) != '-') {
+                    String className = argList.remove(0);
+                    if (!className.endsWith(".java")) className += ".java";
+                    excludes.add(className);
                 }
                 break;
             case "-d":
             case "--dir":
                 sourceDir = argList.remove(0);
-                if (!sourceDir.endsWith("/")){
+                if (!sourceDir.endsWith("/")) {
                     sourceDir = sourceDir + "/";
                 }
                 break;
             case "-o":
             case "--output":
+                /* this will override the default destination */
                 destination = argList.remove(0);
                 break;
             case "--xml":
@@ -116,11 +130,29 @@ public class CLI {
         }
     }
 
-    public void run() throws MojoExecutionException, MojoFailureException, FileNotFoundException {
+    private List<Path> getFiles() throws IOException{
+        Stream<Path> files = Files.walk(Paths.get(this.sourceDir));
+        
+        return files.filter((f)->{
+            return f.toString().endsWith(".java");
+        })
+        .filter((f)->{
+            if (includes.isEmpty()) return true;
+            int index = f.toString().lastIndexOf("/");
+            String filename = f.toString().substring(index + 1);            
+            return this.includes.contains(filename);
+        })
+        .filter((f)->{
+            int index = f.toString().lastIndexOf("/");
+            String filename = f.toString().substring(index + 1);
+            return !this.excludes.contains(filename);
+        })
+        .collect(Collectors.toList());
+    }
+    
+    public void run() throws MojoExecutionException, MojoFailureException, FileNotFoundException, IOException {                
         Launcher launcher = new Launcher();
-        for (String s : sources){
-            launcher.addInputResource(this.sourceDir + s);
-        }
+        getFiles().forEach(f->launcher.addInputResource(f.toString()));
         jsParser = new JSParser();
         jsParser.setPackageFileName(packageFileName);
         launcher.buildModel();
@@ -137,10 +169,11 @@ public class CLI {
     public void output() throws FileNotFoundException, JSBuilderException, IOException {
         LOGGER.info("Javascript Code Generator: Generating output");
         String rootPath;
-        
+
+        /* if destination is not set use 'target/jjjrmi/packagename' */
         if (destination.isEmpty()) rootPath = String.format("target/jjjrmi/%s", packageName);
         else rootPath = String.format("%s", destination);
-        
+
         LOGGER.log(VERY_VERBOSE, "Root Path: " + destination);
         new File(rootPath).mkdirs();
 
@@ -177,7 +210,7 @@ public class CLI {
      * @throws FileNotFoundException
      */
     private void buildPackageJS() throws FileNotFoundException {
-        String pkgOutPath = String.format("%s/%s/%s.js", this.destination, this.packageName, this.packageFileName);
+        String pkgOutPath = String.format("%s/%s.js", this.destination, this.packageFileName);
         File packageOutFile = new File(pkgOutPath);
         PrintWriter packagePW = new PrintWriter(new FileOutputStream(packageOutFile));
 

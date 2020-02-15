@@ -1,6 +1,8 @@
 package ca.frar.jjjrmi.annotations;
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
 * Annotation indicating this class replaces encode/decode functionality.

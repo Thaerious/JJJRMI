@@ -5,6 +5,9 @@
  */
 package ca.frar.jjjrmi.testclasses;
 
+import ca.frar.jjjrmi.annotations.Handles;
+import ca.frar.jjjrmi.annotations.IsAHandler;
+
 /**
  *
  * @author edward

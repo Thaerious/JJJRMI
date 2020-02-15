@@ -14,6 +14,10 @@ class AHandler {
             let decoded = new Decoder(jsonField, translator).decode();
             return decoded;
         }
+        doGetInstance(){
+            this.instance = this.getInstance();
+            return this.instance;
+        }        
 	doDecode(t, json) {
             this.jsonFields = json[Constants.FieldsParam];
             this.decode(t);

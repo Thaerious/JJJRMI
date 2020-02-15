@@ -51,10 +51,10 @@ public class ObjectDecoder {
             if (this.aClass == null) {
                 throw new UnknownClassException(json.getString(Constants.TypeParam));
             }
-            if (HandlerFactory.getInstance().hasHandler(this.aClass)) {
+            if (HandlerFactory.getInstance().hasHandler(this.aClass)) {                
                 Class<? extends AHandler<?>> handlerClass = HandlerFactory.getInstance().getHandler(this.aClass);
                 this.handler = handlerClass.getConstructor(EncodedResult.class).newInstance(this.encodedResult);
-                this.result = handler.getInstance();
+                this.result = handler.doGetInstance();
             } else {
                 this.setupFields();
                 Constructor<?> constructor = this.aClass.getDeclaredConstructor();

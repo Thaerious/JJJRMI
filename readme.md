@@ -7,21 +7,22 @@ add /target/jjjrmi/jjjrmi to any npm dependencies
 
 Command Line Interface
 ----------------------
-Copy dependencies to the target directory.
+Copy dependencies to the target directory then run setup.  This must be run 
+every time a new shell is started.  It does not change the path in .bashrc file.
 > mvn dependency:copy-dependencies 
-
-Run setup.  This must be run everytime a new shell is started.  It does not change
-the path in .bashrc
 > source /bin/setup
+> mvn compile
 
 You can now run the jjjrmi script which calls the CLI.
 > jjjrmi -i src/test/java/ca/frar/jjjrmi/jsbuilder/code/JSLambdaCode.java -p deleteme
 
 running "jjjrmi ." will source and output to the current directory.
 
--i input_path
+-d input_path
 Set input path. If the input is a directory recursively process all files in all
 directories.
+
+-i [input_classes...]
 
 -o output_directory
 Set output path.
@@ -52,3 +53,11 @@ run tests by pattern
 generate coverage report (in target/sites/jacoco)
 > mvn jacoco:report
 
+Setting up & running the JS tests
+-----------------------
+> cd src/test/js
+> npm i
+> node [test file name] [test name]
+
+generate the test classes
+> jjjrmi -d src/test/java/ca/frar/jjjrmi/testclasses/ -o src/test/js/testclasses/

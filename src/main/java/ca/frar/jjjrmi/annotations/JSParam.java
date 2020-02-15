@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
  * @author edward
  */
 @Retention(value = RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
+@Target({ElementType.METHOD, ElementType.CONSTRUCTOR})
 @Repeatable(JSParams.class)
 public @interface JSParam {
     public String name();

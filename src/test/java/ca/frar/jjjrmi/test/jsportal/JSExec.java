@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ca.frar.jjjrm.test.jsportal;
+package ca.frar.jjjrmi.test.jsportal;
 
 import ca.frar.jjjrmi.demo.TranslatorJSDemo;
 import java.io.BufferedReader;

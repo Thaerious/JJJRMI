@@ -27,7 +27,7 @@ class ObjectDecoder {
         if (HandlerFactory.getInstance().hasHandler(this.aClass)) {
             let handlerClass = HandlerFactory.getInstance().getHandler(this.aClass);
             this.handler = handlerClass.getConstructor(EncodedResult.class).newInstance(this.encodedResult);
-            this.result = this.handler.getInstance();
+            this.result = this.handler.doGetInstance();
         } else {
             this.result = new this.aClass();
         }

@@ -22,10 +22,19 @@ abstract public class AHandler<T> {
     private final EncodedResult encodedResult;
     private JSONObject jsonFields;
     private HashMap<String, Field> fields = new HashMap<>();
+    private T instance;
 
+
+    
     @NativeJS
     public AHandler(EncodedResult encodedResult){
         this.encodedResult = encodedResult;        
+    }
+
+    @NativeJS
+    public final T doGetInstance(){
+        this.instance = this.getInstance();
+        return this.instance;
     }
     
     @NativeJS
@@ -51,10 +60,11 @@ abstract public class AHandler<T> {
     abstract public void encode(T object) throws EncoderException;
 
     @NativeJS
-    public final <T> T decodeField(String fieldName, Class<?> type) throws DecoderException {  
-        JSONObject jsonField = jsonFields.getJSONObject(fieldName);
+    public final <T> T decodeField(String jsonFieldName, String pojoFieldName) throws DecoderException {  
+        Field field = this.fields.get(pojoFieldName);
+        JSONObject jsonField = jsonFields.getJSONObject(jsonFieldName);
         Translator translator = encodedResult.getTranslator();
-        Object decoded = new Decoder(jsonField, translator, type).decode();
+        Object decoded = new Decoder(jsonField, translator, field.getType()).decode();
         return (T) decoded;
     }
 

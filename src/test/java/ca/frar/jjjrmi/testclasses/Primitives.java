@@ -1,5 +1,7 @@
 package ca.frar.jjjrmi.testclasses;
 import ca.frar.jjjrmi.annotations.JJJ;
+import ca.frar.jjjrmi.annotations.JSParam;
+import ca.frar.jjjrmi.annotations.NativeJS;
 
 @JJJ(retain = false)
 public class Primitives {
@@ -9,13 +11,15 @@ public class Primitives {
     public byte bite = 7;
     public char car = 'a';
     public short shrt = 100;
-    public long loooong = (long)Integer.MAX_VALUE * (long)10;
+    public long loooong = 0x7fffffff * (long)10;
     public double duble = 1.2;
     public float f = (float) 1.2;
     public int i = -1;
     
     public Primitives(){}
     
+    @NativeJS()
+    @JSParam(name = "x", init = "7")
     public Primitives(int x){
         string = "alpha" + x;
         bt = x % 2 == 0;

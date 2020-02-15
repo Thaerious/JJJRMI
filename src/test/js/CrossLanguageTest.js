@@ -36,6 +36,7 @@ if (process.argv.length === 2) {
     });
 
     rl.on('line', function (line) {
+        if (!test[line]) throw "Test not found: " + line;
         test[line]();
         process.exit();
     });

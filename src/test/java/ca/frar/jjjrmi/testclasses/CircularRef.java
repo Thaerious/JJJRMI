@@ -5,18 +5,21 @@
  */
 package ca.frar.jjjrmi.testclasses;
 
+import ca.frar.jjjrmi.annotations.JJJ;
+
 /**
  *
  * @author Ed Armstrong
  */
-public class Circular {
-    private final Circular target;
+@JJJ
+public class CircularRef {
+    private final CircularRef target;
  
-    public Circular(){
-        this.target = new Circular(new Circular(this));
+    public CircularRef(){
+        this.target = new CircularRef(new CircularRef(this));
     }
     
-    public Circular(Circular target){
+    public CircularRef(CircularRef target){
         this.target = target;
     }
     
