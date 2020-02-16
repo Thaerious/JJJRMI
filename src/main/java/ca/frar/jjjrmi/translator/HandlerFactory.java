@@ -7,7 +7,6 @@ package ca.frar.jjjrmi.translator;
 
 import static ca.frar.jjjrmi.Global.LOGGER;
 import static ca.frar.jjjrmi.Global.VERY_VERBOSE;
-import ca.frar.jjjrmi.translator.encoder.AHandler;
 import ca.frar.jjjrmi.annotations.Handles;
 import java.util.Collection;
 import java.util.HashMap;

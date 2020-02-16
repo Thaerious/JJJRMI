@@ -1,4 +1,4 @@
-package ca.frar.jjjrmi.translator.encoder;
+package ca.frar.jjjrmi.translator;
 import ca.frar.jjjrmi.annotations.JJJ;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.translator.Constants;

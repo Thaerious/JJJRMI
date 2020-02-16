@@ -1,4 +1,5 @@
-package ca.frar.jjjrmi.translator.encoder;
+package ca.frar.jjjrmi.translator;
+import ca.frar.jjjrmi.translator.TranslatorResult;
 import ca.frar.jjjrmi.annotations.JJJ;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.annotations.Transient;
@@ -21,22 +22,32 @@ import org.json.JSONObject;
  * @author Ed Armstrong
  */
 @JJJ(insertJJJMethods=false)
-public class EncodedObject extends JSONObject{    
+public class EncodedObject {    
     final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JSONObject");
     private final Object object;
-    protected final JSONObject fields;
-    private final EncodedResult encodedResult;
+    protected final JSONObject json;
+    private final TranslatorResult encodedResult;
 
     @NativeJS
-    public EncodedObject(Object object, EncodedResult encodedResult) throws EncoderException {        
+    public EncodedObject(Object object, TranslatorResult encodedResult) throws EncoderException {        
         this.object = object;
-        this.fields = new JSONObject();
+        this.json = new JSONObject();
         this.encodedResult = encodedResult;        
         
-        this.put(Constants.KeyParam, encodedResult.getTranslator().allocReference(object));
-        this.put(Constants.TypeParam, object.getClass().getName());
-        this.put(Constants.FieldsParam, fields);
+        this.json.put(Constants.KeyParam, encodedResult.getTranslator().allocReference(object));
+        this.json.put(Constants.TypeParam, object.getClass().getName());
+        this.json.put(Constants.FieldsParam, new JSONObject());
     }
+    
+    public EncodedObject(Object object, TranslatorResult encodedResult, JSONObject json) throws EncoderException {        
+        this.object = object;
+        this.json = json;
+        this.encodedResult = encodedResult;        
+        
+        this.json.put(Constants.KeyParam, encodedResult.getTranslator().allocReference(object));
+        this.json.put(Constants.TypeParam, object.getClass().getName());
+        this.json.put(Constants.FieldsParam, new JSONObject());
+    }    
     
     /**
     Will only encode @JJJ annotated classes.
@@ -58,6 +69,11 @@ public class EncodedObject extends JSONObject{
         
         encodedResult.getTranslator().notifyEncode(object);
     }
+  
+    @NativeJS
+    void setFieldData(String name, JSONObject json) throws EncoderException, IllegalArgumentException, IllegalAccessException {
+        this.json.getJSONObject(Constants.FieldsParam).put(name, json);
+    }    
     
     @NativeJS
     public void setField(Field field) throws EncoderException, IllegalArgumentException, IllegalAccessException {
@@ -66,6 +82,22 @@ public class EncodedObject extends JSONObject{
         if (Modifier.isStatic(field.getModifiers())) return;        
         
         JSONObject toJSON = new Encoder(field.get(this.object), this.encodedResult).encode();
-        this.fields.put(field.getName(), toJSON);
+        this.setFieldData(field.getName(), toJSON);
+    }
+    
+    JSONObject getField(String fieldName){
+        return this.json.getJSONObject(Constants.FieldsParam).getJSONObject(fieldName);
+    }
+
+    public String getType(){
+        return this.json.getString(Constants.TypeParam);
+    }
+    
+    public String getKey(){
+        return this.json.getString(Constants.KeyParam);
+    }
+
+    public JSONObject toJSON(){
+        return this.json;
     }
 }

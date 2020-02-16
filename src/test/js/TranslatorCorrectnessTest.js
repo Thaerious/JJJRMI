@@ -13,6 +13,7 @@ class TranslatorCorrectnessTest {
         translator.classRegistry.registerPackage(require("./testclasses/packageFile.js"));
         let object = new HasHandler(2, 5);
         let encoded = translator.encode(object);
+        console.log(encoded);
         translator.clear();
         let decoded = translator.decode(encoded);
         assertEquals(7, decoded.z);

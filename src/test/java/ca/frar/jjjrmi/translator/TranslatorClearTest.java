@@ -10,7 +10,6 @@ import ca.frar.jjjrmi.exceptions.EncoderException;
 import ca.frar.jjjrmi.testclasses.ArrayWrapper;
 import org.junit.jupiter.api.Test;
 import ca.frar.jjjrmi.testclasses.Simple;
-import ca.frar.jjjrmi.translator.encoder.EncodedResult;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -51,9 +50,9 @@ public class TranslatorClearTest {
     public void test_clear_then_decode() throws EncoderException, DecoderException {
         Translator translator = new Translator();
         ArrayWrapper arrayWrapper = new ArrayWrapper();
-        EncodedResult encoded = translator.encode(arrayWrapper);
+        TranslatorResult encoded = translator.encode(arrayWrapper);
         translator.clear();
-        Object decode = translator.decode(encoded);
+        Object decode = translator.decode(encoded.toString());
         assertEquals(arrayWrapper.getClass(), decode.getClass());
     }    
 }

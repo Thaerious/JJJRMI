@@ -1,4 +1,5 @@
-package ca.frar.jjjrmi.translator.encoder;
+package ca.frar.jjjrmi.translator;
+import ca.frar.jjjrmi.translator.TranslatorResult;
 import static ca.frar.jjjrmi.Global.LOGGER;
 import ca.frar.jjjrmi.annotations.JJJ;
 import ca.frar.jjjrmi.annotations.NativeJS;
@@ -8,7 +9,7 @@ import ca.frar.jjjrmi.exceptions.EncoderException;
 import ca.frar.jjjrmi.socket.JJJObject;
 import ca.frar.jjjrmi.translator.Constants;
 import ca.frar.jjjrmi.translator.Translator;
-import ca.frar.jjjrmi.translator.decoder.Decoder;
+import ca.frar.jjjrmi.translator.Decoder;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -21,13 +22,13 @@ import org.json.JSONObject;
  */
 @JJJ(insertJJJMethods=false)
 abstract public class AHandler<T> {
-    private final EncodedResult encodedResult;
-    private JSONObject jsonFields;
+    private final TranslatorResult encodedResult;
     private HashMap<String, Field> fields = new HashMap<>();
     private T instance;
+    private EncodedObject encodedObject;
     
     @NativeJS
-    public AHandler(EncodedResult encodedResult){
+    public AHandler(TranslatorResult encodedResult){
         this.encodedResult = encodedResult;        
     }
 
@@ -39,15 +40,14 @@ abstract public class AHandler<T> {
     
     @NativeJS
     public final EncodedObject doEncode(Object object) throws EncoderException{
-        EncodedObject encodedObject = new EncodedObject(object, encodedResult);
-        this.jsonFields = encodedObject.fields;
+        this.encodedObject = new EncodedObject(object, encodedResult);        
         this.encode((T) object);
         return encodedObject;
     }
     
     @NativeJS
-    public final T doDecode(Object t, JSONObject json) throws DecoderException{
-        this.jsonFields = json.getJSONObject(Constants.FieldsParam);
+    public final T doDecode(Object t, EncodedObject json) throws DecoderException{
+        this.encodedObject = encodedObject;
         this.setupFields(t.getClass());
         this.decode((T)t);
         return (T)t;
@@ -62,7 +62,7 @@ abstract public class AHandler<T> {
     @NativeJS
     public final <T> T decodeField(String jsonFieldName, String pojoFieldName) throws DecoderException {  
         Field field = this.fields.get(pojoFieldName);
-        JSONObject jsonField = jsonFields.getJSONObject(jsonFieldName);
+        JSONObject jsonField = this.encodedObject.getField(jsonFieldName);
         Translator translator = encodedResult.getTranslator();
         Class<?> type = field.getType();
         Object decoded = new Decoder(jsonField, translator, type).decode();
@@ -83,9 +83,13 @@ abstract public class AHandler<T> {
      * @throws EncoderException 
      */
     @NativeJS
-    public final void encodeField(String field, Object value) throws EncoderException {
-        JSONObject toJSON = new Encoder(value, this.encodedResult).encode();
-        this.jsonFields.put(field, toJSON);
+    public final void encodeField(String name, Object value) throws EncoderException {
+        try {
+            JSONObject toJSON = new Encoder(value, this.encodedResult).encode();
+            this.encodedObject.setFieldData(name, toJSON);
+        } catch (IllegalArgumentException | IllegalAccessException ex) {
+            throw new EncoderException(ex);
+        }
     }
     
     private void setupFields(Class<?> aClass) {

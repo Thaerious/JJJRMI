@@ -1,4 +1,4 @@
-package ca.frar.jjjrmi.translator.decoder;
+package ca.frar.jjjrmi.translator;
 
 import static ca.frar.jjjrmi.Global.LOGGER;
 import ca.frar.jjjrmi.annotations.JJJ;

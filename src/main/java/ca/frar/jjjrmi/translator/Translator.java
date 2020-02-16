@@ -1,10 +1,6 @@
 package ca.frar.jjjrmi.translator;
 import ca.frar.jjjrmi.annotations.JJJ;
 import ca.frar.jjjrmi.annotations.NativeJS;
-import ca.frar.jjjrmi.translator.encoder.AHandler;
-import ca.frar.jjjrmi.translator.decoder.ObjectDecoder;
-import ca.frar.jjjrmi.translator.encoder.EncodedResult;
-import ca.frar.jjjrmi.translator.encoder.EncodedObject;
 import ca.frar.jjjrmi.exceptions.DecoderException;
 import ca.frar.jjjrmi.exceptions.EncoderException;
 import ca.frar.jjjrmi.exceptions.MissingReferenceException;
@@ -44,7 +40,7 @@ public final class Translator {
      * @return 
      */
     @NativeJS
-    public boolean removeByValue(Object obj) {
+    boolean removeByValue(Object obj) {
         if (!objectMap.containsValue(obj)) {
             return false;
         }
@@ -63,7 +59,7 @@ public final class Translator {
      * @param object
      */
     @NativeJS
-    public void addTempReference(String reference, Object object) {
+    void addTempReference(String reference, Object object) {
         this.objectMap.put(reference, object);
         this.tempReferences.add(reference);
     }
@@ -87,7 +83,7 @@ public final class Translator {
      * @return
      */
     @NativeJS
-    public String allocReference(Object object) {
+    String allocReference(Object object) {
         String key = referencePrequel + (nextKey++);
         this.addReference(key, object);
         return key;
@@ -100,7 +96,7 @@ public final class Translator {
      * @param object
      */
     @NativeJS
-    public void addReference(String reference, Object object) {
+    void addReference(String reference, Object object) {
         this.objectMap.put(reference, object);
     }
 
@@ -111,7 +107,7 @@ public final class Translator {
      * @return
      */
     @NativeJS
-    public boolean hasReference(String reference) {
+    boolean hasReference(String reference) {
         return objectMap.containsKey(reference);
     }
 
@@ -122,7 +118,7 @@ public final class Translator {
      * @return
      */
     @NativeJS
-    public boolean hasReferredObject(Object object) {
+    boolean hasReferredObject(Object object) {
         return objectMap.containsValue(object);
     }
 
@@ -163,6 +159,13 @@ public final class Translator {
         return new ArrayList<>(values);
     }
 
+    public String removeReferredObject(Object object){
+        if (!this.hasReferredObject(object)) throw new RuntimeException("Unknown object");
+        String reference = this.getReference(object);
+        this.removeByValue(object);
+        return reference;
+    }
+    
     /**
      * Clear all memory of sent objects. Use if the client of a websocket
      * refreshes the browser before resending objects. Does not reset the
@@ -186,46 +189,8 @@ public final class Translator {
      * @return
      */
     @NativeJS
-    public final EncodedResult encode(Object object) throws EncoderException {
-        if (object == null) throw new RootException();
-        EncodedResult encodedResult = new EncodedResult(this);
-
-        if (this.hasReferredObject(object)) {
-            encodedResult.setRoot(this.getReference(object));
-            return encodedResult;
-        } else if (HandlerFactory.getInstance().hasHandler(object.getClass())) {
-            encodeHandled(object, encodedResult);
-        } else {
-            encodeUnhandled(object, encodedResult);
-        }
-        return encodedResult;
-    }
-
-    @NativeJS
-    private void encodeHandled(Object object, EncodedResult encodedResult) throws EncoderException {
-        try {
-            Class<? extends AHandler<?>> handlerClass = HandlerFactory.getInstance().getHandler(object.getClass());
-            AHandler<?> handler = handlerClass.getConstructor(EncodedResult.class).newInstance(encodedResult);
-            EncodedObject encodedObject = handler.doEncode(object);
-            encodedResult.put(encodedObject);
-            encodedResult.setRoot(this.getReference(object));
-            this.clearTempReferences();
-        } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            throw new EncoderException(ex, object);
-        }
-    }
-
-    @NativeJS
-    private void encodeUnhandled(Object object, EncodedResult encodedResult) throws EncoderException {
-        try {
-            EncodedObject encodedObject = new EncodedObject(object, encodedResult);
-            encodedResult.put(encodedObject);
-            encodedResult.setRoot(this.getReference(object));
-            encodedObject.encode();
-            this.clearTempReferences();
-        } catch (IllegalArgumentException | IllegalAccessException ex) {
-            throw new EncoderException(ex, object);
-        }
+    public final TranslatorResult encode(Object object) throws EncoderException {
+        return new TranslatorResult(this).encodeFromObject(object);
     }
 
     /**
@@ -237,26 +202,8 @@ public final class Translator {
      * @throws ca.frar.jjjrmi.exceptions.DecoderException
      */
     @NativeJS
-    public final Object decode(EncodedResult encodedResult) throws DecoderException {
-        ArrayList<ObjectDecoder> list = new ArrayList<>();        
-        
-        for (JSONObject jsonObject : encodedResult.getAllObjects()) {
-            String key = jsonObject.getString(Constants.KeyParam);
-            if (this.hasReference(key)) continue;
-            list.add(new ObjectDecoder(encodedResult, jsonObject, this));
-        }
-        for (ObjectDecoder decoder : list) {
-            decoder.makeReady();
-        }
-        for (ObjectDecoder decoder : list) {
-            decoder.decode();
-        }
-
-        return this.getReferredObject(encodedResult.getRoot());
-    }
-
-    public final Object decode(String source) throws DecoderException {
-        return decode(new EncodedResult(this, source));
+    public final TranslatorResult decode(String source) throws DecoderException {
+        return new TranslatorResult(this).decodeFromString(source);
     }
 
     public void addEncodeListener(Consumer<Object> lst) {

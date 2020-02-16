@@ -1,6 +1,6 @@
 package ca.frar.jjjrmi.socket;
-import ca.frar.jjjrmi.translator.encoder.AHandler;
-import ca.frar.jjjrmi.translator.encoder.EncodedResult;
+import ca.frar.jjjrmi.translator.AHandler;
+import ca.frar.jjjrmi.translator.TranslatorResult;
 import static ca.frar.jjjrmi.Global.VERY_VERBOSE;
 import ca.frar.jjjrmi.exceptions.EncoderException;
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
@@ -91,8 +91,7 @@ public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, S
         for (Session session : this.sessionTranslators.keySet()) {
             try {
                 Translator translator = getTranslator(session);
-                String key = translator.getReference(forgettable);
-                translator.removeByValue(forgettable);
+                String key = translator.removeReferredObject(forgettable);
                 this.sendObject(session, new ForgetMessage(key));
             } catch (InvalidJJJSessionException | JJJRMIException | IOException ex) {
                 LOGGER.catching(ex);
@@ -105,7 +104,7 @@ public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, S
         try {
             synchronized (this) {
                 Translator translator = getTranslator(session);
-                ClientMessage clientMessage = (ClientMessage) translator.decode(message);
+                ClientMessage clientMessage = (ClientMessage) translator.decode(message).getRoot();
 
                 JJJReceiveEvent rmiReceiveEvent = new JJJReceiveEvent(session, clientMessage, message);
                 this.observers.receive(rmiReceiveEvent);
@@ -217,7 +216,7 @@ public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, S
         synchronized (this) {
             try {
                 LOGGER.log(VERY_VERBOSE, msg.getClass().getSimpleName());
-                EncodedResult encoded = translator.encode(msg);
+                TranslatorResult encoded = translator.encode(msg);
                 String exAsString = encoded.toString();
                 session.getBasicRemote().sendText(exAsString);
 

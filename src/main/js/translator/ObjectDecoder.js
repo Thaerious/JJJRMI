@@ -6,6 +6,7 @@ const EncodedResult = require("./EncodedResult");
 class ObjectDecoder {
     constructor(encodedResult, json, translator) {
         this.json = json;
+        if (!json.type) throw new Error();
         this.translator = translator;
         this.encodedResult = encodedResult;
     }
@@ -21,8 +22,8 @@ class ObjectDecoder {
         }
     }
     makeReady() {
-        this.aClass = this.translator.classMap.get(this.json[Constants.TypeParam]);
-        if (this.aClass === null) throw new Error("ca.frar.jjjrmi.exceptions.UnknownClassException");
+        this.aClass = this.translator.classRegistry.getClass(this.json[Constants.TypeParam]);        
+        if (this.aClass === null) throw new Error("ca.frar.jjjrmi.exceptions.UnknownClassException: " + this.json[Constants.TypeParam]);
 
         if (HandlerFactory.getInstance().hasHandler(this.aClass)) {
             let handlerClass = HandlerFactory.getInstance().getHandler(this.aClass);

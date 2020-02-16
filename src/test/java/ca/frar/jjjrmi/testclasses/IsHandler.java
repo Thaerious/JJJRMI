@@ -11,8 +11,8 @@ import ca.frar.jjjrmi.annotations.JJJ;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.exceptions.DecoderException;
 import ca.frar.jjjrmi.exceptions.EncoderException;
-import ca.frar.jjjrmi.translator.encoder.AHandler;
-import ca.frar.jjjrmi.translator.encoder.EncodedResult;
+import ca.frar.jjjrmi.translator.AHandler;
+import ca.frar.jjjrmi.translator.TranslatorResult;
 
 /**
  *
@@ -22,7 +22,7 @@ import ca.frar.jjjrmi.translator.encoder.EncodedResult;
 @JJJ
 public class IsHandler extends AHandler<HasHandler>{
 
-    public IsHandler(EncodedResult encodedResult) {
+    public IsHandler(TranslatorResult encodedResult) {
         super(encodedResult);
     }
 

@@ -4,14 +4,12 @@
  * and open the template in the editor.
  */
 package ca.frar.jjjrmi.translator;
-
-import ca.frar.jjjrmi.exceptions.EncoderException;
+import ca.frar.jjjrmi.exceptions.JJJRMIException;
 import ca.frar.jjjrmi.exceptions.RootException;
 import ca.frar.jjjrmi.testclasses.Has;
 import ca.frar.jjjrmi.testclasses.HasHandler;
 import ca.frar.jjjrmi.testclasses.Primitives;
 import ca.frar.jjjrmi.testclasses.Simple;
-import ca.frar.jjjrmi.translator.encoder.EncodedResult;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
@@ -28,12 +26,11 @@ public class EncoderSanityTest {
      * @throws EncoderException
      */
     @Test
-    public void test_simple_class() throws EncoderException{
+    public void test_simple_class() throws JJJRMIException{
         Translator translator = new Translator();
         Simple object = new Simple();
-        EncodedResult result = translator.encode(object);
-        assertEquals(1, result.getAllObjects().size());
-        assertTrue(result.has(Constants.RootObject));
+        TranslatorResult result = translator.encode(object);
+        assertEquals(1, result.newObjectCount());
     }
 
     /**
@@ -42,33 +39,30 @@ public class EncoderSanityTest {
      * @throws EncoderException
      */
     @Test
-    public void test_simple_class_same() throws EncoderException{
+    public void test_simple_class_same() throws JJJRMIException{
         Translator translator = new Translator();
         Simple object = new Simple();
-        EncodedResult result1 = translator.encode(object);
-        EncodedResult result2 = translator.encode(object);
+        TranslatorResult result1 = translator.encode(object);
+        TranslatorResult result2 = translator.encode(object);
 
-        assertEquals(0, result2.getAllObjects().size());
-        assertEquals(result1.getString(Constants.RootObject), result2.getString(Constants.RootObject));
-        assertTrue(result1.has(Constants.RootObject));
+        assertEquals(0, result2.newObjectCount());
+        assertEquals(result1.getRoot(), result2.getRoot());
     }
 
     @Test
-    public void test_has_null_field() throws EncoderException{
+    public void test_has_null_field() throws JJJRMIException{
         Translator translator = new Translator();
         Has<Object> object = new Has<>(null);
-        EncodedResult result = translator.encode(object);
-        assertEquals(1, result.getAllObjects().size());
-        assertTrue(result.has(Constants.RootObject));
+        TranslatorResult result = translator.encode(object);
+        assertEquals(1, result.newObjectCount());
     }
 
     @Test
-    public void test_all_primatives() throws EncoderException{
+    public void test_all_primatives() throws JJJRMIException{
         Translator translator = new Translator();
         Primitives object = new Primitives();
-        EncodedResult result = translator.encode(object);
-        assertEquals(1, result.getAllObjects().size());
-        assertTrue(result.has(Constants.RootObject));
+        TranslatorResult result = translator.encode(object);
+        assertEquals(1, result.newObjectCount());
     }
 
     /**
@@ -76,83 +70,78 @@ public class EncoderSanityTest {
      * @throws EncoderException
      */
     @Test
-    public void test_root_is_null_throws_exception() throws EncoderException{
+    public void test_root_is_null_throws_exception() throws JJJRMIException{
         Translator translator = new Translator();
         Object object = null;
 
         assertThrows(RootException.class, () -> {
-            EncodedResult result = translator.encode(object);
+            TranslatorResult result = translator.encode(object);
         });
     }
 
     /**
      * An object references a previously encoded object.
      * There will only be one new object.
-     * @throws EncoderException
+     * @throws JJJRMIException
      */
     @Test
-    public void test_previously_encoded() throws EncoderException{
+    public void test_previously_encoded() throws JJJRMIException{
         Translator translator = new Translator();
         Simple simple = new Simple();
         Has<Simple> has = new Has<>(simple);
         translator.encode(simple);
-        EncodedResult result = translator.encode(has);
-        assertEquals(1, result.getAllObjects().size());
-        assertTrue(result.has(Constants.RootObject));
+        TranslatorResult result = translator.encode(has);
+        assertEquals(1, result.newObjectCount());
     }
 
     /**
      * Encoded object has object not previously encoded.
      * Both will be new objects.
-     * @throws EncoderException
+     * @throws JJJRMIException
      */
     @Test
-    public void test_not_previously_encoded() throws EncoderException{
+    public void test_not_previously_encoded() throws JJJRMIException{
         Translator translator = new Translator();
         Simple simple = new Simple();
         Has<Simple> has = new Has<>(simple);
-        EncodedResult result = translator.encode(has);
-        assertEquals(2, result.getAllObjects().size());
-        assertTrue(result.has(Constants.RootObject));
+        TranslatorResult result = translator.encode(has);
+        assertEquals(2, result.newObjectCount());
     }
 
     /**
      * Encoded object contains an array of primitives.
-     * @throws EncoderException
+     * @throws JJJRMIException
      */
     @Test
-    public void test_array_of_int() throws EncoderException{
+    public void test_array_of_int() throws JJJRMIException{
         Translator translator = new Translator();
         int[] array = new int[3];
         Has<int[]> has = new Has<>(array);
-        EncodedResult result = translator.encode(has);
-        assertEquals(1, result.getAllObjects().size());
-        assertTrue(result.has(Constants.RootObject));
+        TranslatorResult result = translator.encode(has);
+        assertEquals(1, result.newObjectCount());
     }
     
     /**
      * Encode a root object which has a handler.
-     * @throws EncoderException
+     * @throws JJJRMIException
      */
     @Test
-    public void test_handler() throws EncoderException{
+    public void test_handler() throws JJJRMIException{
         Translator translator = new Translator();
-        EncodedResult result = translator.encode(new HasHandler(1, 2.3f));
-        assertEquals(1, result.getAllObjects().size());
-        assertTrue(result.has(Constants.RootObject));
+        TranslatorResult result = translator.encode(new HasHandler(1, 2.3f));
+        assertEquals(1, result.newObjectCount());
     }    
     
     /**
      * Encode non-root object which has a handler.
-     * @throws EncoderException
+     * @throws JJJRMIException
      */
     @Test
-    public void test_handler_as_field() throws EncoderException{
+    public void test_handler_as_field() throws JJJRMIException{
         Translator translator = new Translator();
         HasHandler hasHandler = new HasHandler(1, 2.3f);
         Has<HasHandler> has = new Has<HasHandler>(hasHandler);
-        EncodedResult result = translator.encode(has);
-        assertEquals(2, result.getAllObjects().size());
-        assertTrue(result.has(Constants.RootObject));
+        TranslatorResult result = translator.encode(has);
+        assertEquals(2, result.newObjectCount());
     }        
 }

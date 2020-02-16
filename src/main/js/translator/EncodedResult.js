@@ -4,31 +4,28 @@ const Constants = require("./Constants");
 class EncodedResult {
     constructor(translator) {
         this.translator = translator;
-        this.json = {
-            [Constants.NewObjects] : {}
-        };
+        this[Constants.NewObjects] = {}
     }
     getAllObjects() {
         let list = [];
-        for (let key in this.json[Constants.NewObjects]) {
-            list.push(this.json[Constants.NewObjects][key]);
+        for (let key in this[Constants.NewObjects]) {
+            list.push(this[Constants.NewObjects][key]);
         }
         return list;
     }
     getRoot() {
-        return this.json[Constants.RootObject];
+        return this[Constants.RootObject];
     }
     getTranslator() {
         return this.translator;
     }
     put(encodedObject) {
         let key = encodedObject.json[Constants.KeyParam];
-        this.json[Constants.NewObjects][key] = encodedObject;
+        this[Constants.NewObjects][key] = encodedObject;
     }
     setRoot(rootKey) {
-        this.json[Constants.RootObject] = rootKey;
-    }
-    
+        this[Constants.RootObject] = rootKey;
+    }    
     toString(indent = 0){
         return JSON.stringify(this, null, indent);
     }

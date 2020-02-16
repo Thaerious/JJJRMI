@@ -3,7 +3,6 @@ package ca.frar.jjjrmi.translator;
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
 import ca.frar.jjjrmi.exceptions.MissingConstructorException;
 import ca.frar.jjjrmi.exceptions.MissingReferenceException;
-import ca.frar.jjjrmi.translator.encoder.EncodedResult;
 import ca.frar.jjjrmi.testclasses.ArrayWrapper;
 import ca.frar.jjjrmi.testclasses.Has;
 import ca.frar.jjjrmi.testclasses.HasHandler;
@@ -31,8 +30,8 @@ public class TranslatorCorrectnessTest {
     public void test_simple() throws JJJRMIException {
         Translator translator = new Translator();
         Simple object = new Simple();
-        EncodedResult encoded = translator.encode(object);
-        Object decoded = translator.decode(encoded);
+        TranslatorResult encoded = translator.encode(object);
+        Object decoded = translator.decode(encoded.toString());
 
         assertEquals(Simple.class, decoded.getClass());
         assertEquals(object, decoded);
@@ -47,8 +46,8 @@ public class TranslatorCorrectnessTest {
     public void test_simple_retain_values() throws JJJRMIException {
         Translator translator = new Translator();
         Has<Integer> object = new Has<>(3);
-        EncodedResult encoded = translator.encode(object);
-        Object decoded = translator.decode(encoded);
+        TranslatorResult encoded = translator.encode(object);
+        Object decoded = translator.decode(encoded.toString());
         object.set(7);
 
         assertEquals(Has.class, decoded.getClass());
@@ -67,8 +66,8 @@ public class TranslatorCorrectnessTest {
         Translator translator1 = new Translator();
         Translator translator2 = new Translator();
         Simple object = new Simple();
-        EncodedResult encoded = translator1.encode(object);
-        Object decoded = translator2.decode(encoded);
+        TranslatorResult encoded = translator1.encode(object);
+        Object decoded = translator2.decode(encoded.toString());
 
         assertEquals(Simple.class, decoded.getClass());
         assertNotEquals(object, decoded);
@@ -81,8 +80,8 @@ public class TranslatorCorrectnessTest {
     public void test_array_as_field_00() throws JJJRMIException {
         Translator translator = new Translator();
         ArrayWrapper arrayWrapper = new ArrayWrapper();
-        EncodedResult encoded = translator.encode(arrayWrapper);
-        ArrayWrapper decoded = (ArrayWrapper) translator.decode(encoded);
+        TranslatorResult encoded = translator.encode(arrayWrapper);
+        ArrayWrapper decoded = (ArrayWrapper) translator.decode(encoded.toString()).getRoot();
         assertEquals(arrayWrapper.hashCode(), decoded.hashCode());
     }
 
@@ -93,11 +92,11 @@ public class TranslatorCorrectnessTest {
     public void test_array_as_field_02() throws JJJRMIException {
         Translator translator = new Translator();
         ArrayWrapper arrayWrapper = new ArrayWrapper();
-        EncodedResult encoded = translator.encode(arrayWrapper);
+        TranslatorResult encoded = translator.encode(arrayWrapper);
         translator.clear();
 
         assertFalse(translator.hasReference("S0"));
-        ArrayWrapper decoded = (ArrayWrapper) translator.decode(encoded);
+        ArrayWrapper decoded = (ArrayWrapper) translator.decode(encoded.toString()).getRoot();
         assertNotEquals(arrayWrapper.hashCode(), decoded.hashCode());
         assertEquals(Arrays.toString(arrayWrapper.arrayField), Arrays.toString(decoded.arrayField));
     }
@@ -106,10 +105,10 @@ public class TranslatorCorrectnessTest {
     public void test_primitives() throws JJJRMIException {
         Translator translator = new Translator();
         Primitives object = new Primitives(9);
-        EncodedResult encoded = translator.encode(object);
+        TranslatorResult encoded = translator.encode(object);
         translator.clear();
 
-        Primitives decoded = (Primitives) translator.decode(encoded);
+        Primitives decoded = (Primitives) translator.decode(encoded.toString()).getRoot();
         assertTrue(object.equals(decoded));
     }
 
@@ -117,10 +116,10 @@ public class TranslatorCorrectnessTest {
     public void test_primitives_from_super() throws JJJRMIException {
         Translator translator = new Translator();
         PrimitivesExtended object = new PrimitivesExtended(9);
-        EncodedResult encoded = translator.encode(object);
+        TranslatorResult encoded = translator.encode(object);
         translator.clear();
 
-        Primitives decoded = (PrimitivesExtended) translator.decode(encoded);
+        Primitives decoded = (PrimitivesExtended) translator.decode(encoded.toString()).getRoot();
         assertTrue(object.equals(decoded));
     }
 
@@ -129,9 +128,9 @@ public class TranslatorCorrectnessTest {
         assertThrows(MissingConstructorException.class, () -> {
             Translator translator = new Translator();
             MissingConstructor object = new MissingConstructor(5);
-            EncodedResult encoded = translator.encode(object);
+            TranslatorResult encoded = translator.encode(object);
             translator.clear();
-            translator.decode(encoded);
+            translator.decode(encoded.toString());
         });
     }
 
@@ -139,10 +138,10 @@ public class TranslatorCorrectnessTest {
     public void test_null() throws JJJRMIException {
         Translator translator = new Translator();
         Has<Object> object = new Has<>(null);
-        EncodedResult encoded = translator.encode(object);
+        TranslatorResult encoded = translator.encode(object);
         translator.clear();
 
-        Has<Object> decoded = (Has<Object>) translator.decode(encoded);
+        Has<Object> decoded = (Has<Object>) translator.decode(encoded.toString()).getRoot();
         assertEquals(null, decoded.get());
     }
     
@@ -151,8 +150,8 @@ public class TranslatorCorrectnessTest {
         Translator translator = new Translator();
         Has<Object> object = new Has<>(null);
         translator.encode(object);
-        EncodedResult encoded = translator.encode(object);
-        Object decoded = translator.decode(encoded);
+        TranslatorResult encoded = translator.encode(object);
+        Object decoded = translator.decode(encoded.toString());
         assertEquals(object, decoded);
     }
     
@@ -167,9 +166,9 @@ public class TranslatorCorrectnessTest {
         Has<Simple> has1 = new Has<>(simple);
         translator.encode(has1);
         Has<Simple> has2 = new Has<>(simple);
-        EncodedResult encoded = translator.encode(has2); 
+        TranslatorResult encoded = translator.encode(has2); 
         translator.removeByValue(has2);
-        Has<Simple> decoded = (Has<Simple>) translator.decode(encoded);
+        Has<Simple> decoded = (Has<Simple>) translator.decode(encoded.toString()).getRoot();
         assertEquals(has1.get(), decoded.get());
     }    
         
@@ -178,9 +177,9 @@ public class TranslatorCorrectnessTest {
         Translator translator = new Translator();
         boolean[] array = new boolean[0];
         Has<boolean[]> object = new Has<>(array);
-        EncodedResult encoded = translator.encode(object);
+        TranslatorResult encoded = translator.encode(object);
         translator.clear();
-        Has<Object[]> decoded = (Has<Object[]>) translator.decode(encoded);
+        Has<Object[]> decoded = (Has<Object[]>) translator.decode(encoded.toString()).getRoot();
         assertEquals(0, decoded.get().length);
     }
    
@@ -188,9 +187,9 @@ public class TranslatorCorrectnessTest {
     public void test_string_generic() throws JJJRMIException {
         Translator translator = new Translator();
         Has<String> object = new Has<>("i am string");
-        EncodedResult encoded = translator.encode(object);
+        TranslatorResult encoded = translator.encode(object);
         translator.clear();
-        Has<String> decoded = (Has<String>) translator.decode(encoded);
+        Has<String> decoded = (Has<String>) translator.decode(encoded.toString()).getRoot();
         assertEquals("i am string", decoded.get());
     }   
     
@@ -198,9 +197,9 @@ public class TranslatorCorrectnessTest {
     public void test_int_generic() throws JJJRMIException {
         Translator translator = new Translator();
         Has<Integer> object = new Has<>(5);
-        EncodedResult encoded = translator.encode(object);
+        TranslatorResult encoded = translator.encode(object);
         translator.clear();
-        Has<Integer> decoded = (Has<Integer>) translator.decode(encoded);
+        Has<Integer> decoded = (Has<Integer>) translator.decode(encoded.toString()).getRoot();
         assertTrue(5 == decoded.get());
     }       
     
@@ -208,9 +207,9 @@ public class TranslatorCorrectnessTest {
     public void test_bool_generic() throws JJJRMIException {
         Translator translator = new Translator();
         Has<Boolean> object = new Has<>(true);
-        EncodedResult encoded = translator.encode(object);
+        TranslatorResult encoded = translator.encode(object);
         translator.clear();
-        Has<Boolean> decoded = (Has<Boolean>) translator.decode(encoded);
+        Has<Boolean> decoded = (Has<Boolean>) translator.decode(encoded.toString()).getRoot();
         assertTrue(decoded.get());
     }  
     
@@ -218,9 +217,9 @@ public class TranslatorCorrectnessTest {
     public void test_double_generic() throws JJJRMIException {
         Translator translator = new Translator();
         Has<Double> object = new Has<>(5.1);
-        EncodedResult encoded = translator.encode(object);
+        TranslatorResult encoded = translator.encode(object);
         translator.clear();
-        Has<Double> decoded = (Has<Double>) translator.decode(encoded);
+        Has<Double> decoded = (Has<Double>) translator.decode(encoded.toString()).getRoot();
         assertTrue(5.1 == decoded.get());
     }          
     
@@ -232,9 +231,9 @@ public class TranslatorCorrectnessTest {
     public void test_handler() throws JJJRMIException {
         Translator translator = new Translator();
         HasHandler object = new HasHandler(2, 5);
-        EncodedResult encoded = translator.encode(object);
+        TranslatorResult encoded = translator.encode(object);
         translator.clear();
-        HasHandler decoded = (HasHandler) translator.decode(encoded);
+        HasHandler decoded = (HasHandler) translator.decode(encoded.toString()).getRoot();
         assertEquals(7, decoded.z);
     }         
 

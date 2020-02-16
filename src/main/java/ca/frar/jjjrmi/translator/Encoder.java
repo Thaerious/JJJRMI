@@ -1,5 +1,6 @@
-package ca.frar.jjjrmi.translator.encoder;
+package ca.frar.jjjrmi.translator;
 
+import ca.frar.jjjrmi.translator.TranslatorResult;
 import ca.frar.jjjrmi.annotations.JJJ;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.exceptions.EncoderException;
@@ -23,10 +24,10 @@ public class Encoder {
 
     final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");
     private final Object object;
-    private final EncodedResult encodedResult;
+    private final TranslatorResult encodedResult;
 
     @NativeJS
-    public Encoder(Object object, EncodedResult encodedResult) {
+    public Encoder(Object object, TranslatorResult encodedResult) {
         this.object = object;
         this.encodedResult = encodedResult;
     }
@@ -55,7 +56,7 @@ public class Encoder {
             } else if (HandlerFactory.getInstance().hasHandler(object.getClass())) {
                 LOGGER.trace(" -- handler");
                 Class<? extends AHandler<?>> handlerClass = HandlerFactory.getInstance().getHandler(object.getClass());
-                AHandler<?> handler = handlerClass.getConstructor(EncodedResult.class).newInstance(this.encodedResult);
+                AHandler<?> handler = handlerClass.getConstructor(TranslatorResult.class).newInstance(this.encodedResult);
                 EncodedObject encodedObject = handler.doEncode(object);
                 encodedResult.put(encodedObject);
                 return new EncodedReference(encodedResult.getTranslator().getReference(object));

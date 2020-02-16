@@ -18,6 +18,11 @@ public class EncoderException extends JJJRMIException {
         this.object = object;
     }    
     
+    public EncoderException(Exception exception) {
+        super(exception);
+        this.object = null;
+    }        
+    
     public Object getObject() {
         return object;
     }
