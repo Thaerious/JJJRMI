@@ -79,7 +79,8 @@ public class TranslatorResult {
 
         for (String key : newObjects.keySet()) {
             if (this.translator.hasReference(key)) continue;
-            list.add(new ObjectDecoder(this, newObjects.getJSONObject(key)));
+            JSONObject jsonObject = newObjects.getJSONObject(key);
+            list.add(new ObjectDecoder(this, jsonObject));
         }
         for (ObjectDecoder decoder : list) {
             decoder.makeReady();
@@ -112,7 +113,9 @@ public class TranslatorResult {
 
     @NativeJS
     void put(EncodedObject encodedObject) {
-        this.json.getJSONObject(Constants.NewObjects).put(encodedObject.getKey(), encodedObject);
+        String key = encodedObject.getKey();
+        JSONObject toJSON = encodedObject.toJSON();
+        this.json.getJSONObject(Constants.NewObjects).put(key, toJSON);
     }
     
     @NativeJS

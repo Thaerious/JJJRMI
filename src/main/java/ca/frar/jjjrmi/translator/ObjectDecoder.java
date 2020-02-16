@@ -1,19 +1,12 @@
 package ca.frar.jjjrmi.translator;
-
-import static ca.frar.jjjrmi.Global.LOGGER;
 import ca.frar.jjjrmi.annotations.JJJ;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.annotations.Transient;
-import ca.frar.jjjrmi.translator.Decoder;
 import ca.frar.jjjrmi.exceptions.DecoderException;
 import ca.frar.jjjrmi.exceptions.EncoderException;
 import ca.frar.jjjrmi.exceptions.MissingConstructorException;
 import ca.frar.jjjrmi.exceptions.UnknownClassException;
 import ca.frar.jjjrmi.socket.JJJObject;
-import ca.frar.jjjrmi.translator.Constants;
-import ca.frar.jjjrmi.translator.HandlerFactory;
-import ca.frar.jjjrmi.translator.Translator;
-import ca.frar.jjjrmi.translator.TranslatorResult;
 import ca.frar.jjjrmi.utility.JJJOptionsHandler;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -21,8 +14,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.json.JSONObject;
 
 @JJJ(insertJJJMethods=false)
@@ -30,7 +21,6 @@ public class ObjectDecoder {
     private Class<?> aClass;
     private final TranslatorResult encodedResult;
     private AHandler<?> handler;
-    private EncodedObject encodedObject;
     private final JSONObject json;
     private final Translator translator;
     private Object result;
@@ -50,9 +40,9 @@ public class ObjectDecoder {
     @NativeJS
     public void makeReady() throws DecoderException {
         try {
-            this.aClass = Class.forName(encodedObject.getType());
+            this.aClass = Class.forName(json.getString(Constants.TypeParam));
             if (this.aClass == null) {
-                throw new UnknownClassException(encodedObject.getType());
+                throw new UnknownClassException(json.getString(Constants.TypeParam));
             }
             if (HandlerFactory.getInstance().hasHandler(this.aClass)) {                
                 Class<? extends AHandler<?>> handlerClass = HandlerFactory.getInstance().getHandler(this.aClass);
@@ -66,18 +56,15 @@ public class ObjectDecoder {
                 fieldNames = new LinkedList<>(json.getJSONObject(Constants.FieldsParam).keySet());
             }
             if (new JJJOptionsHandler(this.aClass).retain()) {
-                translator.addReference(encodedObject.getKey(), this.result);
+                translator.addReference(json.getString(Constants.KeyParam), this.result);
             } else {
-                translator.addTempReference(encodedObject.getKey(), this.result);
+                translator.addTempReference(json.getString(Constants.KeyParam), this.result);
             }            
-            this.encodedObject = new EncodedObject(this.result, this.encodedResult, this.json);
         } catch (SecurityException | ClassNotFoundException | InvocationTargetException | InstantiationException | IllegalAccessException ex) {
             throw new DecoderException(ex);
         } catch (NoSuchMethodException ex) {
             throw new MissingConstructorException(this.aClass);
-        } catch (EncoderException ex) {
-            throw new DecoderException(ex);
-        }        
+        }     
     }
 
     /**
@@ -86,7 +73,7 @@ public class ObjectDecoder {
     @NativeJS
     public final void decode() throws DecoderException {
         if (HandlerFactory.getInstance().hasHandler(this.aClass)) {
-            this.handler.doDecode(this.result, encodedObject);
+            this.handler.doDecode(this.result, this.json);
         } else {
             for (String fieldName : this.fieldNames) {
                 try {

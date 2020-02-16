@@ -1,6 +1,5 @@
 package ca.frar.jjjrmi.translator;
 import ca.frar.jjjrmi.translator.TranslatorResult;
-import static ca.frar.jjjrmi.Global.LOGGER;
 import ca.frar.jjjrmi.annotations.JJJ;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.annotations.Transient;
@@ -12,8 +11,6 @@ import ca.frar.jjjrmi.translator.Translator;
 import ca.frar.jjjrmi.translator.Decoder;
 import java.lang.reflect.Field;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.json.JSONObject;
 
 /**
@@ -22,10 +19,11 @@ import org.json.JSONObject;
  */
 @JJJ(insertJJJMethods=false)
 abstract public class AHandler<T> {
-    private final TranslatorResult encodedResult;
+    private TranslatorResult encodedResult;
     private HashMap<String, Field> fields = new HashMap<>();
     private T instance;
     private EncodedObject encodedObject;
+    private JSONObject json;
     
     @NativeJS
     public AHandler(TranslatorResult encodedResult){
@@ -46,8 +44,8 @@ abstract public class AHandler<T> {
     }
     
     @NativeJS
-    public final T doDecode(Object t, EncodedObject json) throws DecoderException{
-        this.encodedObject = encodedObject;
+    public final T doDecode(Object t, JSONObject json) throws DecoderException{
+        this.json = json;
         this.setupFields(t.getClass());
         this.decode((T)t);
         return (T)t;
@@ -61,8 +59,8 @@ abstract public class AHandler<T> {
 
     @NativeJS
     public final <T> T decodeField(String jsonFieldName, String pojoFieldName) throws DecoderException {  
-        Field field = this.fields.get(pojoFieldName);
-        JSONObject jsonField = this.encodedObject.getField(jsonFieldName);
+        Field field = this.fields.get(pojoFieldName);        
+        JSONObject jsonField = this.json.getJSONObject(Constants.FieldsParam).getJSONObject(jsonFieldName);
         Translator translator = encodedResult.getTranslator();
         Class<?> type = field.getType();
         Object decoded = new Decoder(jsonField, translator, type).decode();

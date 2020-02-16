@@ -31,7 +31,7 @@ public class TranslatorCorrectnessTest {
         Translator translator = new Translator();
         Simple object = new Simple();
         TranslatorResult encoded = translator.encode(object);
-        Object decoded = translator.decode(encoded.toString());
+        Object decoded = translator.decode(encoded.toString()).getRoot();
 
         assertEquals(Simple.class, decoded.getClass());
         assertEquals(object, decoded);
@@ -47,7 +47,7 @@ public class TranslatorCorrectnessTest {
         Translator translator = new Translator();
         Has<Integer> object = new Has<>(3);
         TranslatorResult encoded = translator.encode(object);
-        Object decoded = translator.decode(encoded.toString());
+        Object decoded = translator.decode(encoded.toString()).getRoot();
         object.set(7);
 
         assertEquals(Has.class, decoded.getClass());
@@ -67,7 +67,7 @@ public class TranslatorCorrectnessTest {
         Translator translator2 = new Translator();
         Simple object = new Simple();
         TranslatorResult encoded = translator1.encode(object);
-        Object decoded = translator2.decode(encoded.toString());
+        Object decoded = translator2.decode(encoded.toString()).getRoot();
 
         assertEquals(Simple.class, decoded.getClass());
         assertNotEquals(object, decoded);
@@ -151,7 +151,7 @@ public class TranslatorCorrectnessTest {
         Has<Object> object = new Has<>(null);
         translator.encode(object);
         TranslatorResult encoded = translator.encode(object);
-        Object decoded = translator.decode(encoded.toString());
+        Object decoded = translator.decode(encoded.toString()).getRoot();
         assertEquals(object, decoded);
     }
     

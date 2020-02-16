@@ -206,18 +206,22 @@ public final class Translator {
         return new TranslatorResult(this).decodeFromString(source);
     }
 
+    @NativeJS
     public void addEncodeListener(Consumer<Object> lst) {
         this.encodeListeners.add(lst);
     }
 
+    @NativeJS
     public void addDecodeListener(Consumer<Object> lst) {
         this.decodeListeners.add(lst);
     }
 
+    @NativeJS
     public void notifyEncode(Object object) {
         for (Consumer<Object> encodeListener : this.encodeListeners) encodeListener.accept(object);
     }
 
+    @NativeJS
     public void notifyDecode(Object object) {
         for (Consumer<Object> decodeListener : this.decodeListeners) decodeListener.accept(object);
     }
@@ -227,6 +231,7 @@ public final class Translator {
      *
      * @return
      */
+    @NativeJS
     public int size() {
         return objectMap.size();
     }

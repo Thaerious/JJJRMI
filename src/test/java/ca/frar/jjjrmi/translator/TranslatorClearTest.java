@@ -52,7 +52,7 @@ public class TranslatorClearTest {
         ArrayWrapper arrayWrapper = new ArrayWrapper();
         TranslatorResult encoded = translator.encode(arrayWrapper);
         translator.clear();
-        Object decode = translator.decode(encoded.toString());
+        Object decode = translator.decode(encoded.toString()).getRoot();
         assertEquals(arrayWrapper.getClass(), decode.getClass());
     }    
 }
