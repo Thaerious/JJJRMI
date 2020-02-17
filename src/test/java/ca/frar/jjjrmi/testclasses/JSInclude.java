@@ -3,7 +3,8 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ca.frar.jjjrmi.jsbuilder.code;
+package ca.frar.jjjrmi.testclasses;
+import ca.frar.jjjrmi.testclasses.JSLambdaCode;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.socket.JJJObject;
 
@@ -15,6 +16,7 @@ public class JSInclude extends JJJObject{
     
     JSLambdaCode callback;
     
+    @NativeJS
     JSInclude(){}
     
     @NativeJS

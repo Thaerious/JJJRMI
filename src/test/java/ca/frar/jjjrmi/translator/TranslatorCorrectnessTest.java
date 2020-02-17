@@ -236,5 +236,4 @@ public class TranslatorCorrectnessTest {
         HasHandler decoded = (HasHandler) translator.decode(encoded.toString()).getRoot();
         assertEquals(7, decoded.z);
     }         
-
 }

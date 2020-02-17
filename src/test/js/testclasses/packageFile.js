@@ -1,5 +1,6 @@
 "use strict;";
 let package = {};
+package.UnknownInternal = require("./UnknownInternal");
 package.Simple = require("./Simple");
 package.SelfRef = require("./SelfRef");
 package.ReferenceEnum = require("./ReferenceEnum");
@@ -21,5 +22,12 @@ package.Has = require("./Has");
 package.Foo = require("./Foo");
 package.EmptyConstructor = require("./EmptyConstructor");
 package.Constants = require("./Constants");
+package.CircularRef = require("./CircularRef");
+package.GameController = require("./GameController");
+package.Simple = require("./Simple");
+package.JSLambdaCode = require("./JSLambdaCode");
+package.JSInclude = require("./JSInclude");
+package.JSEmptyClassCode = require("./JSEmptyClassCode");
+package.Alphabet = require("./Alphabet");
 
 if (typeof module !== "undefined") module.exports = package;

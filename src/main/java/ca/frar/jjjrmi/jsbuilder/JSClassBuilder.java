@@ -7,7 +7,6 @@ import ca.frar.jjjrmi.annotations.JSPrequel;
 import ca.frar.jjjrmi.annotations.JSRequire;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.annotations.ServerSide;
-import ca.frar.jjjrmi.annotations.SkipJS;
 import ca.frar.jjjrmi.annotations.Transient;
 import ca.frar.jjjrmi.exceptions.TypeDeclarationNotFoundWarning;
 import ca.frar.jjjrmi.jsbuilder.code.JSCodeElement;
@@ -49,6 +48,10 @@ public class JSClassBuilder<T> {
         this.jjjOptions = new JJJOptionsHandler(ctClass);
     }
 
+    public JJJOptionsHandler getOptions(){
+        return jjjOptions;
+    }
+    
     public boolean hasContainer() {
         return container != null;
     }
@@ -105,13 +108,13 @@ public class JSClassBuilder<T> {
         /* Create constructor, if none found create default */
         if (vettedConstructors.isEmpty()) {
             LOGGER.log(VERBOSE, "No constructor found, generating default.");
-            new JSConstructorGenerator(ctClass, this).run();
+            JSMethodBuilder jsMethodBuilder = new JSConstructorGenerator(ctClass, this).run();
+            this.constructor = jsMethodBuilder;
         } else {
             LOGGER.log(VERBOSE, "Constructors found, generating js constructors.");
             for (CtConstructor<?> ctConstructor : vettedConstructors) {
-                JSMethodBuilder jsMethodBuilder = new JSMethodGenerator("constructor", ctConstructor, ctConstructor).run();
+                JSMethodBuilder jsMethodBuilder = new JSConstructorGenerator(ctClass, ctConstructor, this).run();
                 this.constructor = jsMethodBuilder;
-
                 try {
                     this.requireSet.addAll(jsMethodBuilder.getRequires());
                 } catch (TypeDeclarationNotFoundWarning ex) {
@@ -120,14 +123,18 @@ public class JSClassBuilder<T> {
                 }
             }
         }
+        this.requireSet.addAll(this.constructor.getRequires());
 
         /* process all the methods */
         Set<CtMethod<?>> allMethods = ctClass.getMethods();
         for (CtMethod<?> ctMethod : allMethods) {
             if (testGenerateMethod(ctClass, ctMethod)) {
+                LOGGER.log(VERBOSE, "adding method: " + ctMethod.getSimpleName());
                 JSMethodBuilder jsMethodBuilder = new JSMethodGenerator(ctMethod.getSimpleName(), ctMethod, ctMethod).run();
                 this.methods.add(jsMethodBuilder);
                 this.requireSet.addAll(jsMethodBuilder.getRequires());
+            } else {
+                LOGGER.log(VERY_VERBOSE, "skipping method: " + ctMethod.getSimpleName());
             }
         }
 
@@ -147,6 +154,12 @@ public class JSClassBuilder<T> {
 
         this.constructStaticFields();
         
+        for (CtTypeReference<?> ctTypeRef : this.requireSet){
+            LOGGER.log(VERY_VERBOSE, "reference: " + ctTypeRef.getQualifiedName());
+        }
+        int sz = this.requireSet.size();
+        LOGGER.log(VERY_VERBOSE, this.requireSet.size() + " reference" + (sz == 1 ? "" : "s") + " found");
+        
         return this;
     }
 
@@ -155,7 +168,6 @@ public class JSClassBuilder<T> {
     }
 
     protected boolean testGenerateMethod(CtClass<?> ctClass, CtElement ctElement) {
-        boolean skipJS = ctElement.getAnnotation(SkipJS.class) != null;
         boolean nativeJS = ctElement.getAnnotation(NativeJS.class) != null;
         boolean serverSide = ctElement.getAnnotation(ServerSide.class) != null;
         return serverSide || nativeJS;
@@ -248,16 +260,6 @@ public class JSClassBuilder<T> {
                 appendRequire(builder, anImport);
                 continue;
             };
-            
-// I don't know why I did this, leaving it for now.
-//            CtTypeReference<?> superclass = ctClass.getSuperclass();
-//            if (superclass == null || superclass.getDeclaration() == null){
-//                LOGGER.log(VERY_VERBOSE, String.format("Omitting require for unknown superclass ", ctClass.getSimpleName()));
-//                if (checkExternalType(anImport.getSimpleName())){
-//                    LOGGER.warn("unknown type in " + this.getSimpleName() + ": " + anImport.getSimpleName());
-//                }
-//                continue;
-//            }
 
             LOGGER.log(VERY_VERBOSE, String.format("Generating require for %s", anImport.getSimpleName()));
             appendRequire(builder, anImport);
@@ -271,9 +273,9 @@ public class JSClassBuilder<T> {
             builder.append(this.jjjOptions.getName()).append(".").append(nestedClassBuilder.getSimpleName()).append(" = ").append(nestedClassBuilder.getSimpleName()).append(";");
         }
 
-        appendStaticFields(builder);
-        
+        appendStaticFields(builder);        
         appendExport(builder);
+        
         return builder.toString();
     }
 
@@ -284,22 +286,6 @@ public class JSClassBuilder<T> {
             builder.append(" = ").append(assignment);
             builder.append(";\n");
         }
-    }
-    
-    /**
-     * Check if a require has been registered for this class.
-     *
-     * @return
-     */
-    private boolean checkExternalType(String name) {
-        for (CtAnnotation<?> ctAnnotation : ctClass.getAnnotations()) {
-            Annotation actualAnnotation = ctAnnotation.getActualAnnotation();
-            if (actualAnnotation instanceof JSRequire) {                
-                JSRequire jsRequire = (JSRequire) actualAnnotation;
-                if (jsRequire.name().equals(name)) return true;
-            }
-        }
-        return false;
     }
     
     private void appendExport(StringBuilder builder) {
@@ -322,23 +308,12 @@ public class JSClassBuilder<T> {
 
     public void appendRequire(StringBuilder builder, CtTypeReference ref) {
         JJJOptionsHandler jjjOptionsHandler = new JJJOptionsHandler(ref);
-
         builder.append("const ");
         builder.append(jjjOptionsHandler.getName());
         builder.append(" = require(\"./");
         builder.append(jjjOptionsHandler.getName());
         builder.append("\")");
         builder.append(";\n");
-        
-//        List<CtType> nestedChain = nestedChain(source);
-//        builder.append(new JJJOptionsHandler(nestedChain.remove(0)).getName());
-//        builder.append("\")");
-//        
-//        while (!nestedChain.isEmpty()) {
-//            builder.append(".");
-//            builder.append(new JJJOptionsHandler(nestedChain.remove(0)).getName());
-//        }
-        
     }    
     
     private void appendPrequel(StringBuilder builder, JSPrequel jsPrequel) {

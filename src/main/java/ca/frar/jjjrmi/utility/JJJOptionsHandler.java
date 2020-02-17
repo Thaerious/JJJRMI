@@ -1,5 +1,6 @@
 package ca.frar.jjjrmi.utility;
 
+import ca.frar.jjjrmi.annotations.DoNotPackage;
 import ca.frar.jjjrmi.annotations.JJJ;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
@@ -7,7 +8,6 @@ import ca.frar.jjjrmi.annotations.IsSocket;
 import spoon.reflect.reference.CtTypeReference;
 
 public class JJJOptionsHandler {
-
     private IsSocket isSocket;
     private final JJJ jjj;
     private String jsExtends = "";
@@ -16,23 +16,27 @@ public class JJJOptionsHandler {
     private boolean hasName = false;
     private boolean generateJS = true;
     private boolean generated = false;
+    private DoNotPackage doNotPackage;
 
     public JJJOptionsHandler(Object object) {
         jjj = object.getClass().getAnnotation(JJJ.class);
         name = object.getClass().getSimpleName();
         isSocket = object.getClass().getAnnotation(IsSocket.class);
+        doNotPackage = object.getClass().getAnnotation(DoNotPackage.class);
     }
 
     public JJJOptionsHandler(Class<?> aClass) {
         jjj = aClass.getAnnotation(JJJ.class);
         name = aClass.getSimpleName();
         isSocket = aClass.getAnnotation(IsSocket.class);
+        doNotPackage = aClass.getAnnotation(DoNotPackage.class);
     }
 
     public JJJOptionsHandler(CtType<?> ctType) {
         jjj = ctType.getAnnotation(JJJ.class);
         name = ctType.getSimpleName();
         isSocket = ctType.getAnnotation(IsSocket.class);
+        doNotPackage = ctType.getAnnotation(DoNotPackage.class);
     }
 
     public JJJOptionsHandler(CtTypeReference<?> ctTypeReference) {
@@ -57,6 +61,10 @@ public class JJJOptionsHandler {
         return jjj.jsExtends();
     }
 
+    public boolean doNotPackage(){
+        return this.doNotPackage != null;
+    }
+    
     public boolean hasExtends() {
         return jjj != null && !this.jsExtends.isEmpty();
     }

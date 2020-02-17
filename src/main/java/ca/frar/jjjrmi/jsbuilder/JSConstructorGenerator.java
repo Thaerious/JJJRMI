@@ -42,7 +42,7 @@ public class JSConstructorGenerator {
         jsMethodBuilder.setName("constructor");
     }
 
-    public void run() {
+    public JSMethodBuilder run() {
         if (ctConstructor != null) {
             processArguments();
             processBody();
@@ -50,7 +50,7 @@ public class JSConstructorGenerator {
             processEmptyBody();
         }
 
-        jsClassBuilder.addMethod(jsMethodBuilder);
+        return jsMethodBuilder;
     }
 
     private void processArguments() {
@@ -74,7 +74,7 @@ public class JSConstructorGenerator {
             CtField<?> ctField = ctFieldRef.getFieldDeclaration();
             
             if (ctField == null) {
-                LOGGER.log(VERY_VERBOSE, "ctField.getDeclaration() == null");
+                LOGGER.log(VERY_VERBOSE, "field initializer is null: " + ctField.getSimpleName());
                 continue;
             }
                         
@@ -83,7 +83,11 @@ public class JSConstructorGenerator {
                 continue;
             }
             
-            if (ctFieldRef.getDeclaration() == null) continue;
+            if (ctFieldRef.getDeclaration() == null){
+                LOGGER.log(VERY_VERBOSE, "field declaration is null: " + ctField.getSimpleName());
+                continue;
+            }
+            
             JSFieldDeclaration jsFieldDeclaration = new JSFieldDeclaration(ctFieldRef.getDeclaration());
             if (jsFieldDeclaration.hasAssignment()) {
                 if (!jsFieldDeclaration.isStatic()){
@@ -100,7 +104,7 @@ public class JSConstructorGenerator {
         JSElementList jsElementList = this.constructFields();
         boolean hasExtend = this.jsClassBuilder.getHeader().hasExtend();
         if (hasExtend) jsElementList.add(0, new JSSuperConstructor());
-        jsMethodBuilder.setBody(jsElementList.unscoped());
+        jsMethodBuilder.setBody(jsElementList);
     }
 
     private void processBody() {
@@ -136,6 +140,6 @@ public class JSConstructorGenerator {
             jsElementList.add(0, new JSSuperConstructor(superInvoke));
         }
 
-        jsMethodBuilder.setBody(jsElementList.unscoped());
+        jsMethodBuilder.setBody(jsElementList);
     }
 }

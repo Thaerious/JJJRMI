@@ -6,6 +6,8 @@
 package ca.frar.jjjrmi.testclasses;
 
 import ca.frar.jjjrmi.annotations.JJJ;
+import ca.frar.jjjrmi.annotations.JSParam;
+import ca.frar.jjjrmi.annotations.NativeJS;
 
 /**
  *
@@ -19,6 +21,8 @@ public class CircularRef {
         this.target = new CircularRef(new CircularRef(this));
     }
     
+    @NativeJS
+    @JSParam(name="target", init="new CircularRef(this)")
     public CircularRef(CircularRef target){
         this.target = target;
     }

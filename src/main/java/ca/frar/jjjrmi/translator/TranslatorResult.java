@@ -6,6 +6,7 @@
 package ca.frar.jjjrmi.translator;
 
 import ca.frar.jjjrmi.annotations.JJJ;
+import ca.frar.jjjrmi.annotations.JSParam;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.exceptions.DecoderException;
 import ca.frar.jjjrmi.exceptions.EncoderException;
@@ -26,10 +27,12 @@ public class TranslatorResult {
     private final Translator translator;
     private JSONObject json;
 
+    @NativeJS
     TranslatorResult(Translator translator) {
         this.translator = translator;
     }
 
+    @NativeJS
     TranslatorResult encodeFromObject(Object object) throws EncoderException{
         if (object == null) throw new RootException();
         this.json = new JSONObject();
@@ -72,6 +75,7 @@ public class TranslatorResult {
         }
     }
 
+    @NativeJS
     TranslatorResult decodeFromString(String source) throws DecoderException {
         this.json = new JSONObject(source);
         ArrayList<ObjectDecoder> list = new ArrayList<>();
@@ -127,11 +131,16 @@ public class TranslatorResult {
         return this.json.getJSONObject(Constants.NewObjects).keySet().size();
     }
     
-    @Override
+    public JSONObject toJSON(){
+        return this.json;
+    }
+    
     public String toString(){
         return this.json.toString();
     }
     
+    @NativeJS
+    @JSParam(name="indentFactor", init="0")
     public String toString(int indentFactor){
         return this.json.toString(indentFactor);
     }    

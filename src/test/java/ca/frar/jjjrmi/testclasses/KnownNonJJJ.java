@@ -5,6 +5,7 @@
  */
 package ca.frar.jjjrmi.testclasses;
 
+import ca.frar.jjjrmi.annotations.DoNotPackage;
 import ca.frar.jjjrmi.annotations.JSRequire;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.socket.JJJObject;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
  *
  * @author Ed Armstrong
  */
+@DoNotPackage
 @JSRequire(name="ArrayList", value="JJJRMI-extension", postfix="HashMap")
 public class KnownNonJJJ extends JJJObject{
     private final ArrayList array;

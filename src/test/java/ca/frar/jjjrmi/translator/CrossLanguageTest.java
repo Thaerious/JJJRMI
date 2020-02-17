@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Ed Armstrong
  */
-public class CrossLanguage {
+public class CrossLanguageTest {
 
     public Object get(Translator translator, String methodName) throws IOException, DecoderException {
         Process exec = Runtime.getRuntime().exec("node src/test/js/CrossLanguageTest.js");

@@ -115,7 +115,6 @@ public class CLI {
                 destination = argList.remove(0);
                 break;
             case "--xml":
-                xmlClass = argList.remove(0);
                 printXML = true;
                 break;
             case "-v":
@@ -167,6 +166,7 @@ public class CLI {
      * @throws JSBuilderException
      */
     public void output() throws FileNotFoundException, JSBuilderException, IOException {
+        LOGGER.log(VERY_VERBOSE, "+------------------------------------------------------------------------------+");
         LOGGER.info("Javascript Code Generator: Generating output");
         String rootPath;
 
@@ -178,7 +178,6 @@ public class CLI {
         new File(rootPath).mkdirs();
 
         for (JSClassBuilder<?> jsClassBuilder : jsParser.jsClassBuilders()) {
-            LOGGER.log(VERY_VERBOSE, "+------------------------------------------------------------------------------+");
             LOGGER.info("file: " + jsClassBuilder.getSimpleName() + ".js");
             Base.writeClass(jsClassBuilder, rootPath);
 
@@ -218,6 +217,7 @@ public class CLI {
         packagePW.print(String.format("let %s = {};\n", this.packageName));
 
         for (JSClassBuilder<?> jsClassBuilder : jsParser.jsClassBuilders()) {
+            if (jsClassBuilder.getOptions().doNotPackage()) continue;
             packagePW.print(String.format("%s.%s = require(\"./%s\");\n", this.packageName, jsClassBuilder.getSimpleName(), jsClassBuilder.getSimpleName()));
         }
 

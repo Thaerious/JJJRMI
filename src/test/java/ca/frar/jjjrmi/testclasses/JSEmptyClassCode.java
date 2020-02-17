@@ -3,15 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ca.frar.jjjrmi.jsbuilder.code;
-
-import ca.frar.jjjrmi.annotations.JJJ;
+package ca.frar.jjjrmi.testclasses;
+import ca.frar.jjjrmi.socket.JJJObject;
 
 /**
  *
  * @author Ed Armstrong
  */
-@JJJ
-public enum Alphabet {
-    ALPHA, BETA, CHARLIE, DELTA
+public class JSEmptyClassCode extends JJJObject{
+    
 }

@@ -1,11 +1,7 @@
 "use strict";
-const BiMap = require("./BiMap");
-const EncodedResult = require("./EncodedResult");
-const HandlerFactory = require("./HandlerFactory");
-const Constants = require("./Constants");
-const EncodedObject = require("./Encoder").EncodedObject;
-const ObjectDecoder = require("./ObjectDecoder");
+const TranslatorResult = require("./TranslatorResult");
 const ClassRegistry = require("./ClassRegistry");
+const BiMap = require("./BiMap");
 
 class Translator {
     constructor() {
@@ -16,6 +12,12 @@ class Translator {
         this.tempReferences = [];
         this.nextKey = 0;
         this.classRegistry = new ClassRegistry();
+    }
+    addDecodeListener(lst) {
+        this.decodeListeners.add(lst);
+    }
+    addEncodeListener(lst) {
+        this.encodeListeners.add(lst);
     }
     addReference(reference, object) {
         this.objectMap.put(reference, object);
@@ -39,62 +41,22 @@ class Translator {
         }
         this.tempReferences = [];
     }
-    decode(encodedResult) {
-        let list = [];
-        for (let jsonObject of encodedResult.getAllObjects()) {
-            let key = jsonObject[Constants.KeyParam];
-            if (this.hasReference(key)) continue;
-
-            list.push(new ObjectDecoder(encodedResult, jsonObject, this));
-        }
-        for (let decoder of list) {
-            decoder.makeReady();
-        }
-        for (let decoder of list) {
-            decoder.decode();
-        }
-        return this.getReferredObject(encodedResult.getRoot());
+    decode(source) {
+        return new TranslatorResult(this).decodeFromString(source);
     }
     encode(object) {
-        if (object === null) throw new Error("ca.frar.jjjrmi.exceptions.RootException");
-        let encodedResult = new EncodedResult(this);
-
-        if (this.hasReferredObject(object)) {
-            encodedResult.setRoot(this.getReference(object));
-            return encodedResult;
-        } else if (HandlerFactory.getInstance().hasHandler(object.constructor.__getClass())) {
-            this.encodeHandled(object, encodedResult);
-        } else {
-            this.encodeUnhandled(object, encodedResult);
-        }
-
-        return encodedResult;
-    }
-    encodeHandled(object, encodedResult) {
-        let handlerClass = HandlerFactory.getInstance().getHandler(object.constructor.__getClass());
-        let handler = new handlerClass(encodedResult);
-        let encodedObject = handler.doEncode(object);
-        encodedResult.put(encodedObject);
-        encodedResult.setRoot(this.getReference(object));
-        this.clearTempReferences();
-    }
-    encodeUnhandled(object, encodedResult) {
-        let encodedObject = new EncodedObject(object, encodedResult);
-        encodedResult.put(encodedObject);
-        encodedResult.setRoot(this.getReference(object));
-        encodedObject.encode();
-        this.clearTempReferences();
+        return new TranslatorResult(this).encodeFromObject(object);
     }
     getAllReferredObjects() {
-        let values = this.objectMap.values();
-        return new ArrayList(values);
+        let allReferredObjects = [];
+        for (let v of this.objectMap.values()) allReferredObjects.push(v);
+        return allReferredObjects;
     }
     getReference(object) {
         return this.objectMap.getKey(object);
     }
     getReferredObject(reference) {
         if (!this.objectMap.containsKey(reference)) throw new Error("ca.frar.jjjrmi.exceptions.MissingReferenceException");
-
         return this.objectMap.get(reference);
     }
     hasReference(reference) {
@@ -103,19 +65,26 @@ class Translator {
     hasReferredObject(object) {
         return this.objectMap.containsValue(object);
     }
+    notifyDecode(object) {
+        for (let decodeListener of this.decodeListeners) {
+            decodeListener.accept(object);
+        }
+    }
+    notifyEncode(object) {
+        for (let encodeListener of this.encodeListeners) {
+            encodeListener.accept(object);
+        }
+    }
     removeByValue(obj) {
         if (!this.objectMap.containsValue(obj)) return false;
 
         this.objectMap.remove(this.objectMap.getKey(obj));
         return true;
     }
-    notifyEncode(object) {
-    }
-    notifyDecode(object) {
+    size() {
+        return this.objectMap.size();
     }
 }
-;
-Translator.nextKey = 0;
-Translator.referencePrequel = "C";
 
+Translator.referencePrequel = "S";
 if (typeof module !== "undefined") module.exports = Translator;
