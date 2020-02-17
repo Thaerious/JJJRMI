@@ -1,5 +1,6 @@
 package ca.frar.jjjrmi.jsbuilder;
 
+import static ca.frar.jjjrmi.Global.VERBOSE;
 import static ca.frar.jjjrmi.Global.VERY_VERBOSE;
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
 import ca.frar.jjjrmi.exceptions.JJJRMIWarning;
@@ -40,8 +41,12 @@ public class JSParser extends AbstractProcessor<CtClass<?>> {
     @Override
     public void process(CtClass<?> ctClass) {
         if (test(ctClass)) {
+            LOGGER.log(VERBOSE, "----- [" + ctClass.getQualifiedName() + "] -----");
             JSClassBuilder<?> jsClassBuilder = makeBuilder(ctClass).build();
-            jsClassBuilders.addClass(jsClassBuilder);
+            jsClassBuilders.addClass(jsClassBuilder);            
+            LOGGER.log(VERBOSE, "-----");
+        } else {
+            LOGGER.log(VERBOSE, "Skipping " + ctClass.getQualifiedName());
         }
     }
 
@@ -91,7 +96,7 @@ public class JSParser extends AbstractProcessor<CtClass<?>> {
         }
         
         if (jjjOptions.hasJJJ()) {
-            LOGGER.log(Level.forName("VERBOSE", 475), "(+) " + ctClass.getQualifiedName() + "@JJJ");
+            LOGGER.log(VERY_VERBOSE, "(+) " + ctClass.getQualifiedName() + "@JJJ");
             return true;
         }
 
