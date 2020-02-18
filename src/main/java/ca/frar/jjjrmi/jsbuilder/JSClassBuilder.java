@@ -484,5 +484,6 @@ public class JSClassBuilder<T> {
         JSMethodBuilder jsMethodBuilder = new JSMethodBuilder("__init");
         jsMethodBuilder.setBody(jsElementList);
         this.addMethod(jsMethodBuilder);
+        this.requireSet.addAll(jsMethodBuilder.getRequires());
     }
 }
