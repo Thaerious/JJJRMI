@@ -22,6 +22,7 @@ public class JSLiteral extends AbstractJSCodeElement {
     public String toXML(int indent) {
         HashMap<String, String> attributes = new HashMap<>();
         attributes.put("value", ctLiteral.toString());
+        attributes.put("type", ctLiteral.getType().toString());
         return toXML(indent, attributes);
     }      
 }

@@ -138,7 +138,6 @@ class Decoder {
             let object = new RestoredObject(this.json, this.translator).decode();
             callback(object);
         } else {
-            console.log(this.json.toString(2));
             throw new Error("java.lang.RuntimeException");
         }
     }

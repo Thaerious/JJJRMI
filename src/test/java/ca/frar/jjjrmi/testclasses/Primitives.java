@@ -36,7 +36,7 @@ public class Primitives {
     
     @Override
     public boolean equals(Object obj){
-        if (obj.getClass() != this.getClass()) return false;
+        if (obj instanceof Primitives == false) return false;
         Primitives that = (Primitives)obj;
         if (!this.string.equals(that.string)) return false;
         if (this.bt != that.bt) return false;

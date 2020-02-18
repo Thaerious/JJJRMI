@@ -94,7 +94,6 @@ class Encoder {
         this.encodedResult = encodedResult;
     }
     encode() {
-        console.log(this.object);
         if (this.object === null) {
             return new EncodedNull();
         } else if (typeof this.object === "number" || typeof this.object === "string" || typeof this.object === "boolean") {

@@ -23,6 +23,7 @@ public class JSFieldWrite extends AbstractJSCodeElement {
     public String toXML(int indent) {
         HashMap<String, String> attributes = new HashMap<>();
         attributes.put("field", variable.toString());
+        attributes.put("type", variable.getType().toString());
         return toXML(indent, attributes);
     }    
 }
