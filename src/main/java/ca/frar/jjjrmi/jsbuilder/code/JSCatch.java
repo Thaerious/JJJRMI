@@ -1,5 +1,6 @@
 package ca.frar.jjjrmi.jsbuilder.code;
 
+import static ca.frar.jjjrmi.Global.LOGGER;
 import spoon.reflect.code.CtCatch;
 
 public class JSCatch extends AbstractJSCodeElement {
@@ -8,6 +9,7 @@ public class JSCatch extends AbstractJSCodeElement {
     private final String param;
 
     public JSCatch(CtCatch ctCatch) {
+        LOGGER.trace(this.getClass().getSimpleName());
         body = (JSBlock) this.generate(ctCatch.getBody());
         param = ctCatch.getParameter().getReference().getSimpleName();
     }

@@ -1,5 +1,6 @@
 package ca.frar.jjjrmi.jsbuilder.code;
 
+import static ca.frar.jjjrmi.Global.LOGGER;
 import spoon.reflect.code.CtConditional;
 
 public class JSConditional extends AbstractJSCodeElement {
@@ -9,6 +10,7 @@ public class JSConditional extends AbstractJSCodeElement {
     private final JSCodeElement thenEx;
 
     public JSConditional(CtConditional ctConditional) {
+        LOGGER.trace(this.getClass().getSimpleName());
         condition = this.generate(ctConditional.getCondition());
         elseEx = this.generate(ctConditional.getElseExpression());
         thenEx = this.generate(ctConditional.getThenExpression());

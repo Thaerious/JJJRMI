@@ -2,7 +2,7 @@
 const Constants = require("./Constants");
 class EncodedEnum {
     constructor(value) {
-        this[Constants.EnumParam] = value.getClass().getName();
+        this[Constants.EnumParam] = value.constructor.__getClass();
         this[Constants.ValueParam] = value.toString();
     }
 }

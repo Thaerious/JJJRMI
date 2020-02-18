@@ -22,13 +22,17 @@ public class AbstractJSCodeElement implements JSCodeElement {
     ArrayList<JSCodeElement> childElements = new ArrayList<>();
 
     public boolean isEmpty() {
-        return false;
+        return size() == 0;
     }
 
     public String scoped() {
         return toString();
     }
 
+    public int size(){
+        return childElements.size();
+    }
+    
     /**
      * Create a JSCode element from a CT element and attach the result as a
      * child element of this.

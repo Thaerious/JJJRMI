@@ -4,6 +4,39 @@ const TranslatorResult = require("./TranslatorResult");
 const HandlerFactory = require("./HandlerFactory");
 const EncodedReference = require("./EncodedReference");
 const EncodedPrimitive = require("./EncodedPrimitive");
+const EncodedEnum = require("./EncodedEnum");
+
+class EncodedArray {
+    constructor(object, encodedResult) {
+        this.encodedResult = encodedResult;
+        this.object = object;
+        this.json = {};
+        this.elements = [];
+
+        this.json[Constants.KeyParam] = encodedResult.getTranslator().allocReference(object);
+        this.json[Constants.RetainParam] = false;
+        encodedResult.getTranslator().addTempReference(this[Constants.KeyParam], object);
+        this.json[Constants.ElementsParam] = this.elements;
+        this.encode();
+    }
+    encode() {
+        for (let i = 0; i < this.object.length; i++) {
+            let element = this.object[i];
+            if (element !== undefined) {
+                this.elements[i] = new Encoder(element, this.encodedResult).encode();
+            }
+        }
+    }
+
+    toString() {
+        return JSON.stringify(this.json, null, 2);
+    }        
+
+    toJSON() {
+        return this.json;
+    }
+}
+;
 
 class EncodedObject {
     constructor(object, encodedResult) {
@@ -25,7 +58,7 @@ class EncodedObject {
     }
 
     toString() {
-        return JSON.stringify(this, null, 2);
+        return JSON.stringify(this.json, null, 2);
     }
 
     toJSON() {
@@ -39,18 +72,18 @@ class EncodedObject {
     setFieldData(name, json) {
         this.json[Constants.FieldsParam][name] = json;
     }
-    
-    getField(fieldName){
+
+    getField(fieldName) {
         return this.json[Constants.FieldsParam][fieldName];
     }
 
-    getType(){
+    getType() {
         return this.json[Constants.TypeParam];
     }
-    
-    getKey(){
+
+    getKey() {
         return this.json[Constants.KeyParam];
-    }    
+    }
 }
 
 
@@ -60,6 +93,7 @@ class Encoder {
         this.encodedResult = encodedResult;
     }
     encode() {
+        console.log("object " + this.object);
         if (this.object === null) {
             return new EncodedNull();
         } else if (typeof this.object === "number" || typeof this.object === "string" || typeof this.object === "boolean") {
@@ -87,5 +121,6 @@ class Encoder {
 
 module.exports = {
     Encoder: Encoder,
-    EncodedObject: EncodedObject
+    EncodedObject: EncodedObject,
+    EncodedArray: EncodedArray
 };

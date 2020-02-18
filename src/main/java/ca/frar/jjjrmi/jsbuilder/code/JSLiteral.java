@@ -1,10 +1,12 @@
 package ca.frar.jjjrmi.jsbuilder.code;
+import static ca.frar.jjjrmi.jsbuilder.code.JSConstructorCall.LOGGER;
 import spoon.reflect.code.CtLiteral;
 
 public class JSLiteral extends AbstractJSCodeElement {
     private final CtLiteral ctLiteral;
 
     public JSLiteral(CtLiteral<?> ctLiteral) {
+        LOGGER.trace(this.getClass().getSimpleName());
         this.ctLiteral = ctLiteral;
     }
 

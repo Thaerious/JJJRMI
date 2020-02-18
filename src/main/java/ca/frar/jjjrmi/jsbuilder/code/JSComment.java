@@ -1,5 +1,6 @@
 package ca.frar.jjjrmi.jsbuilder.code;
 
+import static ca.frar.jjjrmi.Global.LOGGER;
 import spoon.reflect.code.CtComment;
 
 public class JSComment extends AbstractJSCodeElement {
@@ -7,6 +8,7 @@ public class JSComment extends AbstractJSCodeElement {
     private String outputString;
 
     public JSComment(CtComment ctComment) {
+        LOGGER.trace(this.getClass().getSimpleName());
         String content = ctComment.getContent().trim();
         if (content.startsWith("JS{") && content.endsWith("}")){
             int endOffset = 1;

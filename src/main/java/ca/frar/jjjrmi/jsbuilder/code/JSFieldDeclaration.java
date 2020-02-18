@@ -1,4 +1,5 @@
 package ca.frar.jjjrmi.jsbuilder.code;
+import static ca.frar.jjjrmi.jsbuilder.code.JSConstructorCall.LOGGER;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtFieldReference;
@@ -9,6 +10,7 @@ public class JSFieldDeclaration extends AbstractJSCodeElement{
     private boolean isStatic = false;
 
     public JSFieldDeclaration(CtField<?> ctField){
+        LOGGER.trace(this.getClass().getSimpleName());
         if (ctField.hasModifier(ModifierKind.STATIC)) this.isStatic = true;
         reference = ctField.getReference();
         rhs = this.generate(ctField.getAssignment());

@@ -1,4 +1,5 @@
 package ca.frar.jjjrmi.jsbuilder.code;
+import static ca.frar.jjjrmi.Global.LOGGER;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.UnaryOperatorKind;
 
@@ -8,6 +9,7 @@ public class JSUnaryOperator extends AbstractJSCodeElement {
     private final UnaryOperatorKind kind;
 
     public JSUnaryOperator(CtUnaryOperator<?> ctUnaryOperator) {
+        LOGGER.trace(this.getClass().getSimpleName());
         this.operand = this.generate(ctUnaryOperator.getOperand());
         kind = ctUnaryOperator.getKind();
     }

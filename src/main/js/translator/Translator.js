@@ -24,7 +24,7 @@ class Translator {
     }
     addTempReference(reference, object) {
         this.objectMap.put(reference, object);
-        this.tempReferences.add(reference);
+        this.tempReferences.push(reference);
     }
     allocReference(object) {
         let key = Translator.referencePrequel + this.nextKey++;
@@ -37,7 +37,7 @@ class Translator {
     }
     clearTempReferences() {
         for (let ref of this.tempReferences) {
-            this.objectMap.remove(ref);
+            this.objectMap.removeByKey(ref);
         }
         this.tempReferences = [];
     }

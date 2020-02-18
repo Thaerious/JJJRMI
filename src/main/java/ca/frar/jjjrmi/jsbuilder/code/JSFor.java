@@ -1,4 +1,5 @@
 package ca.frar.jjjrmi.jsbuilder.code;
+import static ca.frar.jjjrmi.jsbuilder.code.JSConstructorCall.LOGGER;
 import spoon.reflect.code.CtFor;
 
 public class JSFor extends AbstractJSCodeElement {
@@ -8,6 +9,7 @@ public class JSFor extends AbstractJSCodeElement {
     private final JSCodeElement body;
 
     public JSFor(CtFor ctFor) {
+        LOGGER.trace(this.getClass().getSimpleName());
         forInit = new JSElementList(ctFor.getForInit());
         forUpdate = new JSElementList(ctFor.getForUpdate());
         forExpression = this.generate(ctFor.getExpression());

@@ -1,5 +1,6 @@
 package ca.frar.jjjrmi.jsbuilder.code;
 import ca.frar.jjjrmi.annotations.DoNotInvoke;
+import static ca.frar.jjjrmi.jsbuilder.code.JSConstructorCall.LOGGER;
 import ca.frar.jjjrmi.socket.JJJObject;
 import ca.frar.jjjrmi.utility.JJJOptionsHandler;
 import java.util.List;
@@ -19,6 +20,7 @@ public class JSInvocation extends AbstractJSCodeElement {
     private final CtInvocation<?> invocation;
 
     public JSInvocation(CtInvocation<?> ctInvocation) {
+        LOGGER.trace(this.getClass().getSimpleName());
         this.invocation = ctInvocation;
         arguments = this.generateList(ctInvocation.getArguments());
         name = ctInvocation.getExecutable().getSimpleName();

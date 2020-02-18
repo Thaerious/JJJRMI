@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import static org.apache.logging.log4j.Level.DEBUG;
+import static org.apache.logging.log4j.Level.TRACE;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -126,6 +127,9 @@ public class CLI {
             case "-vvv":
                 Configurator.setRootLevel(DEBUG);
                 break;
+            case "-vvvv":
+                Configurator.setRootLevel(TRACE);
+                break;                
         }
     }
 

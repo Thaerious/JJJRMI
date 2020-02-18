@@ -98,7 +98,10 @@ public class TranslatorCorrectnessTest {
         assertFalse(translator.hasReference("S0"));
         ArrayWrapper decoded = (ArrayWrapper) translator.decode(encoded.toString()).getRoot();
         assertNotEquals(arrayWrapper.hashCode(), decoded.hashCode());
-        assertEquals(Arrays.toString(arrayWrapper.arrayField), Arrays.toString(decoded.arrayField));
+        assertEquals(Arrays.toString(arrayWrapper.arrayField1), Arrays.toString(decoded.arrayField1));
+        assertEquals(Arrays.toString(arrayWrapper.arrayField2), Arrays.toString(decoded.arrayField2));
+        assertEquals(5, arrayWrapper.arrayField2.length);
+        assertEquals(Arrays.toString(arrayWrapper.arrayField3), Arrays.toString(decoded.arrayField3));
     }
 
     @Test

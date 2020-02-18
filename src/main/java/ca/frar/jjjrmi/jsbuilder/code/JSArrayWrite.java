@@ -1,5 +1,6 @@
 package ca.frar.jjjrmi.jsbuilder.code;
 
+import static ca.frar.jjjrmi.Global.LOGGER;
 import spoon.reflect.code.CtArrayWrite;
 
 public class JSArrayWrite extends AbstractJSCodeElement {
@@ -8,6 +9,7 @@ public class JSArrayWrite extends AbstractJSCodeElement {
     private final JSCodeElement index;
 
     public JSArrayWrite(CtArrayWrite ctArrayWrite) {
+        LOGGER.trace(this.getClass().getSimpleName());
         target = this.generate(ctArrayWrite.getTarget());
         index = this.generate(ctArrayWrite.getIndexExpression());
     }

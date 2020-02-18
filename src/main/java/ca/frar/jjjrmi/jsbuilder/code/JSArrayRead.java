@@ -1,4 +1,5 @@
 package ca.frar.jjjrmi.jsbuilder.code;
+import static ca.frar.jjjrmi.Global.LOGGER;
 import spoon.reflect.code.CtArrayRead;
 
 public class JSArrayRead extends AbstractJSCodeElement {
@@ -6,6 +7,7 @@ public class JSArrayRead extends AbstractJSCodeElement {
     private final JSCodeElement index;
 
     public JSArrayRead(CtArrayRead<?> ctArrayRead) {
+        LOGGER.trace(this.getClass().getSimpleName());
         target = this.generate(ctArrayRead.getTarget());
         index = this.generate(ctArrayRead.getIndexExpression());
     }

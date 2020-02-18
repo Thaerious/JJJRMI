@@ -1,4 +1,5 @@
 package ca.frar.jjjrmi.jsbuilder.code;
+import static ca.frar.jjjrmi.Global.LOGGER;
 import ca.frar.jjjrmi.exceptions.TypeDeclarationNotFoundWarning;
 import ca.frar.jjjrmi.utility.JJJOptionsHandler;
 import java.util.HashSet;
@@ -13,7 +14,7 @@ public class JSConstructorCall extends AbstractJSCodeElement {
     private final String name;
     private final CtConstructorCall ctConstructorCall;
 
-    public JSConstructorCall(CtConstructorCall ctConstructorCall) {
+    public JSConstructorCall(CtConstructorCall ctConstructorCall) {        
         LOGGER.trace(this.getClass().getSimpleName());
         this.ctConstructorCall = ctConstructorCall;
         arguments = new JSElementList(ctConstructorCall.getArguments());

@@ -1,5 +1,6 @@
 package ca.frar.jjjrmi.jsbuilder.code;
 
+import static ca.frar.jjjrmi.jsbuilder.code.JSConstructorCall.LOGGER;
 import java.util.ArrayList;
 import java.util.List;
 import spoon.reflect.code.CtCodeElement;
@@ -8,9 +9,11 @@ import spoon.reflect.code.CtComment;
 public class JSElementList extends AbstractJSCodeElement {
 
     public JSElementList() {
+        LOGGER.trace(this.getClass().getSimpleName());
     }
 
     public JSElementList(List<? extends CtCodeElement> ctList) {
+        LOGGER.trace(this.getClass().getSimpleName());
         for (CtCodeElement element : ctList) {
             if (!element.getComments().isEmpty()) {
                 for (CtComment comment : element.getComments()) {
@@ -20,7 +23,7 @@ public class JSElementList extends AbstractJSCodeElement {
             this.addCtCodeElement(element);
         }
     }
-
+    
     final public void addCtCodeElement(CtCodeElement element) {
         this.generate(element);
     }

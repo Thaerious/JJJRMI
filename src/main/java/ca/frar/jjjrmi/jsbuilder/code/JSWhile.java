@@ -1,4 +1,5 @@
 package ca.frar.jjjrmi.jsbuilder.code;
+import static ca.frar.jjjrmi.Global.LOGGER;
 import spoon.reflect.code.CtWhile;
 
 public class JSWhile extends AbstractJSCodeElement {
@@ -6,6 +7,7 @@ public class JSWhile extends AbstractJSCodeElement {
     private final JSCodeElement body;
 
     public JSWhile(CtWhile ctWhile) {
+        LOGGER.trace(this.getClass().getSimpleName());
         expression = this.generate(ctWhile.getLoopingExpression());
         body = this.generate(ctWhile.getBody());
     }

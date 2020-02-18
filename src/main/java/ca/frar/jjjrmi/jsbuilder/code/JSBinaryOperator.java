@@ -1,5 +1,6 @@
 package ca.frar.jjjrmi.jsbuilder.code;
 
+import static ca.frar.jjjrmi.Global.LOGGER;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtExpression;
@@ -11,6 +12,7 @@ public class JSBinaryOperator extends AbstractJSCodeElement {
     private final JSCodeElement rhs;
 
     public JSBinaryOperator(CtBinaryOperator ctBinaryOperator) {
+        LOGGER.trace(this.getClass().getSimpleName());
         kind = ctBinaryOperator.getKind();
         lhs = this.generate(ctBinaryOperator.getLeftHandOperand());
         rhs = this.generate(ctBinaryOperator.getRightHandOperand());

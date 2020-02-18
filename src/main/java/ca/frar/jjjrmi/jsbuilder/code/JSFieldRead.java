@@ -1,4 +1,5 @@
 package ca.frar.jjjrmi.jsbuilder.code;
+import static ca.frar.jjjrmi.jsbuilder.code.JSConstructorCall.LOGGER;
 import spoon.reflect.code.CtFieldRead;
 import spoon.reflect.reference.CtFieldReference;
 
@@ -7,6 +8,7 @@ public class JSFieldRead extends AbstractJSCodeElement {
     private final JSCodeElement target;
 
     public JSFieldRead(CtFieldRead ctFieldRead) {
+        LOGGER.trace(this.getClass().getSimpleName());
         variable = ctFieldRead.getVariable();
         target = this.generate(ctFieldRead.getTarget());
     }

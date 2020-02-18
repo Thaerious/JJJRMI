@@ -1,10 +1,13 @@
 package ca.frar.jjjrmi.jsbuilder.code;
 
+import static ca.frar.jjjrmi.Global.LOGGER;
+
 public class JSCodeSnippet extends AbstractJSCodeElement {
 
     private final String string;
 
     public JSCodeSnippet(String string) {
+        LOGGER.trace(this.getClass().getSimpleName());
         this.string = string;
     }
 

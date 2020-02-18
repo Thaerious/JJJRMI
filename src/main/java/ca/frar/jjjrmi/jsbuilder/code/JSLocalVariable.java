@@ -1,4 +1,5 @@
 package ca.frar.jjjrmi.jsbuilder.code;
+import static ca.frar.jjjrmi.jsbuilder.code.JSConstructorCall.LOGGER;
 import spoon.reflect.code.CtLocalVariable;
 
 public class JSLocalVariable extends AbstractJSCodeElement{
@@ -7,6 +8,7 @@ public class JSLocalVariable extends AbstractJSCodeElement{
     private final JSCodeElement rhs;
 
     public JSLocalVariable(CtLocalVariable ctLocalVariable){
+        LOGGER.trace(this.getClass().getSimpleName());
         this.ctLocalVariable = ctLocalVariable;
         this.lhs = new JSLocalVariableReference(ctLocalVariable.getReference());
         this.rhs = this.generate(ctLocalVariable.getAssignment());

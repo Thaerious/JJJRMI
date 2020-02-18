@@ -1,4 +1,5 @@
 package ca.frar.jjjrmi.jsbuilder.code;
+import static ca.frar.jjjrmi.jsbuilder.code.JSConstructorCall.LOGGER;
 import spoon.reflect.code.CtForEach;
 
 public class JSForEach extends AbstractJSCodeElement {
@@ -8,6 +9,7 @@ public class JSForEach extends AbstractJSCodeElement {
     private final JSCodeElement variable;
 
     public JSForEach(CtForEach ctForEach) {
+        LOGGER.trace(this.getClass().getSimpleName());
         body = this.generate(ctForEach.getBody());
         expression = this.generate(ctForEach.getExpression());
         variable = this.generate(ctForEach.getVariable());

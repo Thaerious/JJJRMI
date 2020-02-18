@@ -1,5 +1,6 @@
 package ca.frar.jjjrmi.jsbuilder.code;
 
+import static ca.frar.jjjrmi.Global.LOGGER;
 import spoon.reflect.code.CtAssignment;
 
 public class JSAssignment extends AbstractJSCodeElement {
@@ -7,6 +8,7 @@ public class JSAssignment extends AbstractJSCodeElement {
     private final JSCodeElement lhs;
 
     public JSAssignment(CtAssignment ctAssignment) {
+        LOGGER.trace(this.getClass().getSimpleName());
         lhs = this.generate(ctAssignment.getAssigned());
         rhs = this.generate(ctAssignment.getAssignment());
     }

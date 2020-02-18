@@ -1,5 +1,6 @@
 package ca.frar.jjjrmi.jsbuilder.code;
 
+import static ca.frar.jjjrmi.Global.LOGGER;
 import spoon.reflect.code.CtCase;
 
 public class JSCase extends AbstractJSCodeElement {
@@ -8,6 +9,7 @@ public class JSCase extends AbstractJSCodeElement {
     private final JSElementList body;
 
     public JSCase(CtCase<?> ctCase) {
+        LOGGER.trace(this.getClass().getSimpleName());
         expression = this.generate(ctCase.getCaseExpression());
         body = new JSElementList(ctCase.getStatements());
     }

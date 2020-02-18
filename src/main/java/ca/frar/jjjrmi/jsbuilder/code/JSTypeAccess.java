@@ -1,4 +1,5 @@
 package ca.frar.jjjrmi.jsbuilder.code;
+import static ca.frar.jjjrmi.Global.LOGGER;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import java.util.HashSet;
 import java.util.Set;
@@ -10,6 +11,7 @@ public class JSTypeAccess extends AbstractJSCodeElement {
     private String literal = null;
 
     public JSTypeAccess(CtTypeAccess<?> ctTypeAccess) {
+        LOGGER.trace(this.getClass().getSimpleName());
         accessedType = ctTypeAccess.getAccessedType();
     }
 

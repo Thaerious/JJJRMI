@@ -6,6 +6,7 @@ const HasNone = require("./testclasses/HasNone");
 const Primitives = require("./testclasses/Primitives");
 const CircularRef = require("./testclasses/CircularRef");
 const Simple = require("./testclasses/Simple");
+const ArrayWrapper = require("./testclasses/ArrayWrapper");
 const readline = require("readline");
 
 class CrossLanguageTest {
@@ -15,6 +16,13 @@ class CrossLanguageTest {
         let encoded = translator.encode(object);
         console.log(encoded.toString(2));
     }    
+    get_array_wrapper() {
+        let translator = new Translator();
+        let object = new ArrayWrapper();
+        let encoded = translator.encode(object);
+        console.log(encoded);
+        console.log(encoded.toString(2));
+    }   
     get_none() {
         let translator = new Translator();
         let object = new None();

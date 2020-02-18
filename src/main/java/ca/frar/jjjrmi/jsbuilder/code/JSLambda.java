@@ -5,6 +5,7 @@
  */
 package ca.frar.jjjrmi.jsbuilder.code;
 
+import static ca.frar.jjjrmi.jsbuilder.code.JSConstructorCall.LOGGER;
 import java.util.List;
 import spoon.reflect.code.CtBlock;
 import spoon.reflect.code.CtExpression;
@@ -21,6 +22,7 @@ public class JSLambda extends AbstractJSCodeElement{
     private JSCodeElement expression = null;
 
     JSLambda(CtLambda ctLambda) {
+        LOGGER.trace(this.getClass().getSimpleName());
         parameters = ctLambda.getParameters();
         if (ctLambda.getBody() != null) this.body = this.generate(ctLambda.getBody());
         if (ctLambda.getExpression() != null) this.expression = this.generate(ctLambda.getExpression());

@@ -1,10 +1,12 @@
 package ca.frar.jjjrmi.jsbuilder.code;
 
+import static ca.frar.jjjrmi.Global.LOGGER;
 import spoon.reflect.code.CtThisAccess;
 
 public class JSThisAccess extends AbstractJSCodeElement {
 
     public JSThisAccess(CtThisAccess<?> ctThisAccess) {
+        LOGGER.trace(this.getClass().getSimpleName());
     }
 
     @Override
