@@ -1,6 +1,7 @@
 package ca.frar.jjjrmi.jsbuilder.code;
 
 import static ca.frar.jjjrmi.Global.LOGGER;
+import java.util.HashMap;
 import spoon.reflect.code.CtAssignment;
 
 public class JSAssignment extends AbstractJSCodeElement {
@@ -16,6 +17,12 @@ public class JSAssignment extends AbstractJSCodeElement {
     @Override
     public String toString(){
         return lhs.toString() + " = " + rhs.toString();
+    }
+    
+    public String toXML(int indent) {
+        HashMap<String, String> attributes = new HashMap<>();
+        attributes.put("name", lhs.toString());
+        return toXML(indent, attributes);
     }
 
 }

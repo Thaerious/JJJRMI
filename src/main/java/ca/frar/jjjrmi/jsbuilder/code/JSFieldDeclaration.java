@@ -1,5 +1,6 @@
 package ca.frar.jjjrmi.jsbuilder.code;
 import static ca.frar.jjjrmi.jsbuilder.code.JSConstructorCall.LOGGER;
+import java.util.HashMap;
 import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtFieldReference;
@@ -20,16 +21,26 @@ public class JSFieldDeclaration extends AbstractJSCodeElement{
         return isStatic;
     }
 
-    public boolean hasAssignment(){
-        return rhs != null && !rhs.isEmpty();
-    }
-
     @Override
     public String toString(){
-        return "this." + reference.getSimpleName() + " = " + rhs.toString() + ";";
+        if (rhs == null || rhs.toString().isEmpty()){
+            return "this." + reference.getSimpleName() + " = undefined;";
+        } else {
+            return "this." + reference.getSimpleName() + " = " + rhs.toString() + ";";
+        }
     }
 
     public String staticString(String className){
-        return className + "." + reference.getSimpleName() + " = " + rhs.toString() + ";";
+        if (rhs == null || rhs.toString().isEmpty()){
+            return className + "." + reference.getSimpleName() + " = undefined;";
+        } else {
+            return className + "." + reference.getSimpleName() + " = " + rhs.toString() + ";";
+        }
     }
+    
+    public String toXML(int indent) {
+        HashMap<String, String> attributes = new HashMap<>();
+        attributes.put("field", reference.toString());
+        return toXML(indent, attributes);
+    } 
 }

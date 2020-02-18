@@ -35,7 +35,7 @@ public class JSEnumBuilder <T extends Enum> extends JSClassBuilder<T>{
         jsMethodBuilder.setName("constructor");
         jsMethodBuilder.addParameter("value");
         JSCodeSnippet jsCodeSnippet = new JSCodeSnippet("this.__value = value;");
-        jsMethodBuilder.appendToBody(jsCodeSnippet);
+        jsMethodBuilder.getBody().add(jsCodeSnippet);
         this.addMethod(jsMethodBuilder);
     }
 
@@ -55,25 +55,25 @@ public class JSEnumBuilder <T extends Enum> extends JSClassBuilder<T>{
     void addJJJMethods() {
         JSMethodBuilder jsToStringMethod = new JSMethodBuilder();
         jsToStringMethod.setName("toString");
-        jsToStringMethod.setBody("return this.__value;");
+        jsToStringMethod.getBody().add(new JSCodeSnippet("return this.__value;"));
         addMethod(jsToStringMethod);
 
         JSMethodBuilder jsTransMethod = new JSMethodBuilder();
         jsTransMethod.setStatic(true);
         jsTransMethod.setName("__isTransient");
-        jsTransMethod.setBody("return true;");
+        jsTransMethod.getBody().add(new JSCodeSnippet("return true;"));
         addMethod(jsTransMethod);
 
         JSMethodBuilder jsGetClassMethod = new JSMethodBuilder();
         jsGetClassMethod.setStatic(true);
         jsGetClassMethod.setName("__getClass");
-        jsGetClassMethod.appendToBody("return \"" + getCtClass().getQualifiedName() + "\";");
+        jsGetClassMethod.getBody().add(new JSCodeSnippet("return \"" + getCtClass().getQualifiedName() + "\";"));
         addMethod(jsGetClassMethod);
 
         JSMethodBuilder jsIsEnumMethod = new JSMethodBuilder();
         jsIsEnumMethod.setStatic(true);
         jsIsEnumMethod.setName("__isEnum");
-        jsIsEnumMethod.appendToBody("return true;");
+        jsIsEnumMethod.getBody().add(new JSCodeSnippet("return true;"));
         addMethod(jsIsEnumMethod);
     }
 }

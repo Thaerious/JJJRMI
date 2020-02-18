@@ -15,6 +15,7 @@ public class Primitives {
     public double duble = 1.2;
     public float f = (float) 1.2;
     public int i = -1;
+    public int z;
     
     public Primitives(){}
     

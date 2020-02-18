@@ -129,7 +129,7 @@ public class CLI {
                 break;
             case "-vvvv":
                 Configurator.setRootLevel(TRACE);
-                break;                
+                break;                  
         }
     }
 

@@ -1,6 +1,7 @@
 package ca.frar.jjjrmi.jsbuilder.code;
 
 import static ca.frar.jjjrmi.Global.LOGGER;
+import java.util.HashMap;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
 import spoon.reflect.code.CtExpression;
@@ -22,5 +23,11 @@ public class JSBinaryOperator extends AbstractJSCodeElement {
     public String toString() {
         return lhs.toString() + " " + CodeFactory.binaryOperator(kind) + " " + rhs.toString();
     }
+    
+    public String toXML(int indent) {
+        HashMap<String, String> attributes = new HashMap<>();
+        attributes.put("op", kind.toString());
+        return toXML(indent, attributes);
+    }  
 
 }

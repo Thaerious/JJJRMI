@@ -3,6 +3,7 @@ import ca.frar.jjjrmi.annotations.DoNotInvoke;
 import static ca.frar.jjjrmi.jsbuilder.code.JSConstructorCall.LOGGER;
 import ca.frar.jjjrmi.socket.JJJObject;
 import ca.frar.jjjrmi.utility.JJJOptionsHandler;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import spoon.reflect.code.CtExpression;
@@ -28,6 +29,12 @@ public class JSInvocation extends AbstractJSCodeElement {
         checkForSpecialCase(ctInvocation);
     }
 
+    public String toXML(int indent) {
+        HashMap<String, String> attributes = new HashMap<>();
+        attributes.put("name", name);
+        return toXML(indent, attributes);
+    }       
+    
     /**
      * Return true if this invocation should be processed. Return false to not
      * process this invocation.
@@ -54,8 +61,7 @@ public class JSInvocation extends AbstractJSCodeElement {
         if (specialCase != null) return specialCase;
                 
         if (name.equals("<init>")){
-            if (checkForSuperclass()) return "super(" + arguments.inline() + ")";
-            else return "/* no super class */";
+            return "";
         }
         else if (checkInvocation()) {
             return target.toString() + "." + name + "(" + arguments.inline() + ")";

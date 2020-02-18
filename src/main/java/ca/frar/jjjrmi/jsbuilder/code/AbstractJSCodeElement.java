@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.reference.CtTypeReference;
@@ -32,6 +33,18 @@ public class AbstractJSCodeElement implements JSCodeElement {
     public int size(){
         return childElements.size();
     }
+    
+    /**
+     * Test child element against 'predicate'.
+     * @param predicate
+     * @return true if any child element passes predicate.
+     */
+    public boolean forAny(Predicate<JSCodeElement> predicate){
+        for (JSCodeElement element : this.childElements){
+            if (predicate.test(element)) return true;
+        }
+        return false;
+    }    
     
     /**
      * Create a JSCode element from a CT element and attach the result as a
@@ -93,7 +106,11 @@ public class AbstractJSCodeElement implements JSCodeElement {
             builder.append("</").append(this.getClass().getSimpleName()).append(">\n");
         } else {
             for (int i = 0; i < indent; i++) builder.append("\t");
-            builder.append("<").append(this.getClass().getSimpleName()).append("/>\n");
+            builder.append("<").append(this.getClass().getSimpleName());
+            for (String key : attributes.keySet()) {
+                builder.append(" ").append(key).append("=\"").append(attributes.get(key)).append("\"");
+            }
+            builder.append("/>\n");
         }
 
         return builder.toString();

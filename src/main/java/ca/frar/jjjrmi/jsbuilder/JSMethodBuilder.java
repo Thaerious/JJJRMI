@@ -1,32 +1,32 @@
 package ca.frar.jjjrmi.jsbuilder;
 
+import static ca.frar.jjjrmi.Global.LOGGER;
+import static ca.frar.jjjrmi.Global.VERY_VERBOSE;
+import ca.frar.jjjrmi.exceptions.UnknownParameterException;
 import ca.frar.jjjrmi.exceptions.TypeDeclarationNotFoundWarning;
-import ca.frar.jjjrmi.jsbuilder.code.AbstractJSCodeElement;
-import ca.frar.jjjrmi.jsbuilder.code.JSCodeElement;
-import ca.frar.jjjrmi.jsbuilder.code.JSCodeSnippet;
 import ca.frar.jjjrmi.jsbuilder.code.JSElementList;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Set;
-import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtTypeReference;
 
 /**
  * A JS Method, does not do the parsing.
+ *
  * @author Ed Armstrong
  */
 public class JSMethodBuilder {
     private String name = "";
-    private final List<JSParameter> parameters = new ArrayList<>();
+    private final LinkedHashMap<String, JSParameter> parameters = new LinkedHashMap<>();
     private JSElementList body = new JSElementList();
     private boolean isAsync = false;
     private boolean isStatic = false;
-    private boolean invokeSuper = false;
     private boolean isSetter;
     private boolean isGetter;
 
     public JSMethodBuilder(String name) {
+        LOGGER.log(VERY_VERBOSE, "building method: " + name);
         this.name = name;
     }
 
@@ -35,24 +35,21 @@ public class JSMethodBuilder {
 
     /**
      * Retrieve all js 'requires' from and all methods.
-     * @return 
+     *
+     * @return
      */
     public Set<CtTypeReference> getRequires() {
-        HashSet<CtTypeReference>set = new HashSet<>();
-        
-        try{
+        HashSet<CtTypeReference> set = new HashSet<>();
+
+        try {
             set.addAll(this.body.getRequires());
-        } catch (TypeDeclarationNotFoundWarning ex){
+        } catch (TypeDeclarationNotFoundWarning ex) {
             ex.setMethod(this.name);
             throw ex;
         }
         return set;
-    }    
-    
-    void setInvokeSuper(boolean b) {
-        this.invokeSuper = b;
     }
-    
+
     void setStatic(boolean b) {
         this.isStatic = true;
     }
@@ -62,27 +59,46 @@ public class JSMethodBuilder {
         return this;
     }
 
-    public JSMethodBuilder addParameter(JSParameter parameter) {
-        parameters.add(parameter);
+    /**
+     * Replace or add parameter to this method, with values set from
+     * 'annotation'. The order of parameters is not affected if the parameter is
+     * already set.
+     *
+     * @param name
+     * @return
+     */
+    public JSMethodBuilder addParameter(JSParameter annotation) {
+        LOGGER.log(VERY_VERBOSE, "setting initialized parameter: " + annotation.name + " = " + annotation.initializer);
+        parameters.put(annotation.name, annotation);
         return this;
     }
-    
-    public JSMethodBuilder addParameter(String name) {
-        parameters.add(new JSParameter(name, ""));
-        return this;
-    }    
-    
+
     /**
-     * Returns a reflective JSParameter.  Changes made to this parameter affect
-     * the class output.
+     * If this method does not already contain parameter 'name', add a new empty
+     * parameter named 'name' to this method. The parameter is appended to the
+     * end of the parameter list.
+     *
      * @param name
-     * @return 
+     * @return
      */
-    public JSParameter getParameter(String name){
-        for (JSParameter p : this.parameters){
-            if (p.name.equals(name)) return p;
+    public JSMethodBuilder addParameter(String name) {
+        LOGGER.log(VERY_VERBOSE, "setting blank parameter: " + name);
+        JSParameter jsParameter = new JSParameter(name, "");
+        parameters.put(name, jsParameter);
+        return this;
+    }
+
+    /**
+     * Return the initializer associated with parameter 'name'.
+     *
+     * @param name
+     * @return
+     */
+    public JSParameter getParameter(String name) throws UnknownParameterException {
+        if (!this.parameters.containsKey(name)) {
+            throw new UnknownParameterException(name);
         }
-        return null;
+        return this.parameters.get(name);
     }
 
     public JSMethodBuilder setBody(JSElementList body) {
@@ -90,20 +106,13 @@ public class JSMethodBuilder {
         return this;
     }
     
-    public JSMethodBuilder setBody(String body) {
-        this.body = new JSElementList();
-        this.body.add(new JSCodeSnippet(body));
-        return this;
-    }
-    
-    public JSMethodBuilder appendToBody(String snippet) {
-        this.body.add(new JSCodeSnippet(snippet));
-        return this;
-    }
-
-    public JSMethodBuilder appendToBody(JSCodeElement element) {
-        this.body.add(element);
-        return this;
+    /**
+     * Return the body of the element.  Any changes made to the returned body
+     * will be reflected in the method.
+     * @return 
+     */
+    public JSElementList getBody(){
+        return this.body;
     }
 
     public JSMethodBuilder setName(String name) {
@@ -126,24 +135,15 @@ public class JSMethodBuilder {
         if (this.isGetter) builder.append("get ");
         builder.append(name);
         builder.append("(");
-
-        for (int i = 0; i < parameters.size(); i++) {
-            builder.append(parameters.get(i));
-            if (i != parameters.size() - 1) builder.append(", ");
+        
+        Iterator<String> iterator = this.parameters.keySet().iterator();
+        while(iterator.hasNext()){
+            JSParameter jsParameter = this.parameters.get(iterator.next());
+            builder.append(jsParameter.toString());
+            if (iterator.hasNext()) builder.append(", ");
         }
 
         builder.append(") ");
-
-        if (this.invokeSuper) {
-            builder.append("\t\tif (super.").append(name).append(" !== undefined)");
-            builder.append("super.").append(name).append("(");
-            for (int i = 0; i < parameters.size(); i++) {
-                builder.append(parameters.get(i));
-                if (i != parameters.size() - 1) builder.append(", ");
-            }
-            builder.append(");\n");
-        }
-
         builder.append(JSFormatter.process(body.scoped(), 2).trim());
 
         return builder.toString();
@@ -157,38 +157,39 @@ public class JSMethodBuilder {
         this.isGetter = b;
     }
 
-    public String toXML(int indent){        
-        StringBuilder builder = new StringBuilder();        
-        
-            for (int i = 0; i < indent; i++) builder.append("\t");
-            
-            builder.append("<").append(this.getClass().getSimpleName());
-            builder.append(" name=\"").append(this.getName()).append("\"");
-            builder.append(">\n");   
-            
-            builder.append(this.body.toXML(indent + 1));
-            
-            for (int i = 0; i < indent; i++) builder.append("\t");
-            builder.append("</").append(this.getClass().getSimpleName()).append(">\n");
-        
+    public String toXML(int indent) {
+        StringBuilder builder = new StringBuilder();
+
+        for (int i = 0; i < indent; i++) builder.append("\t");
+
+        builder.append("<").append(this.getClass().getSimpleName());
+        builder.append(" name=\"").append(this.getName()).append("\"");
+        builder.append(">\n");
+
+        builder.append(this.body.toXML(indent + 1));
+
+        for (int i = 0; i < indent; i++) builder.append("\t");
+        builder.append("</").append(this.getClass().getSimpleName()).append(">\n");
+
         return builder.toString();
     }
-    
-    public String parametersToXML(int indent){        
-        StringBuilder builder = new StringBuilder();        
-        
-            for (int i = 0; i < indent; i++) builder.append("\t");
-            
-            builder.append("<parameters>");
-            
-            for (JSCodeElement element : this.parameters){
-                builder.append(element.toXML(indent + 1));
-            }
-            
-            for (int i = 0; i < indent; i++) builder.append("\t");
-            builder.append("</parameters>");
-        
+
+    public String parametersToXML(int indent) {
+        StringBuilder builder = new StringBuilder();
+
+        for (int i = 0; i < indent; i++) builder.append("\t");
+
+        builder.append("<parameters>");
+
+        for (String name : this.parameters.keySet()) {
+            JSParameter jsParameter = this.parameters.get(name);
+            builder.append(jsParameter.toXML(indent + 1));
+        }
+
+        for (int i = 0; i < indent; i++) builder.append("\t");
+        builder.append("</parameters>");
+
         return builder.toString();
-    }    
-    
+    }
+
 }

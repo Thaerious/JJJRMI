@@ -3,6 +3,8 @@ package ca.frar.jjjrmi.jsbuilder.code;
 import static ca.frar.jjjrmi.jsbuilder.code.JSConstructorCall.LOGGER;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtComment;
 
@@ -27,7 +29,7 @@ public class JSElementList extends AbstractJSCodeElement {
     final public void addCtCodeElement(CtCodeElement element) {
         this.generate(element);
     }
-
+    
     public String inline() {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < this.childElements.size(); i++) {

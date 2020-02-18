@@ -1,9 +1,8 @@
 package ca.frar.jjjrmi.jsbuilder;
-
-import ca.frar.jjjrmi.annotations.InvokeSuper;
 import ca.frar.jjjrmi.annotations.JSParam;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.annotations.ServerSide;
+import ca.frar.jjjrmi.jsbuilder.code.JSCodeSnippet;
 import ca.frar.jjjrmi.jsbuilder.code.JSElementList;
 import java.lang.annotation.Annotation;
 import java.util.List;
@@ -11,7 +10,6 @@ import spoon.reflect.code.CtBlock;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtModifiable;
-import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtParameter;
 import spoon.reflect.declaration.ModifierKind;
 
@@ -49,33 +47,37 @@ public class JSMethodGenerator {
             if (nativeJSAnno.isGetter()) jsMethodBuilder.setGetter(true);
         }
 
-        if (ctModifiable.hasModifier(ModifierKind.STATIC)) jsMethodBuilder.setStatic(true);
-        processArguments();
+        if (ctModifiable.hasModifier(ModifierKind.STATIC)){
+            jsMethodBuilder.setStatic(true);
+        }
+        
+        processParameters();
+        processParameterAnnotations();
 
         if (ctModifiable.getAnnotation(ServerSide.class) != null) {
-            jsMethodBuilder.setBody(String.format("return this.__jjjWebsocket.methodRequest(this, \"%s\", arguments);", this.name));
+            String format = String.format("return this.__jjjWebsocket.methodRequest(this, \"%s\", arguments);", this.name);
+            JSCodeSnippet snippet = new JSCodeSnippet(format);
+            jsMethodBuilder.getBody().add(snippet);
         } else {
             processBody();
-        }
-
-        if (ctModifiable.getAnnotation(InvokeSuper.class) != null) {
-            jsMethodBuilder.setInvokeSuper(true);
-        }
-
-        List<CtAnnotation<? extends Annotation>> annotations = ctExectuable.getAnnotations();
-        for (CtAnnotation ctAnnotation : annotations) {
-            Annotation actualAnnotation = ctAnnotation.getActualAnnotation();
-            if (actualAnnotation instanceof JSParam) {
-                JSParam annotationParameter = (JSParam) actualAnnotation;
-                JSParameter methodParameter = jsMethodBuilder.getParameter(annotationParameter.name());
-                methodParameter.initializer = annotationParameter.init();
-            }
         }
 
         return jsMethodBuilder;
     }
 
-    private void processArguments() {
+    private void processParameterAnnotations() {
+        List<CtAnnotation<? extends Annotation>> annotations = ctExectuable.getAnnotations();
+        for (CtAnnotation<?> ctAnnotation : annotations) {
+            Annotation actualAnnotation = ctAnnotation.getActualAnnotation();
+            if (actualAnnotation instanceof JSParam) {
+                JSParam annotationParameter = (JSParam) actualAnnotation;
+                JSParameter jsParameter = new JSParameter(annotationParameter.name(), annotationParameter.init());
+                jsMethodBuilder.addParameter(jsParameter);
+            }
+        }        
+    }
+    
+    private void processParameters() {
         List<CtParameter<?>> parameters = ctExectuable.getParameters();
         for (CtParameter<?> parameter : parameters) {
             jsMethodBuilder.addParameter(parameter.getSimpleName());

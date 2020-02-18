@@ -1,5 +1,6 @@
 package ca.frar.jjjrmi.jsbuilder.code;
 import static ca.frar.jjjrmi.jsbuilder.code.JSConstructorCall.LOGGER;
+import java.util.HashMap;
 import spoon.reflect.code.CtLiteral;
 
 public class JSLiteral extends AbstractJSCodeElement {
@@ -17,4 +18,10 @@ public class JSLiteral extends AbstractJSCodeElement {
         else if (value instanceof Number) return value.toString();
         else return ctLiteral.toString();
     }
+    
+    public String toXML(int indent) {
+        HashMap<String, String> attributes = new HashMap<>();
+        attributes.put("value", ctLiteral.toString());
+        return toXML(indent, attributes);
+    }      
 }
