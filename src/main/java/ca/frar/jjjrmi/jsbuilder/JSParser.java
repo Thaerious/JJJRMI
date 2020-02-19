@@ -5,6 +5,7 @@ import static ca.frar.jjjrmi.Global.VERY_VERBOSE;
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
 import ca.frar.jjjrmi.exceptions.JJJRMIWarning;
 import ca.frar.jjjrmi.socket.HasWebsockets;
+import ca.frar.jjjrmi.socket.JJJObject;
 import ca.frar.jjjrmi.utility.JJJOptionsHandler;
 import java.util.ArrayList;
 import org.apache.logging.log4j.Level;
@@ -62,12 +63,18 @@ public class JSParser extends AbstractProcessor<CtClass<?>> {
         }
     }
     
-    public boolean test(CtClass<?> ctClass) {
+    public boolean test(CtClass ctClass) {
         JJJOptionsHandler jjjOptions = new JJJOptionsHandler(ctClass);
         this.sourceClasses.add(ctClass);
-
-        CtTypeReference<Object> jjjObjectType = ctClass.getFactory().Type().get(HasWebsockets.class).getReference();
-        boolean isSubtype = ctClass.isSubtypeOf(jjjObjectType);
+        JJJOptionsHandler jjjOptionsHandler = new JJJOptionsHandler(ctClass);
+        
+        CtTypeReference reference = ctClass.getReference(); 
+        
+        CtTypeReference<JJJObject> jjjObjectRef = ctClass.getFactory().Type().createReference(JJJObject.class);
+        
+        LOGGER.debug(reference.isSubtypeOf(jjjObjectRef));
+        
+        boolean isSubtype = true;
 
         LOGGER.log(VERY_VERBOSE, "+------------------------------------------------------------------------------+");
         LOGGER.log(VERY_VERBOSE, "(?) Considering class: " + ctClass.getQualifiedName());

@@ -5,6 +5,7 @@ import ca.frar.jjjrmi.annotations.JJJ;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 import ca.frar.jjjrmi.annotations.IsSocket;
+import ca.frar.jjjrmi.socket.JJJObject;
 import spoon.reflect.reference.CtTypeReference;
 
 public class JJJOptionsHandler {
@@ -54,13 +55,16 @@ public class JJJOptionsHandler {
 
     /**
      * The object that the JS object will extend.
-     *
      * @return
      */
     public String getExtends() {
         return jjj.jsExtends();
     }
 
+    /**
+     * Do not add class to packageFile.js
+     * @return 
+     */
     public boolean doNotPackage(){
         return this.doNotPackage != null;
     }
@@ -69,10 +73,20 @@ public class JJJOptionsHandler {
         return jjj != null && !this.jsExtends.isEmpty();
     }
 
+//    public boolean isSubType() {
+////        CtTypeReference<Object> jjjObjectType = ctClass.getFactory().Type().get(JJJObject.class).getReference();        
+//        
+//        
+//    }
+
     public boolean topLevel() {
         return jjj != null && jjj.topLevel();
     }
 
+    /**
+     * Set insertJJJMethods in @JJJ to false to not insert handling methods.
+     * @return 
+     */
     public boolean insertJJJMethods() {
         return jjj == null || jjj.insertJJJMethods();
     }
@@ -99,10 +113,14 @@ public class JJJOptionsHandler {
         return jjj == null || jjj.generateJS();
     }
 
+    /**
+     * True is this object has the @JJJ annotation.
+     * @return 
+     */
     public boolean hasJJJ() {
         return this.jjj != null;
     }
-
+    
     public boolean isSocket() {
         return this.isSocket != null;
     }

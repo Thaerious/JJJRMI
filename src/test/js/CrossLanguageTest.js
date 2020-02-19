@@ -7,9 +7,22 @@ const Primitives = require("./testclasses/Primitives");
 const CircularRef = require("./testclasses/CircularRef");
 const Simple = require("./testclasses/Simple");
 const ArrayWrapper = require("./testclasses/ArrayWrapper");
+const PrimitivesExtended = require("./testclasses/PrimitivesExtended");
 const readline = require("readline");
 
 class CrossLanguageTest {
+    get_primitives_extended() {
+        let translator = new Translator();
+        let object = new PrimitivesExtended(65);
+        let encoded = translator.encode(object);
+        console.log(encoded.toString(2));
+    }      
+    get_array_field() {
+        let translator = new Translator();
+        let object = new ArrayWrapper();
+        let encoded = translator.encode(object);
+        console.log(encoded.toString(2));
+    }    
     get_simple() {
         let translator = new Translator();
         let object = new Simple();

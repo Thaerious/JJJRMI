@@ -4,7 +4,6 @@
  * and open the template in the editor.
  */
 package ca.frar.jjjrmi.jsbuilder.code;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -21,6 +20,11 @@ import spoon.reflect.reference.CtTypeReference;
  */
 public class AbstractJSCodeElement implements JSCodeElement {
     ArrayList<JSCodeElement> childElements = new ArrayList<>();
+
+    @Override
+    public JSCodeElement get() {
+        return this;
+    }
 
     public boolean isEmpty() {
         return size() == 0;
@@ -54,7 +58,7 @@ public class AbstractJSCodeElement implements JSCodeElement {
      * @return
      */
     JSCodeElement generate(CtCodeElement ctCodeElement) {
-        JSCodeElement generated = CodeFactory.generate(ctCodeElement);
+        JSCodeElement generated = CodeFactory.generate(ctCodeElement).get();
         this.childElements.add(generated);
         return generated;
     }

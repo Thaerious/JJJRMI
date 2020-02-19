@@ -7,9 +7,12 @@ package ca.frar.jjjrmi.translator;
 
 import ca.frar.jjjrmi.exceptions.DecoderException;
 import ca.frar.jjjrmi.exceptions.EncoderException;
+import ca.frar.jjjrmi.exceptions.JJJRMIException;
+import ca.frar.jjjrmi.testclasses.ArrayWrapper;
 import ca.frar.jjjrmi.testclasses.HasNone;
 import ca.frar.jjjrmi.testclasses.None;
 import ca.frar.jjjrmi.testclasses.Primitives;
+import ca.frar.jjjrmi.testclasses.PrimitivesExtended;
 import ca.frar.jjjrmi.testclasses.Simple;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -101,4 +104,25 @@ public class CrossLanguageTest {
         assertEquals(Primitives.class, decoded.getClass());
         assertEquals(new Primitives(7), decoded);
     }     
+    
+    @Test
+    public void test_array_as_field_00() throws JJJRMIException, IOException {
+        Translator translator = new Translator();
+        Object decoded = this.get(translator, "get_array_field");
+        assertEquals(ArrayWrapper.class, decoded.getClass());
+    }
+    
+    /**
+     * Primitives Extended class only has values from the parent class.  All 
+     * values should be available and the same.
+     * @throws JJJRMIException
+     * @throws IOException 
+     */
+    @Test
+    public void test_primitives_from_super() throws JJJRMIException, IOException {
+        Translator translator = new Translator();
+        Object decoded = this.get(translator, "get_primitives_extended");
+        new Primitives(65);
+        assertEquals(ArrayWrapper.class, decoded.getClass());
+    }    
 }

@@ -18,11 +18,11 @@ public class JSInvocation extends AbstractJSCodeElement {
     private String name;
     private final JSCodeElement target;
     private String specialCase = null;
-    private final CtInvocation<?> invocation;
+    private final CtInvocation<?> ctInvocation;
 
     public JSInvocation(CtInvocation<?> ctInvocation) {
         LOGGER.trace(this.getClass().getSimpleName());
-        this.invocation = ctInvocation;
+        this.ctInvocation = ctInvocation;
         arguments = this.generateList(ctInvocation.getArguments());
         name = ctInvocation.getExecutable().getSimpleName();
         target = this.generate(ctInvocation.getTarget());
@@ -31,9 +31,26 @@ public class JSInvocation extends AbstractJSCodeElement {
 
     public String toXML(int indent) {
         HashMap<String, String> attributes = new HashMap<>();
-        attributes.put("name", name);
+        attributes.put("name", ctInvocation.getExecutable().getSimpleName());
+        attributes.put("type", ctInvocation.getExecutable().getType().toString());
         return toXML(indent, attributes);
-    }       
+    }
+    
+    @Override
+    public JSCodeElement get(){
+        CtTypeReference<?> typeRef = ctInvocation.getExecutable().getType();
+        CtTypeReference<Object> jjjTypeRef = typeRef.getFactory().Type().get(JJJObject.class).getReference();
+        boolean subtypeOf = typeRef.isSubtypeOf(jjjTypeRef);
+        
+        LOGGER.debug(subtypeOf);
+        
+        if (name.equals("<init>")){
+            return new JSSuperConstructor(ctInvocation);
+        } else {
+            return this;
+        }
+        
+    }
     
     /**
      * Return true if this invocation should be processed. Return false to not
@@ -43,8 +60,8 @@ public class JSInvocation extends AbstractJSCodeElement {
      * @return
      */
     private boolean checkInvocation() {
-        if (invocation.getTarget() == null) return true; // super(...)
-        CtTypeReference<?> type = invocation.getTarget().getType();
+        if (ctInvocation.getTarget() == null) return true; // super(...)
+        CtTypeReference<?> type = ctInvocation.getTarget().getType();
         CtType<?> typeDeclaration = type.getTypeDeclaration();
         Set<CtMethod<?>> methods = typeDeclaration.getAllMethods();
 
@@ -67,27 +84,6 @@ public class JSInvocation extends AbstractJSCodeElement {
             return target.toString() + "." + name + "(" + arguments.inline() + ")";
         } else {
             return "/* method invocation revoked */";
-        }
-    }
-
-    private boolean checkForSuperclass(){
-        CtType<?> type = this.invocation.getType().getDeclaration();        
-        
-        if (type == null){
-            return false;
-        }
-        
-        JJJOptionsHandler jjjOptions = new JJJOptionsHandler(type);
-        
-        if (jjjOptions.hasExtends()) {
-            return true;
-        }
-        
-        if (type.getSimpleName().equals(JJJObject.class.getSimpleName())) {
-            return false;
-        }
-        else {
-            return true;
         }
     }
     

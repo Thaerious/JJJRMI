@@ -1,5 +1,5 @@
 #!/bin/bash
-ROOTPATH=/mnt/d/project/trunk/jjj/rmi
+ROOTPATH=
 
 POSITIONAL=()
 

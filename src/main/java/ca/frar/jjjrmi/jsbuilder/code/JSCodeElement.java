@@ -8,4 +8,11 @@ public interface JSCodeElement {
     String scoped();
     Set<CtTypeReference> getRequires();
     String toXML(int indent);
+    
+    /**
+     * Retrieve a JSElement to insert into tree, usually just 'this'.
+     * Override if processing may return different types.
+     * @return 
+     */
+    JSCodeElement get(); 
 }

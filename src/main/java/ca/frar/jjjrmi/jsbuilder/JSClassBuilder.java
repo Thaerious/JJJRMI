@@ -285,7 +285,7 @@ public class JSClassBuilder<T> {
                 continue;
             }
 
-            if (anImport.isEnum() && new JJJOptionsHandler(anImport.getDeclaration()).hasJJJ()) {
+            if (anImport.isEnum() && new JJJOptionsHandler(anImport.getTypeDeclaration()).hasJJJ()) {
                 LOGGER.log(VERY_VERBOSE, String.format("Generating require for annotated enum %s", anImport.getSimpleName()));
                 appendRequire(builder, anImport);
                 continue;

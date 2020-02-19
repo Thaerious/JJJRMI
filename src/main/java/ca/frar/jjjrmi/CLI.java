@@ -7,7 +7,6 @@ import ca.frar.jjjrmi.jsbuilder.JSBuilderException;
 import ca.frar.jjjrmi.jsbuilder.JSClassBuilder;
 import ca.frar.jjjrmi.jsbuilder.JSParser;
 import ca.frar.stream.TemplateVariableReader;
-import edu.emory.mathcs.backport.java.util.Arrays;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -19,7 +18,6 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -60,7 +58,7 @@ public class CLI {
         cli.run();
         cli.output();
     }
-
+    
     public void parseArgs(String... args) {
         @SuppressWarnings("unchecked")
         List<String> argList = new LinkedList<>();
@@ -134,6 +132,11 @@ public class CLI {
     }
 
     private List<Path> getFiles() throws IOException{
+        if (!new File(this.sourceDir).exists()){
+            LOGGER.error("Source directory does not exist: " + this.sourceDir);
+            System.exit(1);
+        }
+        
         Stream<Path> files = Files.walk(Paths.get(this.sourceDir));
         
         return files.filter((f)->{

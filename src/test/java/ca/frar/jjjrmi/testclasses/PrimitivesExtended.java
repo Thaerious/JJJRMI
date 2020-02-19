@@ -5,18 +5,35 @@
  */
 package ca.frar.jjjrmi.testclasses;
 
+import ca.frar.jjjrmi.annotations.JJJ;
+import ca.frar.jjjrmi.annotations.JSParam;
+import ca.frar.jjjrmi.annotations.NativeJS;
+
 /**
- *
+ * This class tests that the super invocation (w/params) gets created.
  * @author Ed Armstrong
  */
+@JJJ
 public class PrimitivesExtended extends Primitives{
-
+    Primitives innerPrim;
+    
     public PrimitivesExtended(){
-        super();
+        super();        
     }
     
+    @NativeJS()
+    @JSParam(name = "i", init = "7")    
     public PrimitivesExtended(int i) {
         super(i);
+        foo();
+        bar();
     }
     
+    @NativeJS()
+    public void foo(){
+    }
+    
+    @NativeJS()
+    public static void bar(){
+    }    
 }

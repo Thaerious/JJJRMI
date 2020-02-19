@@ -3,8 +3,7 @@
 ROOTPATH=$( cd "$(dirname ./$BASH_SOURCE)"; cd .. ; pwd -P )
 
 export PATH=$PATH:$ROOTPATH/bin
-export JJJRMI=$ROOTPATH
+echo $ROOTPATH
 
-touch $ROOTPATH/bin/jjjrmi
-echo "#!/bin/bash" > $ROOTPATH/bin/jjjrmi
-echo java -classpath $ROOTPATH/target/dependency/*:$ROOTPATH/target/classes ca.frar.jjjrmi.CLI '$@' >> $ROOTPATH/bin/jjjrmi
+cp bin/jjjrmi.template bin/jjjrmi
+sed -i "s|ROOTPATH=|ROOTPATH=$ROOTPATH|" "bin/jjjrmi"

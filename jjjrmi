@@ -1,5 +1,5 @@
 #!/bin/bash
-ROOTPATH=/mnt/d/project/trunk/jjj/rmi
+ROOTPATH=$ROOTPATH
 
 POSITIONAL=()
 
@@ -27,4 +27,4 @@ echo ${CLASSPATH}
 CLASSPATH=$CLASSPATH:$ROOTPATH/target/dependency/*
 CLASSPATH=$CLASSPATH:$ROOTPATH/target/classes
 
-java -classpath $CLASSPATH ca.frar.jjjrmi.CLI "$@"
+echo java -classpath $CLASSPATH ca.frar.jjjrmi.CLI "$@"
