@@ -1,8 +1,8 @@
 package ca.frar.jjjrmi.jsbuilder.code;
-
 import static ca.frar.jjjrmi.Global.LOGGER;
 import java.util.HashMap;
 import spoon.reflect.code.CtAssignment;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.TypeFactory;
 import spoon.reflect.reference.CtTypeReference;
 
@@ -20,16 +20,40 @@ public class JSAssignment extends AbstractJSCodeElement {
 
     @Override
     public String toString(){
-        CtTypeReference<?> lhsType = ctAssignment.getAssigned().getType();
-        CtTypeReference<?> rhsType = ctAssignment.getAssignment().getType();
+        CtTypeReference<?> lhsRef = ctAssignment.getAssigned().getType();
+        CtTypeReference<?> rhsRef = ctAssignment.getAssignment().getType();
+        CtTypeReference<Character> CHARACTER_PRIMITIVE = lhsRef.getFactory().Type().CHARACTER_PRIMITIVE;
         
-        TypeFactory typeFactory = new TypeFactory();
-        LOGGER.debug(lhsType + ", " + (lhs == typeFactory.CHARACTER_PRIMITIVE));
-        if (lhsType == typeFactory.CHARACTER && rhsType == typeFactory.INTEGER){
-             return lhs.toString() + " = String.fromCharCode(" + rhs.toString() + ")";
-        } else {        
+        CtType<?> lhsDec = lhsRef.getTypeDeclaration();
+        CtType<?> charDec = CHARACTER_PRIMITIVE.getTypeDeclaration();
+
+        if (lhsDec == charDec){
+            return lhsCharToString(rhsRef);
+        } else {
             return lhs.toString() + " = " + rhs.toString();
         }
+    }
+    
+    private String lhsCharToString(CtTypeReference<?> rhsRef){
+        CtType<?> rht = rhsRef.getTypeDeclaration(); // right hand type
+        TypeFactory tf = rhsRef.getFactory().Type(); //type factory
+
+        LOGGER.debug(rhsRef);
+        LOGGER.debug(rht);
+        
+        if (   rht == tf.INTEGER.getTypeDeclaration() 
+            || rht == tf.INTEGER_PRIMITIVE.getTypeDeclaration()
+            || rht == tf.SHORT.getTypeDeclaration()
+            || rht == tf.SHORT_PRIMITIVE.getTypeDeclaration()
+            || rht == tf.LONG.getTypeDeclaration()
+            || rht == tf.LONG_PRIMITIVE.getTypeDeclaration()                
+           ){
+            return String.format("%s = String.fromCharCode(%s);", lhs.toString(), rhs.toString());
+        }
+        if (rht == tf.STRING.getTypeDeclaration()){
+            return String.format("%s = %s.charAt(0);", lhs.toString(), rhs.toString());
+        }        
+        return lhs.toString() + " = " + rhs.toString();
     }
     
     public String toXML(int indent) {

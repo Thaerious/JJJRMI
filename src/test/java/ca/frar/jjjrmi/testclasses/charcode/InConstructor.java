@@ -16,6 +16,7 @@ import ca.frar.jjjrmi.annotations.NativeJS;
 public class InConstructor {
     private final char a;
     private final char b;
+    private final char c;
     
     public static void main(String ... args){
         System.out.println(new InConstructor().toString());
@@ -25,6 +26,7 @@ public class InConstructor {
     public InConstructor(){
         this.a = 'a';
         this.b = 66;
+        this.c = (short)66;
     }
     
     @Override
