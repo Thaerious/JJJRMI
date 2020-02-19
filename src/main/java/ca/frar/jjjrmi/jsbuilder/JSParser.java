@@ -66,15 +66,10 @@ public class JSParser extends AbstractProcessor<CtClass<?>> {
     public boolean test(CtClass ctClass) {
         JJJOptionsHandler jjjOptions = new JJJOptionsHandler(ctClass);
         this.sourceClasses.add(ctClass);
-        JJJOptionsHandler jjjOptionsHandler = new JJJOptionsHandler(ctClass);
         
         CtTypeReference reference = ctClass.getReference(); 
-        
-        CtTypeReference<JJJObject> jjjObjectRef = ctClass.getFactory().Type().createReference(JJJObject.class);
-        
-        LOGGER.debug(reference.isSubtypeOf(jjjObjectRef));
-        
-        boolean isSubtype = true;
+        CtTypeReference<JJJObject> jjjObjectRef = ctClass.getFactory().Type().createReference(JJJObject.class);        
+        boolean isSubtype = reference.isSubtypeOf(jjjObjectRef);
 
         LOGGER.log(VERY_VERBOSE, "+------------------------------------------------------------------------------+");
         LOGGER.log(VERY_VERBOSE, "(?) Considering class: " + ctClass.getQualifiedName());

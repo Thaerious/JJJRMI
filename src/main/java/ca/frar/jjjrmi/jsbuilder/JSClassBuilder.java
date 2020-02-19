@@ -77,27 +77,7 @@ public class JSClassBuilder<T> {
         if (jjjOptions.insertJJJMethods()) addJJJMethods();
         setHeader(new JSHeaderBuilder().setName(jjjOptions.getName()));
 
-        /* determine superclass, first by jjjoptions then by extends */
-        CtType<?> supertype = null;
-        CtTypeReference<?> superclass = ctClass.getSuperclass();
-
-        if (superclass != null) {
-            supertype = ctClass.getSuperclass().getDeclaration();
-        }
-
-        if (this.jjjOptions.hasExtends()) {
-            LOGGER.log(VERBOSE, "Setting JS superclass from @JJJ annotation: " + jjjOptions.getExtends());
-            this.getHeader().setExtend(jjjOptions.getExtends());
-        } else if (supertype == null) {
-            LOGGER.log(VERY_VERBOSE, "No JS superclass found.");
-        } else if (supertype.getSimpleName().equals(JJJObject.class.getSimpleName())) {
-            LOGGER.log(VERY_VERBOSE, "Direct Java superclass is of type JJJObject: " + supertype.getSimpleName());
-        } else {
-            LOGGER.log(VERBOSE, "Setting JS superclass from Java superclass: " + supertype.getSimpleName());
-            this.getHeader().setExtend(supertype.getSimpleName());
-            requireSet.add(supertype.getReference());
-        }
-
+        buildSuperClass();
         buildInitMethod();
         buildConstructor();
 
@@ -139,6 +119,35 @@ public class JSClassBuilder<T> {
         return this;
     }
 
+    private void buildSuperClass(){
+    /* determine superclass, first by jjjoptions then by extends */
+        CtTypeReference<?> superclass = ctClass.getSuperclass();
+
+        if (this.jjjOptions.hasExtends()) {
+            LOGGER.log(VERBOSE, "Setting JS superclass from @JJJ annotation: " + jjjOptions.getExtends());
+            this.getHeader().setExtend(jjjOptions.getExtends());
+            return;
+        }
+        
+        if (superclass == null) {
+            LOGGER.log(VERY_VERBOSE, "No superclass found.");
+            return;
+        }
+        
+        CtTypeReference reference = ctClass.getReference(); 
+        CtTypeReference<JJJObject> jjjObjectRef = ctClass.getFactory().Type().createReference(JJJObject.class);        
+        boolean isSubtype = reference.isSubtypeOf(jjjObjectRef);        
+        
+        if (isSubtype){
+            LOGGER.log(VERBOSE, "Setting JS superclass from Java superclass: " + superclass.getSimpleName());
+            this.getHeader().setExtend(superclass.getSimpleName());
+            requireSet.add(superclass);            
+            return;
+        }
+        
+        LOGGER.log(VERY_VERBOSE, "Class not subtype of JJJObject: " + superclass.getSimpleName());
+    }
+    
     private void buildConstructor() {
         /* Constructor Generation */
         Set<? extends CtConstructor<?>> allConstructors = ctClass.getConstructors();
