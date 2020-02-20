@@ -148,6 +148,11 @@ public class TranslatorCorrectnessTest {
         assertEquals(null, decoded.get());
     }
     
+    /**
+     * The same object has been encoded twice.  The second encoding sent
+     * returns a reference to the first.
+     * @throws JJJRMIException 
+     */
     @Test
     public void test_reference_as_root() throws JJJRMIException {
         Translator translator = new Translator();

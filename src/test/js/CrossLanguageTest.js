@@ -11,63 +11,68 @@ const PrimitivesExtended = require("./testclasses/PrimitivesExtended");
 const Has = require("./testclasses/Has");
 const readline = require("readline");
 
+
+function log(string){
+    console.log(string);
+    console.log(String.fromCharCode(3));
+}
+
 class CrossLanguageTest {
-    get_primitives_extended() {
-        let translator = new Translator();
-        let object = new PrimitivesExtended(65);
-        let encoded = translator.encode(object);
-        console.log(encoded.toString(2));
-    }      
+    constructor(){
+        this.translator = new Translator();
+    }
+    
+    resend(){
+        let encoded = this.translator.encode(this.lastObject);
+        log(encoded.toString(2));
+    }
+    
+    get_primitives_extended() {        
+        this.lastObject = new PrimitivesExtended(65);
+        let encoded = this.translator.encode(this.lastObject);
+        log(encoded.toString(2));
+    }
     get_array_field() {
-        let translator = new Translator();
-        let object = new ArrayWrapper();
-        let encoded = translator.encode(object);
-        console.log(encoded.toString(2));
+        this.lastObject = new ArrayWrapper();
+        let encoded = this.translator.encode(this.lastObject);
+        log(encoded.toString(2));
     }    
     get_simple() {
-        let translator = new Translator();
-        let object = new Simple();
-        let encoded = translator.encode(object);
-        console.log(encoded.toString(2));
+        this.lastObject = new Simple();
+        let encoded = this.translator.encode(this.lastObject);
+        log(encoded.toString(2));
     }    
     get_array_wrapper() {
-        let translator = new Translator();
-        let object = new ArrayWrapper();
-        let encoded = translator.encode(object);
-        console.log(encoded);
-        console.log(encoded.toString(2));
+        this.lastObject = new ArrayWrapper();
+        let encoded = this.translator.encode(this.lastObject);
+        log(encoded.toString(2));
     }   
     get_none() {
-        let translator = new Translator();
-        let object = new None();
-        let encoded = translator.encode(object);
-        console.log(encoded.toString(2));
+        this.lastObject = new None();
+        let encoded = this.translator.encode(this.lastObject);
+        log(encoded.toString(2));
     }
     get_has_none() {
-        let translator = new Translator();
-        let object = new HasNone();
-        let encoded = translator.encode(object);
-        console.log(encoded.toString(2));
+        this.lastObject = new HasNone();
+        let encoded = this.translator.encode(this.lastObject);
+        log(encoded.toString(2));
     }
     get_primitives() {
-        let translator = new Translator();
-        let object = new Primitives();
-        let encoded = translator.encode(object);
-        console.log(encoded.toString(2));
+        this.lastObject = new Primitives();
+        let encoded = this.translator.encode(this.lastObject);
+        log(encoded.toString(2));
     }
     get_circular(){
-        let translator = new Translator();
-        let object = new CircularRef();
-        let encoded = translator.encode(object);
-        console.log(encoded.toString(2));
+        this.lastObject = new CircularRef();
+        let encoded = this.translator.encode(this.lastObject);
+        log(encoded.toString(2));
     }
     get_has_null(){
-        let translator = new Translator();
-        let object = new Has();
-        object.set(null);
-        let encoded = translator.encode(object);
-        console.log(encoded.toString(2));
-    }    
+        this.lastObject = new Has();
+        this.lastObject.set(null);
+        let encoded = this.translator.encode(this.lastObject);
+        log(encoded.toString(2));
+    }
 }
 
 const test = new CrossLanguageTest();
@@ -79,10 +84,15 @@ if (process.argv.length === 2) {
         terminal: false
     });
 
-    rl.on('line', function (line) {
-        if (!test[line]) throw "Test not found: " + line;
-        test[line]();
-        process.exit();
+    rl.on('line', function (line) {     
+        line = line.toLowerCase();
+        if (line === "exit") process.exit();
+        line = line.replace(/ /g, "_");
+        if (!test[line]){
+            console.log("unknown command: " + line);
+        } else {
+            test[line]();        
+        }
     });
 } else {
     test[process.argv[2]]();
