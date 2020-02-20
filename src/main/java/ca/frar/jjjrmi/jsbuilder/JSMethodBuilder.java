@@ -114,7 +114,7 @@ public class JSMethodBuilder {
     public JSElementList getBody(){
         return this.body;
     }
-
+    
     public JSMethodBuilder setName(String name) {
         this.name = name;
         return this;

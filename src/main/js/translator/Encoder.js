@@ -5,6 +5,7 @@ const HandlerFactory = require("./HandlerFactory");
 const EncodedReference = require("./EncodedReference");
 const EncodedPrimitive = require("./EncodedPrimitive");
 const EncodedEnum = require("./EncodedEnum");
+const EncodedNull = require("./EncodedNull");
 
 class EncodedArray {
     constructor(object, encodedResult) {

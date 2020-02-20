@@ -26,6 +26,36 @@ public class JSElementList extends AbstractJSCodeElement {
         }
     }
     
+    /**
+     * Retrieve the index of the first element with class 'aClass'.  Returns
+     * -1 if none found.
+     * @param aClass
+     * @return 
+     */
+    public int firstIndexOf(Class<? extends JSCodeElement> aClass){
+        int i = 0;
+        for (JSCodeElement element : this.childElements){
+            if (element.getClass() == aClass) return i;
+            i++;
+        }
+        return -1;
+    }
+    
+    /**
+     * Retrieve the index of the first element with class 'aClass' searching
+     * inclusively from index 'from'.  Returns -1 if no element found.
+     * @param aClass
+     * @return 
+     */
+    public int nextIndexOf(int from, Class<? extends JSCodeElement> aClass){
+        int i = from;
+        for (JSCodeElement element : this.childElements){
+            if (element.getClass() == aClass) return i;
+            i++;
+        }
+        return -1;
+    }    
+    
     final public void addCtCodeElement(CtCodeElement element) {
         this.generate(element);
     }
@@ -100,5 +130,9 @@ public class JSElementList extends AbstractJSCodeElement {
 
     public void add(JSCodeElement jsCodeElement) {
         this.childElements.add(jsCodeElement);
+    }
+    
+    public void remove(int i) {
+        this.childElements.remove(i);
     }
 }

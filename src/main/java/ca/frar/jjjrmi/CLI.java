@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -24,6 +25,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import static org.apache.logging.log4j.Level.DEBUG;
+import static org.apache.logging.log4j.Level.ERROR;
+import static org.apache.logging.log4j.Level.OFF;
 import static org.apache.logging.log4j.Level.TRACE;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -37,7 +40,6 @@ import spoon.reflect.CtModel;
  * @author Ed Armstrong
  */
 public class CLI {
-
     private HashSet<String> includes = new HashSet<>();
     private HashSet<String> excludes = new HashSet<>();
     private String sourceDir = "./";
@@ -51,10 +53,10 @@ public class CLI {
     private JSParser jsParser;
     private String xmlClass = "";
 
-    public static void main(String... args) throws MojoExecutionException, MojoFailureException, FileNotFoundException, JSBuilderException, IOException {
-        CLI cli = new CLI();
-        LOGGER.info("JJJRMI CLI");
+    public static void main(String... args) throws MojoExecutionException, MojoFailureException, FileNotFoundException, JSBuilderException, IOException {       
+        CLI cli = new CLI();        
         cli.parseArgs(args);
+        LOGGER.info("JJJRMI CLI");
         cli.run();
         cli.output();
     }
@@ -116,6 +118,11 @@ public class CLI {
             case "--xml":
                 printXML = true;
                 break;
+            case "-s":
+                Configurator.setRootLevel(ERROR);
+                break;
+            case "-ss":
+                Configurator.setRootLevel(OFF);
             case "-v":
                 Configurator.setRootLevel(VERBOSE);
                 break;

@@ -1,5 +1,6 @@
 package ca.frar.jjjrmi.utility;
 
+import static ca.frar.jjjrmi.Global.LOGGER;
 import ca.frar.jjjrmi.annotations.DoNotPackage;
 import ca.frar.jjjrmi.annotations.JJJ;
 import spoon.reflect.declaration.CtClass;
@@ -41,13 +42,14 @@ public class JJJOptionsHandler {
     }
 
     public JJJOptionsHandler(CtTypeReference<?> ctTypeReference) {
-        if (ctTypeReference.getDeclaration() != null) {
-            CtType<?> ctType = ctTypeReference.getDeclaration();
+        if (ctTypeReference.getTypeDeclaration() != null) {
+            CtType<?> ctType = ctTypeReference.getTypeDeclaration();
             jjj = ctType.getAnnotation(JJJ.class);
             name = ctType.getSimpleName();
             isSocket = ctType.getAnnotation(IsSocket.class);
         } else {
-            jjj = null;
+            LOGGER.warn("Unknown type (missing classpath?): " + ctTypeReference.getSimpleName());
+            jjj = ctTypeReference.getAnnotation(JJJ.class);
             name = ctTypeReference.getSimpleName();
             isSocket = null;            
         }

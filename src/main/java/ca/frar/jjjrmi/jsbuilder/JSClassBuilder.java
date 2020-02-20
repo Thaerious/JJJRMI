@@ -11,7 +11,6 @@ import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.annotations.ServerSide;
 import ca.frar.jjjrmi.annotations.Transient;
 import ca.frar.jjjrmi.exceptions.TypeDeclarationNotFoundWarning;
-import ca.frar.jjjrmi.exceptions.UnknownParameterException;
 import ca.frar.jjjrmi.jsbuilder.code.JSCodeElement;
 import ca.frar.jjjrmi.jsbuilder.code.JSCodeSnippet;
 import ca.frar.jjjrmi.jsbuilder.code.JSElementList;
@@ -77,7 +76,7 @@ public class JSClassBuilder<T> {
         if (jjjOptions.insertJJJMethods()) addJJJMethods();
         setHeader(new JSHeaderBuilder().setName(jjjOptions.getName()));
 
-        buildSuperClass();
+        buildExtendsSuper();
         buildInitMethod();
         buildConstructor();
 
@@ -119,8 +118,8 @@ public class JSClassBuilder<T> {
         return this;
     }
 
-    private void buildSuperClass(){
-    /* determine superclass, first by jjjoptions then by extends */
+    private void buildExtendsSuper(){
+        /* determine superclass, first by jjjoptions then by extends */
         CtTypeReference<?> superclass = ctClass.getSuperclass();
 
         if (this.jjjOptions.hasExtends()) {
@@ -134,18 +133,28 @@ public class JSClassBuilder<T> {
             return;
         }
         
-        CtTypeReference reference = ctClass.getReference(); 
-        CtTypeReference<JJJObject> jjjObjectRef = ctClass.getFactory().Type().createReference(JJJObject.class);        
-        boolean isSubtype = reference.isSubtypeOf(jjjObjectRef);        
+        CtTypeReference<JJJObject> jjjObjectRef = ctClass.getFactory().Type().createReference(JJJObject.class);   
         
-        if (isSubtype){
-            LOGGER.log(VERBOSE, "Setting JS superclass from Java superclass: " + superclass.getSimpleName());
+        boolean isSubtype = superclass.isSubtypeOf(jjjObjectRef); 
+        boolean isType = superclass.getTypeDeclaration() == jjjObjectRef.getTypeDeclaration();
+        boolean hasAnno = new JJJOptionsHandler(superclass).hasJJJ();
+        
+        if (isType){
+            LOGGER.log(VERY_VERBOSE, "Super is JJJObject: " + superclass.getSimpleName());
+        } 
+        else if (isSubtype){
+            LOGGER.log(VERBOSE, "Super is subtype of JJJObject : " + superclass.getSimpleName());
             this.getHeader().setExtend(superclass.getSimpleName());
             requireSet.add(superclass);            
-            return;
         }
-        
-        LOGGER.log(VERY_VERBOSE, "Class not subtype of JJJObject: " + superclass.getSimpleName());
+        else if (hasAnno){
+            LOGGER.log(VERY_VERBOSE, "Super has @JJJ: " + superclass.getSimpleName());
+            this.getHeader().setExtend(superclass.getSimpleName());
+            requireSet.add(superclass);
+        }
+        else {
+            LOGGER.log(VERY_VERBOSE, "Super not subtype of JJJObject and is not annotated: " + superclass.getSimpleName());
+        }
     }
     
     private void buildConstructor() {
@@ -187,18 +196,28 @@ public class JSClassBuilder<T> {
         /* test for and insert super call */
         boolean requiresSuper = false;
         JSCodeSnippet snippet = new JSCodeSnippet("this.__init()");
-        this.constructor.getBody().add(0, snippet);
 
-        if (this.ctClass.getAnnotation(InvokeSuper.class) != null) {
+        int indexOfSuper = this.constructor.getBody().firstIndexOf(JSSuperConstructor.class);
+        
+        LOGGER.debug(indexOfSuper);
+        
+        if (this.ctClass.getAnnotation(InvokeSuper.class) != null || this.getHeader().hasExtend()) {
             requiresSuper = true;
         }        
-        if (this.getHeader().hasExtend()){
-            requiresSuper = true;
-        }
         
-        boolean hasSuper = this.constructor.getBody().forAny((e)->e instanceof JSSuperConstructor);
-        if (!hasSuper && requiresSuper){
+        if (indexOfSuper != -1 && !requiresSuper){
+            LOGGER.log(VERY_VERBOSE, "Removing super & inserting init");
+            this.constructor.getBody().remove(indexOfSuper);
+            this.constructor.getBody().add(0, snippet);
+        } 
+        else if (indexOfSuper == -1 && requiresSuper){
+            LOGGER.log(VERY_VERBOSE, "Inserting super & init");
             this.constructor.getBody().add(0, new JSSuperConstructor());
+            this.constructor.getBody().add(1, snippet);
+        }
+        else {
+            LOGGER.log(VERY_VERBOSE, "Inserting init invocation");
+            this.constructor.getBody().add(indexOfSuper + 1, snippet);
         }
     }
     
@@ -400,17 +419,6 @@ public class JSClassBuilder<T> {
             current = current.getContainer();
         }
         return builder.toString();
-    }
-
-    private static List<CtType> nestedChain(CtType source) {
-        ArrayList<CtType> list = new ArrayList<>();
-        CtType current = source;
-        list.add(0, current);
-        while (!current.isTopLevel()) {
-            current = current.<CtClass>getParent(CtClass.class);
-            list.add(0, current);
-        }
-        return list;
     }
 
     public String toXML(int indent) {

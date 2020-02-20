@@ -9,6 +9,7 @@ import ca.frar.jjjrmi.exceptions.DecoderException;
 import ca.frar.jjjrmi.exceptions.EncoderException;
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
 import ca.frar.jjjrmi.testclasses.ArrayWrapper;
+import ca.frar.jjjrmi.testclasses.Has;
 import ca.frar.jjjrmi.testclasses.HasNone;
 import ca.frar.jjjrmi.testclasses.None;
 import ca.frar.jjjrmi.testclasses.Primitives;
@@ -122,7 +123,14 @@ public class CrossLanguageTest {
     public void test_primitives_from_super() throws JJJRMIException, IOException {
         Translator translator = new Translator();
         Object decoded = this.get(translator, "get_primitives_extended");
-        new Primitives(65);
-        assertEquals(ArrayWrapper.class, decoded.getClass());
+        assertEquals(PrimitivesExtended.class, decoded.getClass());
+        assertEquals(new Primitives(65), decoded);
+    }    
+    
+    @Test
+    public void test_null() throws JJJRMIException, IOException {
+        Translator translator = new Translator();
+        Has<?> decoded = (Has<?>) this.get(translator, "get_has_null");
+        assertEquals(null, decoded.get());
     }    
 }
