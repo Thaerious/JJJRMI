@@ -6,6 +6,18 @@ Development Quick Setup
 > mvn compile dependency:copy-dependencies
 > source bin/setup
 ````
+
+Perform Tests
+-------------
+Build test classes  
+`> jjjrmi -d src/test/java/ca/frar/jjjrmi/testclasses/ -o src/test/js/testclasses`
+
+Run tests  
+`> mvn test`
+
+Build coverage reports, then browse to '.../rmi/target/site/jacoco/index.html'.    
+`> mvn jacoco:report`
+
 Compiling
 ---------
 mvn install
