@@ -1,10 +1,11 @@
 Development Quick Setup
 -----------------------
-`> git clone --branch refactor-json git@github.com:Thaerious/JJJRMI.git rmi`
-`> cd rmi`
-`> mvn compile dependency:copy-dependencies`
-`> source bin/setup`
-
+````
+> git clone --branch refactor-json git@github.com:Thaerious/JJJRMI.git rmi
+> cd rmi
+> mvn compile dependency:copy-dependencies
+> source bin/setup
+````
 Compiling
 ---------
 mvn install
