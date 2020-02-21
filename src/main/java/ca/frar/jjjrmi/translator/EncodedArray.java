@@ -3,19 +3,20 @@ import ca.frar.jjjrmi.translator.TranslatorResult;
 import ca.frar.jjjrmi.annotations.JJJ;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.exceptions.EncoderException;
+import ca.frar.jjjrmi.exceptions.JJJRMIException;
 import ca.frar.jjjrmi.translator.Constants;
 import java.lang.reflect.Array;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 @JJJ(insertJJJMethods=false)
-public class EncodedArray extends JSONObject{
+class EncodedArray extends JSONObject{
     private final TranslatorResult encodedResult;
     private Object object = null;
     private final JSONArray elements;
 
     @NativeJS
-    EncodedArray(Object object, TranslatorResult encodedResult) throws EncoderException {
+    EncodedArray(Object object, TranslatorResult encodedResult) throws JJJRMIException {
         this.encodedResult = encodedResult;
         this.object = object;
         this.elements = new JSONArray();
@@ -27,7 +28,7 @@ public class EncodedArray extends JSONObject{
     }
 
     @NativeJS
-    private void encode() throws EncoderException {
+    private void encode() throws JJJRMIException {
         for (int i = 0; i < (Array.getLength(object)); i++) {
             Object element = Array.get(object, i);
             elements.put(new Encoder(element, encodedResult).encode());

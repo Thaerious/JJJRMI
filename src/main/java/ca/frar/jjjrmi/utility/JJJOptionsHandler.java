@@ -1,12 +1,10 @@
 package ca.frar.jjjrmi.utility;
-
 import static ca.frar.jjjrmi.Global.LOGGER;
 import ca.frar.jjjrmi.annotations.DoNotPackage;
 import ca.frar.jjjrmi.annotations.JJJ;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 import ca.frar.jjjrmi.annotations.IsSocket;
-import ca.frar.jjjrmi.socket.JJJObject;
 import spoon.reflect.reference.CtTypeReference;
 
 public class JJJOptionsHandler {

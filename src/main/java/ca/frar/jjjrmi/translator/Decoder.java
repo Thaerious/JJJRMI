@@ -14,13 +14,13 @@ import org.json.JSONObject;
  * @author Ed Armstrong
  */
 @JJJ(insertJJJMethods=false)
-public class Decoder {
+class Decoder {
     private final JSONObject json;
     private final Translator translator;
     private Class<?> expectedType = null;
 
     @NativeJS
-    public Decoder(JSONObject json, Translator translator, Class<?> expectedType) {
+    Decoder(JSONObject json, Translator translator, Class<?> expectedType) {
         this.json = json;
         this.translator = translator;
         this.expectedType = expectedType;
@@ -33,7 +33,7 @@ public class Decoder {
      * @throws DecoderException
      */
     @NativeJS
-    public Object decode() throws DecoderException {
+    Object decode() throws DecoderException {
         if (json.has(Constants.TypeParam) && json.getString(Constants.TypeParam).equals(Constants.NullValue)) {
             return null;
         } else if (json.has(Constants.PointerParam)) {

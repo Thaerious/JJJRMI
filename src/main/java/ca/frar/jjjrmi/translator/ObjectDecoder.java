@@ -17,7 +17,7 @@ import java.util.List;
 import org.json.JSONObject;
 
 @JJJ(insertJJJMethods=false)
-public class ObjectDecoder {
+class ObjectDecoder {
     private Class<?> aClass;
     private final TranslatorResult encodedResult;
     private AHandler<?> handler;
@@ -28,7 +28,7 @@ public class ObjectDecoder {
     private HashMap<String, Field> fields = new HashMap<>();
 
     @NativeJS
-    public ObjectDecoder(TranslatorResult encodedResult, JSONObject json) {
+    ObjectDecoder(TranslatorResult encodedResult, JSONObject json) {
         this.json = json;
         this.translator = encodedResult.getTranslator();
         this.encodedResult = encodedResult;
@@ -38,7 +38,7 @@ public class ObjectDecoder {
      * Runs once to prepare for decoding.
      */
     @NativeJS
-    public void makeReady() throws DecoderException {
+    void makeReady() throws DecoderException {
         try {
             this.aClass = Class.forName(json.getString(Constants.TypeParam));
             if (this.aClass == null) {
@@ -71,7 +71,7 @@ public class ObjectDecoder {
      * Fill in the object's fields.
      */
     @NativeJS
-    public final void decode() throws DecoderException {
+    final void decode() throws DecoderException {
         if (HandlerFactory.getInstance().hasHandler(this.aClass)) {
             this.handler.doDecode(this.result, this.json);
         } else {

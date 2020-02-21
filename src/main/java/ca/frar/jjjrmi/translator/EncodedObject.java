@@ -4,6 +4,7 @@ import ca.frar.jjjrmi.annotations.JJJ;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.annotations.Transient;
 import ca.frar.jjjrmi.exceptions.EncoderException;
+import ca.frar.jjjrmi.exceptions.JJJRMIException;
 import ca.frar.jjjrmi.socket.JJJObject;
 import ca.frar.jjjrmi.translator.Constants;
 import java.lang.reflect.Field;
@@ -22,14 +23,14 @@ import org.json.JSONObject;
  * @author Ed Armstrong
  */
 @JJJ(insertJJJMethods=false)
-public class EncodedObject {    
+class EncodedObject {    
     final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JSONObject");
     private final Object object;
     protected final JSONObject json;
     private final TranslatorResult encodedResult;
 
     @NativeJS
-    public EncodedObject(Object object, TranslatorResult encodedResult) throws EncoderException {        
+    EncodedObject(Object object, TranslatorResult encodedResult) throws EncoderException {        
         this.object = object;
         this.json = new JSONObject();
         this.encodedResult = encodedResult;        
@@ -38,24 +39,14 @@ public class EncodedObject {
         this.json.put(Constants.TypeParam, object.getClass().getName());
         this.json.put(Constants.FieldsParam, new JSONObject());
     }
-    
-    public EncodedObject(Object object, TranslatorResult encodedResult, JSONObject json) throws EncoderException {        
-        this.object = object;
-        this.json = json;
-        this.encodedResult = encodedResult;        
-        
-        this.json.put(Constants.KeyParam, encodedResult.getTranslator().allocReference(object));
-        this.json.put(Constants.TypeParam, object.getClass().getName());
-        this.json.put(Constants.FieldsParam, new JSONObject());
-    }    
-    
+
     /**
     Will only encode @JJJ annotated classes.
     @throws IllegalArgumentException
     @throws IllegalAccessException
     */
     @NativeJS
-    public void encode() throws IllegalArgumentException, IllegalAccessException, EncoderException {
+    void encode() throws IllegalArgumentException, IllegalAccessException, JJJRMIException {
         LOGGER.trace("EncodedObject.encode() : " + this.object.getClass().getSimpleName());        
 
         // encode all fields for each class and superclass until JJJObject or Object is reached        
@@ -76,7 +67,7 @@ public class EncodedObject {
     }    
     
     @NativeJS
-    public void setField(Field field) throws EncoderException, IllegalArgumentException, IllegalAccessException {
+    void setField(Field field) throws JJJRMIException, IllegalArgumentException, IllegalAccessException {
         field.setAccessible(true);
         if (field.getAnnotation(Transient.class) != null) return;
         if (Modifier.isStatic(field.getModifiers())) return;        
@@ -85,19 +76,11 @@ public class EncodedObject {
         this.setFieldData(field.getName(), toJSON);
     }
     
-    JSONObject getField(String fieldName){
-        return this.json.getJSONObject(Constants.FieldsParam).getJSONObject(fieldName);
-    }
-
-    public String getType(){
-        return this.json.getString(Constants.TypeParam);
-    }
-    
-    public String getKey(){
+    String getKey(){
         return this.json.getString(Constants.KeyParam);
     }
 
-    public JSONObject toJSON(){
+    JSONObject toJSON(){
         return this.json;
     }
 }

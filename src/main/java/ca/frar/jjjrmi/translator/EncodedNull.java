@@ -5,9 +5,9 @@ import ca.frar.jjjrmi.translator.Constants;
 import org.json.JSONObject;
 
 @JJJ(insertJJJMethods=false)
-public class EncodedNull extends JSONObject{
+class EncodedNull extends JSONObject{
     @NativeJS
-    public EncodedNull(){
+    EncodedNull(){
         this.put(Constants.TypeParam, Constants.NullValue);
     }
 }

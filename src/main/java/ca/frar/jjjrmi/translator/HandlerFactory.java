@@ -8,9 +8,7 @@ package ca.frar.jjjrmi.translator;
 import static ca.frar.jjjrmi.Global.LOGGER;
 import static ca.frar.jjjrmi.Global.VERY_VERBOSE;
 import ca.frar.jjjrmi.annotations.Handles;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Set;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
@@ -20,11 +18,11 @@ import org.reflections.scanners.TypeAnnotationsScanner;
  *
  * @author Ed Armstrong
  */
-public class HandlerFactory {    
+class HandlerFactory {    
     private static HandlerFactory instance = null;
     private final HashMap<String, Class<? extends AHandler<?>>> classMap = new HashMap<>();
     
-    public static HandlerFactory getInstance(){
+    static HandlerFactory getInstance(){
         if (instance == null) instance = new HandlerFactory();
         return instance;
     }
@@ -46,17 +44,12 @@ public class HandlerFactory {
         LOGGER.debug("number of classes: " + classMap.size());
     }
     
-    public boolean hasHandler(Class<?> aClass){
+    boolean hasHandler(Class<?> aClass){
         if (aClass == null) throw new NullPointerException();
         return this.classMap.containsKey(aClass.getName());
     }
 
-    public <T> Class<? extends AHandler<?>> getHandler(Class<T> aClass){
+    <T> Class<? extends AHandler<?>> getHandler(Class<T> aClass){
         return this.classMap.get(aClass.getName());
-    }
-    
-    public List<Class<? extends AHandler<?>>> getAllHandlers(){
-        Collection<Class<? extends AHandler<?>>> values = classMap.values();
-        return List.copyOf(values);
     }
 }

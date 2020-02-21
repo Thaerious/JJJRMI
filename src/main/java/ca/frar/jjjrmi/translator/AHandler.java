@@ -5,6 +5,7 @@ import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.annotations.Transient;
 import ca.frar.jjjrmi.exceptions.DecoderException;
 import ca.frar.jjjrmi.exceptions.EncoderException;
+import ca.frar.jjjrmi.exceptions.JJJRMIException;
 import ca.frar.jjjrmi.socket.JJJObject;
 import ca.frar.jjjrmi.translator.Constants;
 import ca.frar.jjjrmi.translator.Translator;
@@ -81,7 +82,7 @@ abstract public class AHandler<T> {
      * @throws EncoderException 
      */
     @NativeJS
-    public final void encodeField(String name, Object value) throws EncoderException {
+    public final void encodeField(String name, Object value) throws JJJRMIException {
         try {
             JSONObject toJSON = new Encoder(value, this.encodedResult).encode();
             this.encodedObject.setFieldData(name, toJSON);

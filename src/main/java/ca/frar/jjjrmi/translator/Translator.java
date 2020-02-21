@@ -1,10 +1,13 @@
 package ca.frar.jjjrmi.translator;
+import ca.frar.jjjrmi.exceptions.UntrackedObjectException;
 import ca.frar.jjjrmi.annotations.JJJ;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.exceptions.DecoderException;
 import ca.frar.jjjrmi.exceptions.EncoderException;
-import ca.frar.jjjrmi.exceptions.MissingReferenceException;
+import ca.frar.jjjrmi.exceptions.JJJRMIException;
+import ca.frar.jjjrmi.exceptions.UnknownReferenceException;
 import ca.frar.jjjrmi.exceptions.RootException;
+import ca.frar.jjjrmi.exceptions.TranslatorException;
 import ca.frar.jjjrmi.utility.BiMap;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -33,20 +36,6 @@ public final class Translator {
     private final ArrayList<String> tempReferences = new ArrayList<>();
     private int nextKey = 0;
     private static String referencePrequel = "S";
-
-    /**
-     * Remove the referred object from the translator.
-     * @param obj
-     * @return 
-     */
-    @NativeJS
-    boolean removeByValue(Object obj) {
-        if (!objectMap.containsValue(obj)) {
-            return false;
-        }
-        this.objectMap.remove(objectMap.getKey(obj));
-        return true;
-    }
 
     /**
      * Add a reference that will be removed when this round of
@@ -129,9 +118,9 @@ public final class Translator {
      * @return
      */
     @NativeJS
-    public Object getReferredObject(String reference) throws MissingReferenceException {
+    public Object getReferredObject(String reference) throws UnknownReferenceException {
         if (!objectMap.containsKey(reference)) {
-            throw new MissingReferenceException(reference);
+            throw new UnknownReferenceException(reference);
         }
         return objectMap.get(reference);
     }
@@ -144,7 +133,8 @@ public final class Translator {
      * @return A JSON encoded reference
      */
     @NativeJS
-    public String getReference(Object object) {
+    public String getReference(Object object) throws UntrackedObjectException {
+        if (!this.hasReferredObject(object)) throw new UntrackedObjectException(object);
         return objectMap.getKey(object);
     }
 
@@ -154,15 +144,22 @@ public final class Translator {
      * @return
      */
     @NativeJS
-    public Collection<Object> getAllReferredObjects() {
+    public Collection<Object> getAllTrackedObjects() {
         Collection<Object> values = this.objectMap.values();
         return new ArrayList<>(values);
     }
 
-    public String removeReferredObject(Object object){
-        if (!this.hasReferredObject(object)) throw new RuntimeException("Unknown object");
+    /**
+     * Remove object from this translator.  On subsequent encodes a new full
+     * encoding will take place.  If the object is not tracked by this 
+     * translator, an exception will be thrown.
+     * @param object
+     * @return The reference to the object.
+     */
+    public String removeTrackedObject(Object object) throws UntrackedObjectException{
+        if (!this.hasReferredObject(object)) throw new UntrackedObjectException(object);
         String reference = this.getReference(object);
-        this.removeByValue(object);
+        this.objectMap.remove(objectMap.getKey(object));
         return reference;
     }
     
@@ -189,7 +186,7 @@ public final class Translator {
      * @return
      */
     @NativeJS
-    public final TranslatorResult encode(Object object) throws EncoderException {
+    public final TranslatorResult encode(Object object) throws JJJRMIException {
         return new TranslatorResult(this).encodeFromObject(object);
     }
 
@@ -212,18 +209,8 @@ public final class Translator {
     }
 
     @NativeJS
-    public void addDecodeListener(Consumer<Object> lst) {
-        this.decodeListeners.add(lst);
-    }
-
-    @NativeJS
     public void notifyEncode(Object object) {
         for (Consumer<Object> encodeListener : this.encodeListeners) encodeListener.accept(object);
-    }
-
-    @NativeJS
-    public void notifyDecode(Object object) {
-        for (Consumer<Object> decodeListener : this.decodeListeners) decodeListener.accept(object);
     }
 
     /**

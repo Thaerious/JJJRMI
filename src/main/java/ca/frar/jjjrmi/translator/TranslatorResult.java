@@ -10,7 +10,8 @@ import ca.frar.jjjrmi.annotations.JSParam;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.exceptions.DecoderException;
 import ca.frar.jjjrmi.exceptions.EncoderException;
-import ca.frar.jjjrmi.exceptions.MissingReferenceException;
+import ca.frar.jjjrmi.exceptions.JJJRMIException;
+import ca.frar.jjjrmi.exceptions.UnknownReferenceException;
 import ca.frar.jjjrmi.exceptions.RootException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ public class TranslatorResult {
     }
 
     @NativeJS
-    TranslatorResult encodeFromObject(Object object) throws EncoderException{
+    TranslatorResult encodeFromObject(Object object) throws JJJRMIException{
         if (object == null) throw new RootException();
         this.json = new JSONObject();
         this.json.put(Constants.NewObjects, new JSONObject());
@@ -51,7 +52,7 @@ public class TranslatorResult {
     }
 
     @NativeJS
-    private void encodeHandled(Object object) throws EncoderException {
+    private void encodeHandled(Object object) throws JJJRMIException {
         try {
             Class<? extends AHandler<?>> handlerClass = HandlerFactory.getInstance().getHandler(object.getClass());
             AHandler<?> handler = handlerClass.getConstructor(TranslatorResult.class).newInstance(this);
@@ -64,7 +65,7 @@ public class TranslatorResult {
     }
 
     @NativeJS
-    private void encodeUnhandled(Object object) throws EncoderException {
+    private void encodeUnhandled(Object object) throws JJJRMIException {
         try {
             EncodedObject encodedObject = new EncodedObject(object, this);
             this.put(encodedObject);
@@ -110,7 +111,7 @@ public class TranslatorResult {
     }
 
     @NativeJS
-    public Object getRoot() throws MissingReferenceException {
+    public Object getRoot() throws UnknownReferenceException {
         String key = this.json.getString(Constants.RootObject);
         return this.translator.getReferredObject(key);        
     }

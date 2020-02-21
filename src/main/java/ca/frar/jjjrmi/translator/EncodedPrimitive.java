@@ -5,10 +5,10 @@ import ca.frar.jjjrmi.translator.Constants;
 import org.json.JSONObject;
 
 @JJJ(insertJJJMethods=false)
-public class EncodedPrimitive extends JSONObject{
+class EncodedPrimitive extends JSONObject{
 
     @NativeJS
-    public EncodedPrimitive(Object value) {
+    EncodedPrimitive(Object value) {
         this.put(Constants.ValueParam, value);
 
         switch (value.getClass().getCanonicalName()) {

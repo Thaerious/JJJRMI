@@ -2,15 +2,19 @@ package ca.frar.jjjrmi.translator;
 
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
 import ca.frar.jjjrmi.exceptions.MissingConstructorException;
-import ca.frar.jjjrmi.exceptions.MissingReferenceException;
+import ca.frar.jjjrmi.exceptions.UnknownReferenceException;
+import ca.frar.jjjrmi.exceptions.UntrackedObjectException;
 import ca.frar.jjjrmi.testclasses.ArrayWrapper;
 import ca.frar.jjjrmi.testclasses.Has;
 import ca.frar.jjjrmi.testclasses.HasHandler;
 import ca.frar.jjjrmi.testclasses.MissingConstructor;
+import ca.frar.jjjrmi.testclasses.None;
 import ca.frar.jjjrmi.testclasses.Primitives;
 import ca.frar.jjjrmi.testclasses.PrimitivesExtended;
 import ca.frar.jjjrmi.testclasses.Simple;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -36,6 +40,18 @@ public class TranslatorCorrectnessTest {
         assertEquals(Simple.class, decoded.getClass());
         assertEquals(object, decoded);
     }
+    
+    @Test
+    public void test_none() throws JJJRMIException {
+        Translator translator = new Translator();
+        None object = new None();
+        TranslatorResult encoded = translator.encode(object);
+        Object decoded = translator.decode(encoded.toString()).getRoot();
+
+        assertEquals(None.class, decoded.getClass());
+        assertEquals(object, decoded);
+        assertEquals(1, translator.size());
+    }    
 
     /**
      * Changing the local copies values will be maintained.
@@ -175,10 +191,32 @@ public class TranslatorCorrectnessTest {
         translator.encode(has1);
         Has<Simple> has2 = new Has<>(simple);
         TranslatorResult encoded = translator.encode(has2); 
-        translator.removeByValue(has2);
+        translator.removeTrackedObject(has2);
         Has<Simple> decoded = (Has<Simple>) translator.decode(encoded.toString()).getRoot();
         assertEquals(has1.get(), decoded.get());
     }    
+    
+    public void test_remove_untracked(){
+            assertThrows(UntrackedObjectException.class, () -> {
+            Translator translator = new Translator();
+            Object obj = new None();
+            translator.removeTrackedObject(obj);
+        });    
+    }
+    
+    public void test_unknown_reference_0(){
+            assertThrows(UnknownReferenceException.class, () -> {
+            Translator translator = new Translator();
+            translator.getReferredObject("X");
+        });    
+    }    
+    
+    public void test_unknown_reference_1(){
+            assertThrows(UntrackedObjectException.class, () -> {
+            Translator translator = new Translator();
+            translator.getReference(new None());
+        });    
+    }        
         
     @Test
     public void test_array_of_empty() throws JJJRMIException {
@@ -243,5 +281,72 @@ public class TranslatorCorrectnessTest {
         translator.clear();
         HasHandler decoded = (HasHandler) translator.decode(encoded.toString()).getRoot();
         assertEquals(7, decoded.z);
-    }         
+    }      
+    
+    /**
+     * Get all object on new translator, is empty.
+     * @throws JJJRMIException 
+     */
+    public void test_get_all_tracked_0() throws JJJRMIException {
+        Translator translator = new Translator();
+        Collection<Object> all = translator.getAllTrackedObjects();
+        assertEquals(0, all.size());
+    }
+    
+    /**
+     * Get all object on simple tracked object.
+     * @throws JJJRMIException 
+     */
+    public void test_get_all_tracked_1() throws JJJRMIException {
+        Translator translator = new Translator();
+        translator.encode(new None());
+        Collection<Object> all = translator.getAllTrackedObjects();
+        assertEquals(1, all.size());        
+    }
+    
+    /**
+     * Get all object on multiple tracked objects.
+     * @throws JJJRMIException 
+     */
+    public void test_get_all_tracked_2() throws JJJRMIException {
+        Translator translator = new Translator();        
+        translator.encode(new None());
+        translator.encode(new None());
+        translator.encode(new None());
+        Collection<Object> all = translator.getAllTrackedObjects();
+        assertEquals(3, translator.size());
+        assertEquals(3, all.size());          
+    }    
+    
+    /**
+     * Get all object after clear, is empty.
+     * @throws JJJRMIException 
+     */
+    public void test_get_all_tracked_3() throws JJJRMIException {
+        Translator translator = new Translator();
+        translator.encode(new None());
+        translator.encode(new None());
+        translator.encode(new None());
+        translator.clear();
+        Collection<Object> all = translator.getAllTrackedObjects();
+        assertEquals(0, all.size());         
+    }    
+    
+    
+    class TestConsumer implements Consumer<Object>{
+        public Object accepted = null;
+
+        public void accept(Object t){
+            accepted = t;
+        }
+    };    
+    
+    public void test_encode_listener() throws JJJRMIException {
+        Translator translator = new Translator();
+        TestConsumer lst = new TestConsumer();
+        translator.addEncodeListener(lst);
+        None none = new None();
+        translator.encode(none);
+        assertEquals(none, lst.accepted);         
+    }       
 }

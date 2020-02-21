@@ -1,20 +1,9 @@
 package ca.frar.jjjrmi.demo;
 
-import ca.frar.jjjrmi.annotations.Handles;
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
-import ca.frar.jjjrmi.socket.JJJObject;
-import ca.frar.jjjrmi.translator.HandlerFactory;
 import ca.frar.jjjrmi.translator.Translator;
-import ca.frar.jjjrmi.translator.AHandler;
-import ca.frar.jjjrmi.translator.TranslatorResult;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.List;
-import java.util.Set;
-import org.reflections.Reflections;
-import org.reflections.scanners.SubTypesScanner;
-import org.reflections.scanners.TypeAnnotationsScanner;
 
 public class Demo {
     final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(Demo.class);    

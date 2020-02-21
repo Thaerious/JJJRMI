@@ -91,7 +91,7 @@ public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, S
         for (Session session : this.sessionTranslators.keySet()) {
             try {
                 Translator translator = getTranslator(session);
-                String key = translator.removeReferredObject(forgettable);
+                String key = translator.removeTrackedObject(forgettable);
                 this.sendObject(session, new ForgetMessage(key));
             } catch (InvalidJJJSessionException | JJJRMIException | IOException ex) {
                 LOGGER.catching(ex);
@@ -365,7 +365,7 @@ public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, S
         JJJCloseEvent closeEvent = new JJJCloseEvent(session);
         
         if (removedTranslator != null) {
-            Collection objRef = removedTranslator.getAllReferredObjects();
+            Collection objRef = removedTranslator.getAllTrackedObjects();
             objRef.forEach(obj -> {
                 if (obj instanceof HasWebsockets) ((HasWebsockets) obj).removeWebsocket(this);
             });
@@ -383,7 +383,7 @@ public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, S
         this.observers.exception(exceptionEvent);
 
         if (removedTranslator != null) {
-            Collection objRef = removedTranslator.getAllReferredObjects();
+            Collection objRef = removedTranslator.getAllTrackedObjects();
             objRef.forEach(obj -> {
                 if (obj instanceof HasWebsockets) ((HasWebsockets) obj).removeWebsocket(this);
             });

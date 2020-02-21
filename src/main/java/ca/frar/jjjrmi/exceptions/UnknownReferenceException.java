@@ -9,13 +9,13 @@ package ca.frar.jjjrmi.exceptions;
  *
  * @author Ed Armstrong
  */
-public class MissingReferenceException extends DecoderException {
+public class UnknownReferenceException extends DecoderException {
 
-    public MissingReferenceException() {
+    public UnknownReferenceException() {
         super("Reference not found.");
     }
     
-    public MissingReferenceException(String reference) {
+    public UnknownReferenceException(String reference) {
         super("Reference not found: " + reference);
     }    
     

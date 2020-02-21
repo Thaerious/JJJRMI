@@ -7,6 +7,7 @@ package ca.frar.jjjrmi.translator;
 
 import ca.frar.jjjrmi.exceptions.DecoderException;
 import ca.frar.jjjrmi.exceptions.EncoderException;
+import ca.frar.jjjrmi.exceptions.JJJRMIException;
 import ca.frar.jjjrmi.testclasses.ArrayWrapper;
 import org.junit.jupiter.api.Test;
 import ca.frar.jjjrmi.testclasses.Simple;
@@ -21,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TranslatorClearTest {
 
     @Test
-    public void test_clear_with_one() throws EncoderException, DecoderException {
+    public void test_clear_with_one() throws JJJRMIException {
         Translator translator = new Translator();
         Simple object = new Simple();
         translator.encode(object);
@@ -31,14 +32,14 @@ public class TranslatorClearTest {
     }
 
     @Test
-    public void test_clear_empty() throws EncoderException, DecoderException {
+    public void test_clear_empty() throws JJJRMIException {
         Translator translator = new Translator();
         translator.clear();
         assertEquals(0, translator.size());
     }
 
     @Test
-    public void test_clear_array() throws EncoderException, DecoderException {
+    public void test_clear_array() throws JJJRMIException {
         Translator translator = new Translator();
         ArrayWrapper arrayWrapper = new ArrayWrapper();
         translator.encode(arrayWrapper);
@@ -47,7 +48,7 @@ public class TranslatorClearTest {
     }
     
     @Test
-    public void test_clear_then_decode() throws EncoderException, DecoderException {
+    public void test_clear_then_decode() throws JJJRMIException {
         Translator translator = new Translator();
         ArrayWrapper arrayWrapper = new ArrayWrapper();
         TranslatorResult encoded = translator.encode(arrayWrapper);

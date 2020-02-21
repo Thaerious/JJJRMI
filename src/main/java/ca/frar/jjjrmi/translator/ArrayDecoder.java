@@ -20,9 +20,6 @@ class ArrayDecoder {
 
     @NativeJS
     ArrayDecoder(JSONObject json, Translator translator, Class<?> componentClass) throws DecoderException {
-        if (json == null) throw new NullPointerException();
-        if (translator == null) throw new NullPointerException();
-
         this.json = json;
         this.translator = translator;
         this.elements = json.getJSONArray(Constants.ElementsParam);   
@@ -30,7 +27,7 @@ class ArrayDecoder {
     }
 
     @NativeJS
-    public Object decode() throws DecoderException {
+    Object decode() throws DecoderException {
         JSONArray jsonArray = json.getJSONArray(Constants.ElementsParam);
         int[] dims = new int[1];
         dims[0] = jsonArray.length();        
@@ -75,7 +72,7 @@ class ArrayDecoder {
      * @param json
      * @return 
      */
-    public static boolean test(JSONObject json) {
+    static boolean test(JSONObject json) {
         return json.has(Constants.ElementsParam);
     }
 }
