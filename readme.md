@@ -6,6 +6,15 @@ Development Quick Setup
 > mvn compile dependency:copy-dependencies
 > source bin/setup
 ````
+
+Perform Tests
+-------------
+Build test classes  
+`> jjjrmi -d src/test/java/ca/frar/jjjrmi/testclasses/ -o src/test/js/testclasses`
+
+Run tests  
+`> mvn test`
+
 Compiling
 ---------
 mvn install
