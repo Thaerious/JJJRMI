@@ -31,9 +31,10 @@ Set input path. If the input is a directory recursively process all files in all
 directories.
 
 -o | --output output_directory
-Set output path.
+Set output path.  The default is target/jjjrmi/package-name
 
 set package name default "package".  Will out files to subdirectory in the output directory.
+The default is 'package'.
 -n | --name [package_name]
 
 include only specified source files (.java extension not required).
