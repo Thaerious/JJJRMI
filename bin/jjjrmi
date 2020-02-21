@@ -27,5 +27,4 @@ echo ${CLASSPATH}
 CLASSPATH=$CLASSPATH:$ROOTPATH/target/dependency/*
 CLASSPATH=$CLASSPATH:$ROOTPATH/target/classes
 
-echo java -classpath $CLASSPATH ca.frar.jjjrmi.CLI "$@"
 java -classpath $CLASSPATH ca.frar.jjjrmi.CLI "$@"
