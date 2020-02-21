@@ -15,6 +15,9 @@ Build test classes
 Run tests  
 `> mvn test`
 
+Build coverage reports, then browse to '.../rmi/target/site/jacoco/index.html'.    
+`> mvn jacoco:report`
+
 Compiling
 ---------
 mvn install
