@@ -1,11 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package ca.frar.jjjrmi.translator;
-
-import ca.frar.jjjrmi.exceptions.DecoderException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,19 +10,19 @@ import java.util.logging.Logger;
  *
  * @author Ed Armstrong
  */
-class StdinReader extends Thread {    
+class BlockingStreamReader extends Thread {    
     private BufferedReader bsr;
     private boolean doEcho = false;
     private InputStreamReader isr;
-    private final HasTranslator outer;
     private final InputStream stream;
+    private final AcceptsResult<String> outer;
 
-    public StdinReader(InputStream stream, final HasTranslator outer) {
+    public BlockingStreamReader(InputStream stream, final AcceptsResult<String> outer) {
         this.outer = outer;
         this.stream = stream;
     }
 
-    public StdinReader echo(boolean value){
+    public BlockingStreamReader echo(boolean value){
         this.doEcho = value;
         return this;
     }
@@ -43,16 +36,17 @@ class StdinReader extends Thread {
         isr = new InputStreamReader(stream);
         bsr = new BufferedReader(isr);
         StringBuilder builder = new StringBuilder();
+        System.out.println("Waiting for response");
+        
         try {
             String line = bsr.readLine();
+            if (doEcho) System.out.println("> " + line);
             while (line != null) {
                 if (line.charAt(0) == 3) {
-                    String string = builder.toString();
-                    if (doEcho) System.out.println(string);
-                    TranslatorResult decoded = outer.getTranslator().decode(string);
+                    String string = builder.toString();                    
                     
                     synchronized (outer) {
-                        outer.addResult(decoded);
+                        outer.addResult(string);
                         outer.notify();
                     }
                     
@@ -65,9 +59,6 @@ class StdinReader extends Thread {
             }
         } catch (IOException ex) {
             Logger.getLogger(JSGetter.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (DecoderException ex) {
-            Logger.getLogger(JSGetter.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
 }

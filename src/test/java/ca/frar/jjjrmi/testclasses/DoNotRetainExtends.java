@@ -5,23 +5,29 @@
  */
 package ca.frar.jjjrmi.testclasses;
 
-import ca.frar.jjjrmi.annotations.DoNotPackage;
-import ca.frar.jjjrmi.annotations.JSRequire;
+import ca.frar.jjjrmi.annotations.JJJ;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.socket.JJJObject;
-import java.util.ArrayList;
 
 /**
  *
  * @author Ed Armstrong
  */
-@DoNotPackage
-public class UnknownInternal extends JJJObject{
-    private final NonJJJ nonjjj;
+@JJJ(retain=false)
+public class DoNotRetainExtends extends JJJObject{
+    private int x = 0;
     
     @NativeJS
-    public UnknownInternal(){
-        this.nonjjj = new NonJJJ();
+    public DoNotRetainExtends(){
     }
     
+    @NativeJS
+    public void setX(int x){
+        this.x = x;
+    }
+    
+    @NativeJS
+    public int getX(){
+        return x;
+    }    
 }

@@ -1,5 +1,5 @@
 package ca.frar.jjjrmi.socket.observer.events;
-import ca.frar.jjjrmi.socket.message.JJJMessage;
+import ca.frar.jjjrmi.rmi.JJJMessage;
 import javax.websocket.Session;
 
 public class JJJSendEvent <T extends JJJMessage> extends JJJEvent{

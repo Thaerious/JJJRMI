@@ -12,19 +12,19 @@ import java.io.PrintStream;
 import java.util.LinkedList;
 
 /**
- *
+ * Use with 'CrossLanguageTest.js' to test JS generated objects being decoded
+ * in java.
  * @author Ed Armstrong
  */
-public class JS {
-
-    private final ErrReader errReader;
+public class JSGetter implements HasTranslator{
+    private final StreamEcho errReader;
     private final Process exec;
-    LinkedList<Object> results = new LinkedList<Object>();
+    LinkedList<TranslatorResult> results = new LinkedList<>();
     final Translator translator;
     StdinReader reader;
     
     public static void main(String ... args) throws IOException, DecoderException, InterruptedException{
-        JS js = new JS().echo(true);
+        JSGetter js = new JSGetter().echo(true);
         
         js.cmd("get has null");
         js.cmd("resend");
@@ -33,16 +33,16 @@ public class JS {
         System.out.println(js.exit());        
     }
 
-    public JS echo(boolean value){
+    public JSGetter echo(boolean value){
         this.reader.echo(value);
         return this;
     }    
 
-    public JS() throws IOException {
+    public JSGetter() throws IOException {
         this.exec = Runtime.getRuntime().exec("node src/test/js/CrossLanguageTest.js");
         this.translator = new Translator();
         this.reader = new StdinReader(this.exec.getInputStream(), this);        
-        this.errReader = new ErrReader(this.exec.getErrorStream(), this);
+        this.errReader = new StreamEcho(this.exec.getErrorStream(), "[JAVA]");
         this.reader.start();
         this.errReader.start();
     }
@@ -52,7 +52,7 @@ public class JS {
      *
      * @return
      */
-    public Object exit() throws InterruptedException {
+    public TranslatorResult exit() throws InterruptedException {
         OutputStream outputStream = exec.getOutputStream();
         PrintStream printStream = new PrintStream(outputStream);
         printStream.println("exit");
@@ -65,7 +65,7 @@ public class JS {
      *
      * @return
      */
-    public Object rv() throws InterruptedException {
+    public TranslatorResult rv() throws InterruptedException {
         synchronized(this){
             while(this.results.isEmpty()){
                 this.wait();
@@ -74,11 +74,21 @@ public class JS {
         }
     }
 
-    public JS cmd(String methodName) throws IOException, DecoderException {
+    public JSGetter cmd(String methodName) throws IOException, DecoderException {
         OutputStream outputStream = exec.getOutputStream();
         PrintStream printStream = new PrintStream(outputStream);
         printStream.println(methodName);
         printStream.flush();
         return this;
+    }
+
+    @Override
+    public Translator getTranslator() {
+        return this.translator;
+    }
+
+    @Override
+    public void addResult(TranslatorResult result) {
+        this.results.addLast(result);
     }
 }

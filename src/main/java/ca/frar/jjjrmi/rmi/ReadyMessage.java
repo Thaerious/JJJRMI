@@ -1,7 +1,7 @@
-package ca.frar.jjjrmi.socket.message;
+package ca.frar.jjjrmi.rmi;
 import ca.frar.jjjrmi.annotations.JJJ;
 import ca.frar.jjjrmi.annotations.NativeJS;
-import static ca.frar.jjjrmi.socket.message.JJJMessageType.READY;
+import static ca.frar.jjjrmi.rmi.JJJMessageType.READY;
 
 /**
  * Message sent from server to client containing the root object.

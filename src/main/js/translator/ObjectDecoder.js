@@ -1,21 +1,20 @@
 "use strict";
 const Constants = require("./Constants");
 const HandlerFactory = require("./HandlerFactory");
-const EncodedResult = require("./EncodedResult");
 
 class ObjectDecoder {
-    constructor(encodedResult, json, translator) {
+    constructor(translatorResult, json, translator) {
         this.json = json;
         if (!json.type) throw new Error();
         this.translator = translator;
-        this.encodedResult = encodedResult;
+        this.translatorResult = translatorResult;
     }
     decode() {
         if (HandlerFactory.getInstance().hasHandler(this.aClass)){
             this.handler.doDecode(this.result, this.json);
         }
         else {
-            for (let fieldName of this.json[Constants.FieldsParam]){
+            for (let fieldName in this.json[Constants.FieldsParam]){
                 let fieldValue = new Decoder(this.json[Constants.FieldsParam][fieldName], this.translator).decode();
                 this.result[fieldName] = fieldValue;
             }
@@ -27,7 +26,7 @@ class ObjectDecoder {
 
         if (HandlerFactory.getInstance().hasHandler(this.aClass)) {
             let handlerClass = HandlerFactory.getInstance().getHandler(this.aClass);
-            this.handler = handlerClass.getConstructor(EncodedResult.class).newInstance(this.encodedResult);
+            this.handler = handlerClass.getConstructor(EncodedResult.class).newInstance(this.translatorResult);
             this.result = this.handler.doGetInstance();
         } else {
             this.result = new this.aClass();

@@ -38,6 +38,7 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 
 public class JSClassBuilder<T> {
+
     protected JSHeaderBuilder header = new JSHeaderBuilder();
     protected JSMethodBuilder constructor = new JSMethodBuilder("constructor");
     protected final CtClass<T> ctClass;
@@ -118,7 +119,7 @@ public class JSClassBuilder<T> {
         return this;
     }
 
-    private void buildExtendsSuper(){
+    private void buildExtendsSuper() {
         /* determine superclass, first by jjjoptions then by extends */
         CtTypeReference<?> superclass = ctClass.getSuperclass();
 
@@ -127,36 +128,33 @@ public class JSClassBuilder<T> {
             this.getHeader().setExtend(jjjOptions.getExtends());
             return;
         }
-        
+
         if (superclass == null) {
             LOGGER.log(VERY_VERBOSE, "No superclass found.");
             return;
         }
-        
-        CtTypeReference<JJJObject> jjjObjectRef = ctClass.getFactory().Type().createReference(JJJObject.class);   
-        
-        boolean isSubtype = superclass.isSubtypeOf(jjjObjectRef); 
+
+        CtTypeReference<JJJObject> jjjObjectRef = ctClass.getFactory().Type().createReference(JJJObject.class);
+
+        boolean isSubtype = superclass.isSubtypeOf(jjjObjectRef);
         boolean isType = superclass.getTypeDeclaration() == jjjObjectRef.getTypeDeclaration();
         boolean hasAnno = new JJJOptionsHandler(superclass).hasJJJ();
-        
-        if (isType){
+
+        if (isType) {
             LOGGER.log(VERY_VERBOSE, "Super is JJJObject: " + superclass.getSimpleName());
-        } 
-        else if (isSubtype){
+        } else if (isSubtype) {
             LOGGER.log(VERBOSE, "Super is subtype of JJJObject : " + superclass.getSimpleName());
             this.getHeader().setExtend(superclass.getSimpleName());
-            requireSet.add(superclass);            
-        }
-        else if (hasAnno){
+            requireSet.add(superclass);
+        } else if (hasAnno) {
             LOGGER.log(VERY_VERBOSE, "Super has @JJJ: " + superclass.getSimpleName());
             this.getHeader().setExtend(superclass.getSimpleName());
             requireSet.add(superclass);
-        }
-        else {
+        } else {
             LOGGER.log(VERY_VERBOSE, "Super not subtype of JJJObject and is not annotated: " + superclass.getSimpleName());
         }
     }
-    
+
     private void buildConstructor() {
         /* Constructor Generation */
         Set<? extends CtConstructor<?>> allConstructors = ctClass.getConstructors();
@@ -171,8 +169,8 @@ public class JSClassBuilder<T> {
 
         if (vettedConstructors.size() > 1) {
             LOGGER.warn("Multiple constructors found: " + ctClass.getQualifiedName());
-        }        
-        
+        }
+
         /* Create constructor, if none found create default */
         if (vettedConstructors.isEmpty()) {
             LOGGER.log(VERBOSE, "No constructor found, generating default.");
@@ -192,35 +190,33 @@ public class JSClassBuilder<T> {
             }
         }
         this.requireSet.addAll(this.constructor.getRequires());
-        
+
         /* test for and insert super call */
         boolean requiresSuper = false;
         JSCodeSnippet snippet = new JSCodeSnippet("this.__init()");
 
         int indexOfSuper = this.constructor.getBody().firstIndexOf(JSSuperConstructor.class);
-        
+
         LOGGER.debug(indexOfSuper);
-        
+
         if (this.ctClass.getAnnotation(InvokeSuper.class) != null || this.getHeader().hasExtend()) {
             requiresSuper = true;
-        }        
-        
-        if (indexOfSuper != -1 && !requiresSuper){
+        }
+
+        if (indexOfSuper != -1 && !requiresSuper) {
             LOGGER.log(VERY_VERBOSE, "Removing super & inserting init");
             this.constructor.getBody().remove(indexOfSuper);
             this.constructor.getBody().add(0, snippet);
-        } 
-        else if (indexOfSuper == -1 && requiresSuper){
+        } else if (indexOfSuper == -1 && requiresSuper) {
             LOGGER.log(VERY_VERBOSE, "Inserting super & init");
             this.constructor.getBody().add(0, new JSSuperConstructor());
             this.constructor.getBody().add(1, snippet);
-        }
-        else {
+        } else {
             LOGGER.log(VERY_VERBOSE, "Inserting init invocation");
             this.constructor.getBody().add(indexOfSuper + 1, snippet);
         }
     }
-    
+
     protected boolean hasNativeJS(CtTypeReference<?> ctTypeReference) {
         return ctTypeReference.getAnnotation(NativeJS.class) != null;
     }
@@ -319,8 +315,20 @@ public class JSClassBuilder<T> {
                 continue;
             };
 
-            LOGGER.log(VERY_VERBOSE, String.format("Generating require for %s", anImport.getSimpleName()));
-            appendRequire(builder, anImport);
+            CtTypeReference<JJJObject> jjjObjectRef = ctClass.getFactory().Type().createReference(JJJObject.class);
+            boolean isSubtype = anImport.isSubtypeOf(jjjObjectRef);
+            boolean hasAnno = new JJJOptionsHandler(anImport).hasJJJ();
+            
+            if (anImport.getDeclaration() == null){
+                LOGGER.warn(" - unknown type required: " + anImport.getSimpleName());            
+            }
+            else if (!isSubtype && !hasAnno){
+                LOGGER.warn(" - non-transpiled type required: " + anImport.getSimpleName());                        
+            }
+            else{ 
+                LOGGER.log(VERY_VERBOSE, String.format("Generating require for %s", anImport.getSimpleName()));
+                appendRequire(builder, anImport);
+            }
         }
 
         builder.append(header.fullString(this.jjjOptions.getName()));
@@ -439,7 +447,6 @@ public class JSClassBuilder<T> {
         builder.append("</").append(this.getClass().getSimpleName()).append(">\n");
 
         return builder.toString();
-
     }
 
     private void constructStaticFields() {

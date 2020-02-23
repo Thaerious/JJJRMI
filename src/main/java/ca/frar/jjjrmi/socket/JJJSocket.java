@@ -1,11 +1,19 @@
 package ca.frar.jjjrmi.socket;
+import ca.frar.jjjrmi.rmi.ForgetMessage;
+import ca.frar.jjjrmi.rmi.ReadyMessage;
+import ca.frar.jjjrmi.rmi.MethodRequest;
+import ca.frar.jjjrmi.rmi.ClientMessage;
+import ca.frar.jjjrmi.rmi.JJJMessage;
+import ca.frar.jjjrmi.rmi.MethodResponse;
+import ca.frar.jjjrmi.rmi.RejectedConnectionMessage;
+import ca.frar.jjjrmi.rmi.ServerSideExceptionMessage;
+import ca.frar.jjjrmi.rmi.ClientRequestMessage;
 import ca.frar.jjjrmi.translator.AHandler;
 import ca.frar.jjjrmi.translator.TranslatorResult;
 import static ca.frar.jjjrmi.Global.VERY_VERBOSE;
 import ca.frar.jjjrmi.exceptions.EncoderException;
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
 import ca.frar.jjjrmi.exceptions.ParameterCountException;
-import ca.frar.jjjrmi.socket.message.*;
 import ca.frar.jjjrmi.socket.observer.*;
 import ca.frar.jjjrmi.socket.observer.events.*;
 import ca.frar.jjjrmi.translator.*;
@@ -165,10 +173,6 @@ public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, S
             }
 
             if (rmiOpenEvent.isDefaultPrevented()) return;
-
-            translator.addDecodeListener((obj) -> {
-                if (obj instanceof HasWebsockets) ((HasWebsockets) obj).addWebsocket(this);
-            });
 
             translator.addEncodeListener((obj) -> {
                 if (obj instanceof HasWebsockets) ((HasWebsockets) obj).addWebsocket(this);

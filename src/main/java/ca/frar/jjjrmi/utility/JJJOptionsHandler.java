@@ -73,12 +73,6 @@ public class JJJOptionsHandler {
         return jjj != null && !this.jsExtends.isEmpty();
     }
 
-//    public boolean isSubType() {
-////        CtTypeReference<Object> jjjObjectType = ctClass.getFactory().Type().get(JJJObject.class).getReference();        
-//        
-//        
-//    }
-
     public boolean topLevel() {
         return jjj != null && jjj.topLevel();
     }

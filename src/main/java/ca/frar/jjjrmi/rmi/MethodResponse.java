@@ -1,8 +1,8 @@
-package ca.frar.jjjrmi.socket.message;
+package ca.frar.jjjrmi.rmi;
 import ca.frar.jjjrmi.annotations.JJJ;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.annotations.ProcessLevel;
-import static ca.frar.jjjrmi.socket.message.JJJMessageType.LOCAL;
+import static ca.frar.jjjrmi.rmi.JJJMessageType.LOCAL;
 
 /**
  * Message from server to client to send a response to MethodRequest.

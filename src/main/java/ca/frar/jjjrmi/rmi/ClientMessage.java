@@ -1,4 +1,4 @@
-package ca.frar.jjjrmi.socket.message;
+package ca.frar.jjjrmi.rmi;
 import ca.frar.jjjrmi.annotations.JJJ;
 import ca.frar.jjjrmi.annotations.SkipJS;
 import ca.frar.jjjrmi.socket.JJJTransientObject;

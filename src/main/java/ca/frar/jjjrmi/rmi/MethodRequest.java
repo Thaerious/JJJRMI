@@ -1,8 +1,8 @@
-package ca.frar.jjjrmi.socket.message;
+package ca.frar.jjjrmi.rmi;
 import ca.frar.jjjrmi.annotations.JJJ;
 import ca.frar.jjjrmi.annotations.ProcessLevel;
 import ca.frar.jjjrmi.annotations.SkipJS;
-import static ca.frar.jjjrmi.socket.message.ClientMessageType.METHOD_REQUEST;
+import static ca.frar.jjjrmi.rmi.ClientMessageType.METHOD_REQUEST;
 import java.lang.reflect.Array;
 import java.lang.reflect.Parameter;
 

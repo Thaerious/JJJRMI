@@ -17,34 +17,32 @@ import java.util.logging.Logger;
  *
  * @author Ed Armstrong
  */
-class ErrReader extends Thread {
+class StreamEcho extends Thread {
     private BufferedReader bsr;
-    private InputStreamReader isr;
-    private final JS outer;
     private final InputStream stream;
+    private final String prequel;
 
-    public ErrReader(InputStream stream, final JS outer) {
-        this.outer = outer;
+    public StreamEcho(InputStream stream, String prequel) {
         this.stream = stream;
+        this.prequel = prequel;
     }
 
     public void close() throws IOException {
         bsr.close();
-        isr.close();
     }
 
     public void run() {
         try {
-            isr = new InputStreamReader(stream);
+            InputStreamReader isr = new InputStreamReader(stream);
             bsr = new BufferedReader(isr);
 
             String line = bsr.readLine();
             while (line != null) {
-                System.out.println(line);
+                System.out.println(prequel + line);
                 line = bsr.readLine();
             }
         } catch (IOException ex) {
-            Logger.getLogger(ErrReader.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(StreamEcho.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

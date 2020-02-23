@@ -1,5 +1,5 @@
 package ca.frar.jjjrmi.socket;
-import ca.frar.jjjrmi.socket.message.JJJMessage;
+import ca.frar.jjjrmi.rmi.JJJMessage;
 import ca.frar.jjjrmi.socket.observer.*;
 import ca.frar.jjjrmi.socket.observer.events.*;
 import java.util.ArrayList;

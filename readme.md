@@ -67,3 +67,11 @@ Print xml of generated files (for debugging)
 Output verbosity options
 -s, -ss silent, really silent
 -v, -vv, -vvv, -vvvv verbose, very verbose, debug, trace
+
+Running Tests
+-------------
+compile tests
+> mvn test-compile
+
+run a single test class
+> mvn -Dtest=UsersServiceImplTest test

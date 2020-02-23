@@ -2,6 +2,7 @@
 const Constants = require("./Constants");
 const HandlerFactory = require("./HandlerFactory");
 const EncodedObject = require("./Encoder").EncodedObject;
+const ObjectDecoder = require("./ObjectDecoder");
 
 class TranslatorResult {
     constructor(translator) {
@@ -11,10 +12,11 @@ class TranslatorResult {
         this.json = JSON.parse(source);
         let list = [];
         let newObjects = this.json[Constants.NewObjects];
-        for (let key of newObjects.keySet()) {
+        
+        for (let key in newObjects) {
             if (this.translator.hasReference(key)) continue;
             let jsonObject = newObjects[key];
-            list.add(new ObjectDecoder(this, jsonObject));
+            list.push(new ObjectDecoder(this, jsonObject, this.translator));
         }
         for (let decoder of list) {
             decoder.makeReady();
@@ -25,7 +27,7 @@ class TranslatorResult {
         return this;
     }
     encodeFromObject(object) {
-        if (object === null) throw new Error("ca.frar.jjjrmi.exceptions.RootException");
+        if (!object) throw new Error("ca.frar.jjjrmi.exceptions.RootException");
 
         this.json = {};
         this.json[Constants.NewObjects] = {};
@@ -55,7 +57,7 @@ class TranslatorResult {
         encodedObject.encode();
     }
     getRoot() {
-        let key = this.json.getString(Constants.RootObject);
+        let key = this.json[Constants.RootObject];
         return this.translator.getReferredObject(key);
     }
     getTranslator() {
