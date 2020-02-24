@@ -22,5 +22,6 @@ Constants.HandlerParam = "handler";
 Constants.RootObject = "root-object";
 Constants.NewObjects = "new-objects";
 Constants.ComponentTypeParam = "component-type";
+Constants.SizeParam = "size";
 
 if (typeof module !== "undefined") module.exports = Constants;

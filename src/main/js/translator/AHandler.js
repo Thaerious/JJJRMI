@@ -2,7 +2,7 @@
 const Constants = require("./Constants");
 const Encoder = require("./Encoder").Encoder;
 const EncodedObject = require("./Encoder").EncodedObject;
-const Decoder = require("./Decoder");
+const Decoder = require("./Decoder").Decoder;
 
 class AHandler {
 	constructor(encodedResult) {

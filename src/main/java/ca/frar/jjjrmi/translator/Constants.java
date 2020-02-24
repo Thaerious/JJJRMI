@@ -22,6 +22,7 @@ public class Constants {
     public final static String PrimativeTypeBoolean = "boolean";
     public final static String RetainParam = "retain";
     public final static String HandlerParam = "handler";
+    public final static String SizeParam = "size";
     public final static String RootObject = "root-object";
     public final static String NewObjects = "new-objects";
     public final static String ComponentTypeParam = "component-type";

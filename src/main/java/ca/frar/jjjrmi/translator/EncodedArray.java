@@ -19,9 +19,10 @@ class EncodedArray extends JSONObject{
     EncodedArray(Object object, TranslatorResult encodedResult) throws JJJRMIException {
         this.encodedResult = encodedResult;
         this.object = object;
-        this.elements = new JSONArray();
+        this.elements = new JSONArray();        
         this.put(Constants.KeyParam, encodedResult.getTranslator().allocReference(object));
         this.put(Constants.RetainParam, false);
+        this.put(Constants.SizeParam, Array.getLength(object));
         encodedResult.getTranslator().addTempReference(this.get(Constants.KeyParam).toString(), object);
         this.put(Constants.ElementsParam, elements);
         encode();

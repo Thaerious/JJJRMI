@@ -5,6 +5,9 @@ class BiMap {
         this.objectMap = new Map();
         this.reverseMap = new Map();
     }
+    size(){
+        return this.objectMap.size;
+    }
     clear() {
         this.objectMap.clear();
         this.reverseMap.clear();

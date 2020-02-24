@@ -53,16 +53,21 @@ public class TranslatorClient {
         cmd("exit", "");
         outEcho.close();        
         errEcho.close();
-        System.out.println("[JAVA] exit");
         exec.destroy();
+        System.out.println("java exiting");
     }
     
     public String cmd(String cmd, String arg) throws IOException{
-        System.out.println("[JAVA] " + cmd + " " + arg);
         out.println(cmd + " " + arg);
         out.flush();
         String line = in.readLine();
-        System.out.println("[JAVA] " + line);
         return line;
     }
+    
+    public String cmd(String cmd) throws IOException{
+        out.println(cmd);
+        out.flush();
+        String line = in.readLine();
+        return line;
+    }    
 }

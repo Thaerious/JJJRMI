@@ -16,6 +16,7 @@ class EncodedArray {
 
         this.json[Constants.KeyParam] = encodedResult.getTranslator().allocReference(object);
         this.json[Constants.RetainParam] = false;
+        this.json[Constants.SizeParam] = object.length;
         encodedResult.getTranslator().addTempReference(this[Constants.KeyParam], object);
         this.json[Constants.ElementsParam] = this.elements;
         this.encode();

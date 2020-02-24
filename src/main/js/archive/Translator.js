@@ -1,6 +1,6 @@
 "use strict";
 let Encoder = require("./Encoder");
-let Decoder = require("./Decoder");
+let Decoder = require("./Decoder").Decoder;
 let ArrayList = require("./ArrayList");
 let EncodedJSON = require("./EncodedJSON");
 
