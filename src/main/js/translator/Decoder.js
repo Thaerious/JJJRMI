@@ -16,10 +16,9 @@ class Decoder {
             return this.translator.getReferredObject(pointer);
         }
         else if (this.json[Constants.EnumParam]) {
-            let aClass = this.getClass().getClassLoader().loadClass(this.json[Constants.EnumParam]);
+            let aClass = this.translator.classRegistry.getClass(this.json[Constants.EnumParam]);  
             let value = this.json[Constants.ValueParam];
-            let valueOf = Enum.valueOf(aClass, value);
-            return valueOf;
+            return aClass[value];
         }
         else if (this.json[Constants.ValueParam]) {
             return this.json[Constants.ValueParam];

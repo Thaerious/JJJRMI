@@ -25,6 +25,7 @@ class ArrayDecoder {
             return this.result;
         }
 };
+
 ArrayDecoder.json = null;
 ArrayDecoder.componentClass = null;
 ArrayDecoder.result = null;

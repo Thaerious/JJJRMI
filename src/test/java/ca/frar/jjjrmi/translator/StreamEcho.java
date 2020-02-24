@@ -33,6 +33,7 @@ class StreamEcho extends Thread {
 
     public void run() {
         try {
+            System.out.println("[JAVA] stream echo running");
             InputStreamReader isr = new InputStreamReader(stream);
             bsr = new BufferedReader(isr);
 
@@ -44,5 +45,6 @@ class StreamEcho extends Thread {
         } catch (IOException ex) {
             Logger.getLogger(StreamEcho.class.getName()).log(Level.SEVERE, null, ex);
         }
+        System.out.println("[JAVA] stream echo exiting");
     }
 }

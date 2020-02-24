@@ -19,6 +19,10 @@ class RemoteTranslator {
         process.exit();
     }
 
+    error() {
+        throw new Error("error");
+    }
+
     /**
      * Re-encdode and send the last encoded object.
      * @returns String encoding.
@@ -52,7 +56,7 @@ let server = Net.createServer(function (socket) {
         console.log('client disconnected');
     });
 
-    socket.on('data', (data) => {       
+    socket.on('data', (data) => {
         let line = data.toString();
         let cmd = line.substring(0, line.indexOf(" ")).trim();
         let arg = line.substring(line.indexOf(" ")).trim();
@@ -60,11 +64,10 @@ let server = Net.createServer(function (socket) {
         console.log("cmd> '" + cmd + "'");
         console.log("arg> '" + arg + "'");
 
-        if (!test[cmd]){
+        if (!test[cmd]) {
             console.log("command not found: " + cmd);
             socket.write("");
-        }
-        else{
+        } else {
             let r = test[cmd].call(test, arg);
             socket.write(r + "\n");
         }

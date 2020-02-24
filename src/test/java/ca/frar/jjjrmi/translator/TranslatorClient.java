@@ -25,8 +25,8 @@ public class TranslatorClient {
         TranslatorClient tc = new TranslatorClient().connect(HOST, PORT);
         Translator translator = new Translator();
         TranslatorResult result = translator.encode(new None());
-        tc.cmd("decode", result.toString());
-        tc.exit();
+        tc.cmd("error", "-");
+        tc.close();
     }
     
     private Socket socket;
@@ -34,9 +34,10 @@ public class TranslatorClient {
     private BufferedReader in;
     private StreamEcho outEcho;
     private StreamEcho errEcho;
+    private Process exec;
     
     public TranslatorClient connect(String host, int port) throws IOException{
-        Process exec = Runtime.getRuntime().exec("node src/test/js/PortTranslator.js");        
+        exec = Runtime.getRuntime().exec("node src/test/js/PortTranslator.js");        
         outEcho = new StreamEcho(exec.getInputStream(), "[JS] ");
         errEcho = new StreamEcho(exec.getErrorStream(), "[JS-ERROR] ");
         outEcho.start();
@@ -48,17 +49,20 @@ public class TranslatorClient {
         return this;
     }
     
-    public void exit() throws IOException{
+    public void close() throws IOException{
         cmd("exit", "");
         outEcho.close();        
         errEcho.close();
         System.out.println("[JAVA] exit");
+        exec.destroy();
     }
     
-    public void cmd(String cmd, String arg) throws IOException{
+    public String cmd(String cmd, String arg) throws IOException{
+        System.out.println("[JAVA] " + cmd + " " + arg);
         out.println(cmd + " " + arg);
         out.flush();
         String line = in.readLine();
         System.out.println("[JAVA] " + line);
+        return line;
     }
 }
