@@ -4,7 +4,7 @@
   "description": "",
   "main": "TranslatorCorrectnessTest.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "nyc --reporter=html node CrossLanguageTest.js get_simple"
   },
   "author": "",
   "license": "ISC",
@@ -12,5 +12,8 @@
     "jjjrmi": "file:../../main/js",
     "net": "^1.0.2",
     "readline": "^1.3.0"
+  },
+  "devDependencies": {
+    "nyc": "^15.0.0"
   }
 }

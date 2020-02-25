@@ -86,5 +86,5 @@ class Translator {
     }
 }
 
-Translator.referencePrequel = "S";
+Translator.referencePrequel = "C";
 if (typeof module !== "undefined") module.exports = Translator;

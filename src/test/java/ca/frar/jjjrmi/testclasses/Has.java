@@ -5,6 +5,7 @@
  */
 package ca.frar.jjjrmi.testclasses;
 
+import ca.frar.jjjrmi.annotations.JSParam;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.socket.JJJObject;
 
@@ -17,6 +18,8 @@ public class Has <T> extends JJJObject{
     
     private Has(){}
     
+    @NativeJS
+    @JSParam(name="t", init="undefined")
     public Has(T t){
         this.t = t;
     }

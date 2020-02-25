@@ -8,7 +8,7 @@ class TranslatorResult {
     constructor(translator) {
         this.translator = translator;
     }
-    decodeFromString(source) {
+    decodeFromString(source) {        
         this.json = JSON.parse(source);
         let list = [];
         let newObjects = this.json[Constants.NewObjects];
@@ -31,9 +31,15 @@ class TranslatorResult {
 
         this.json = {};
         this.json[Constants.NewObjects] = {};
-        if (this.translator.hasReferredObject(object)) this.setRoot(this.translator.getReference(object));
-        else if (HandlerFactory.getInstance().hasHandler(object.constructor.__getClass())) this.encodeHandled(object);
-        else this.encodeUnhandled(object);
+        if (this.translator.hasReferredObject(object)){
+            this.setRoot(this.translator.getReference(object));
+        }
+        else if (object.constructor.__getClass && HandlerFactory.getInstance().hasHandler(object.constructor.__getClass())){
+            this.encodeHandled(object);
+        }
+        else{
+            this.encodeUnhandled(object);
+        }
 
         this.translator.clearTempReferences();
         return this;

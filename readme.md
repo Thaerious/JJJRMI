@@ -10,13 +10,20 @@ Development Quick Setup
 Perform Tests
 -------------
 Build test classes  
-`> jjjrmi -d src/test/java/ca/frar/jjjrmi/testclasses/ -o src/test/js/testclasses`
+`> jjjrmi -p -d src/test/java/ca/frar/jjjrmi/testclasses/ -o src/test/js/testclasses`
 
-Run tests  
+Run java tests  
 `> mvn test`
 
 Build coverage reports, then browse to '.../rmi/target/site/jacoco/index.html'.    
 `> mvn jacoco:report`
+
+Prepare data files for JS tests (requires mvn test-compile).
+`> java -cp target/classes/:target/test-classes/:target/dependency/* ca.frar.jjjrmi.translator.GenerateJSON ./target/test-data/from-java.json`
+`> node src/test/js/GenerateJSON.js target/test-data/from-js.json`
+
+Run JS tests, then browse to '.../rmi/target/site/nyc/index.html'.
+`> nyc --report-dir=target/site/nyc --reporter=html node src/test/js/TestJavaToJS.js target/test-data/from-java.json`
 
 Compiling
 ---------

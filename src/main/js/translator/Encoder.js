@@ -48,7 +48,7 @@ class EncodedObject {
 
         this.json = {};
         this.json[Constants.KeyParam] = encodedResult.getTranslator().allocReference(object);
-        this.json[Constants.TypeParam] = object.constructor.__getClass();
+        this.json[Constants.TypeParam] = object.constructor.__getClass ? object.constructor.__getClass() : null;
         this.json[Constants.FieldsParam] = {};
     }
     encode() {

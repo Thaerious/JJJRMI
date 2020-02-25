@@ -1,4 +1,4 @@
-/* global process */
+clear/* global process */
 "use strict";
 const Translator = require("../../main/js/translator/Translator");
 const None = require("./testclasses/None");
