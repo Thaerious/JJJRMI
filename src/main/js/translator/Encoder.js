@@ -30,15 +30,10 @@ class EncodedArray {
         }
     }
 
-    toString() {
-        return JSON.stringify(this.json, null, 2);
-    }        
-
     toJSON() {
         return this.json;
     }
 }
-;
 
 class EncodedObject {
     constructor(object, encodedResult) {
@@ -58,10 +53,6 @@ class EncodedObject {
             this.json[Constants.FieldsParam][field] = encoded;
         }
         this.encodedResult.getTranslator().notifyEncode(this.object);
-    }
-
-    toString() {
-        return JSON.stringify(this.json, null, 2);
     }
 
     toJSON() {

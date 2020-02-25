@@ -32,6 +32,12 @@ class GenerateJSON {
         let r = this[method]();
         if (r) this.json[method.substring(9)] = r;
     }
+    
+    generate_circular(){
+        let translator = new Translator();
+        return translator.encode(new PackageFile.CircularRef());
+    }
+    
     generate_referenceAsRoot(){
         let translator = new Translator();
         let has = new PackageFile.Has(null);

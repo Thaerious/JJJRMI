@@ -16,7 +16,7 @@ import ca.frar.jjjrmi.socket.JJJObject;
 public class Has <T> extends JJJObject{
     private T t;
     
-    private Has(){}
+    public Has(){}
     
     @NativeJS
     @JSParam(name="t", init="undefined")

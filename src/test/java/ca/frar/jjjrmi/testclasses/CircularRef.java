@@ -18,7 +18,7 @@ public class CircularRef {
     private final CircularRef target;
  
     public CircularRef(){
-        this.target = new CircularRef(new CircularRef(this));
+        this.target = new CircularRef(this);
     }
     
     @NativeJS

@@ -6,6 +6,7 @@
 package ca.frar.jjjrmi.translator;
 
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
+import ca.frar.jjjrmi.testclasses.CircularRef;
 import ca.frar.jjjrmi.testclasses.Has;
 import ca.frar.jjjrmi.testclasses.None;
 import ca.frar.jjjrmi.testclasses.Primitives;
@@ -17,7 +18,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.nio.file.Path;
 import org.json.JSONObject;
 
 /**
@@ -74,6 +74,11 @@ public class GenerateJSON {
         
         return null;
     }    
+    
+    public TranslatorResult generate_circular() throws JJJRMIException {
+        Translator translator = new Translator();
+        return translator.encode(new CircularRef());
+    }        
     
     public TranslatorResult generate_nonEmptyArray() throws JJJRMIException {
         Translator translator = new Translator();

@@ -178,4 +178,18 @@ class Tests {
         Assert.equals(3, object.t[1]);
         Assert.equals(7, object.t[2]);
     }
+    
+    /**
+     * Circular references will point to each other.
+     */
+    test_circular(){
+        let translator = new Translator();
+        translator.classRegistry.registerPackage(PackageFile);
+        let text = JSON.stringify(this.json.circular);
+        let object = translator.decode(text).getRoot();
+        let target = object.target;
+        
+        Assert.equals("ca.frar.jjjrmi.testclasses.CircularRef", object.constructor.__getClass());
+        Assert.equals(object, target.target);
+    }
 }
