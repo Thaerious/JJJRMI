@@ -51,21 +51,22 @@ directories.
 -o | --output output_directory  
 Set output path.  The default is target/jjjrmi/package-name
 
+-n | --name [package_name]  
 set package name default "package".  Will out files to subdirectory in the output directory.
 The default is 'package'.
--n | --name [package_name]
 
+-i | --include [class1 ... classN]  
 include only specified source files (.java extension not required).
--i | --include [class1 ... classN]
 
+-e | --exclude [class1 ... classN]  
 exclude only specified source files (.java extension not required).
--e | --exclude [class1 ... classN]
 
+-p | --package  
 Generate the packageFile.js file.
--p | --package
 
+-j | --json  
 Generate the package.json file.
--j | --json
+
 
 Print xml of generated files (for debugging)
 --xml
