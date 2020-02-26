@@ -18,10 +18,10 @@ Run java tests
 Build coverage reports, then browse to '.../rmi/target/site/jacoco/index.html'.    
 `> mvn jacoco:report`
 
-Prepare data files for JS tests (requires mvn test-compile).
+Prepare data files for JS tests (requires mvn test-compile).  
 `> java -cp target/classes/:target/test-classes/:target/dependency/* ca.frar.jjjrmi.translator.GenerateJSON ./target/test-data/from-java.json`
 
-Run JS tests, then browse to '.../rmi/target/site/nyc/index.html'.
+Run JS tests, then browse to '.../rmi/target/site/nyc/index.html'.  
 `> nyc --report-dir=target/site/nyc --reporter=html bash jstest.sh`
 
 Compiling
@@ -32,23 +32,23 @@ Compiling
 
 Command Line Interface
 ----------------------
-Copy dependencies to the target directory.
+Copy dependencies to the target directory.  
 `> mvn install dependency:copy-dependencies`
 
 Run setup.  This must be run everytime a new shell is started.  It does not change
-the path in .bashrc
+the path in .bashrc  
 `> source /bin/setup`
 
-You can now run the jjjrmi script which calls the CLI.
+You can now run the jjjrmi script which calls the CLI.  
 `> jjjrmi -d src/test/java/ca/frar/jjjrmi/jsbuilder/code/JSLambdaCode.java -p deleteme`
 
-running "jjjrmi ." will source and output to the current directory.
+running "jjjrmi ." will source and output to the current directory.  
 
--d | --dir input_root_directory
+-d | --dir input_root_directory  
 Set input path. If the input is a directory recursively process all files in all
 directories.
 
--o | --output output_directory
+-o | --output output_directory  
 Set output path.  The default is target/jjjrmi/package-name
 
 set package name default "package".  Will out files to subdirectory in the output directory.
@@ -76,24 +76,20 @@ Output verbosity options
 
 Running Tests
 -------------
-compile tests
-
+compile tests  
 > mvn test-compile
 
-run a single test class
-
+run a single test class  
 > mvn -Dtest=UsersServiceImplTest test
 
 Dependent Version Management
 ----------------------------
 see: https://www.baeldung.com/maven-dependency-latest-version
 
-List avaialable updates
+List avaialable updates  
+`> mvn versions:display-dependency-updates`  
 
-`> mvn versions:display-dependency-updates`
-
-Update all dependencies (use one)
-
-`> mvn versions:use-next-releases`
-`> mvn versions:use-latest-releases`
+Update all dependencies (use one)  
+`> mvn versions:use-next-releases`  
+`> mvn versions:use-latest-releases`  
 
