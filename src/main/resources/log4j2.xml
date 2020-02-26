@@ -6,28 +6,11 @@
         <CustomLevel name="VERY_VERBOSE" intLevel="475" />
     </CustomLevels>        
     <Appenders>
-        <Console name="Console" target="SYSTEM_OUT">   
-            <PatternLayout>
-                <ScriptPatternSelector defaultPattern="">
-                    <Script name="LevelSelector" language="javascript"><![CDATA[
-                    result=null;
-                    switch (logEvent.getLevel()){
-                        case org.apache.logging.log4j.Level.DEBUG:
-                        case org.apache.logging.log4j.Level.TRACE:
-                            result="LINE";
-                            break;
-                        default:
-                            result="NO_LINE";                                            
-                    }
-                    result;
-                    ]]>
-                    </Script>                                
-                    <PatternMatch key="LINE" pattern="JJJ[%level{VERY_VERBOSE=Z, VERBOSE=V, WARN=W, DEBUG=D, ERROR=E, TRACE=T, INFO=I}] %d{HH:mm:ss} : %msg (%C{1}:%L)%n"/>        
-                    <PatternMatch key="NO_LINE" pattern="JJJ[%level{VERY_VERBOSE=Z, VERBOSE=V, WARN=W, DEBUG=D, ERROR=E, TRACE=T, INFO=I}] %d{HH:mm:ss} : %msg %n"/>        
-                </ScriptPatternSelector>
-            </PatternLayout>
+        <Console name="Console" target="SYSTEM_OUT">            
+                <PatternLayout pattern="JJJ[%level{VERY_VERBOSE=Z, VERBOSE=V, WARN=W, DEBUG=D, ERROR=E, TRACE=T, INFO=I}] %d{HH:mm:ss} : %msg  (%C{1}:%L)%n"/>
+                <!--<PatternLayout pattern="JJJ[%level{VERY_VERBOSE=Z, VERBOSE=V, WARN=W, DEBUG=D, ERROR=E, TRACE=T, INFO=I}] %d{HH:mm:ss} : %msg%n"/>-->
+                <!--<PatternLayout pattern="JJJ[%level{VERY_VERBOSE=Z, VERBOSE=V, WARN=W, DEBUG=D, ERROR=E, TRACE=T, INFO=I}] : %msg%n"/>-->
         </Console>
-
     </Appenders>
     <Loggers>
         <Root level="INFO">

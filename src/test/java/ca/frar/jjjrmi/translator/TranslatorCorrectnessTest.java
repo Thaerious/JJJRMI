@@ -362,15 +362,15 @@ public class TranslatorCorrectnessTest {
      * produce a new object.
      * @throws JJJRMIException 
      */
-    @Test
-    public void test_do_not_retain_extends() throws JJJRMIException{
-        Translator translator = new Translator();
-        DoNotRetainExtends object = new DoNotRetainExtends();
-        TranslatorResult encoded = translator.encode(object);        
-        Object decoded = translator.decode(encoded.toString()).getRoot();
-        assertFalse(translator.hasReferredObject(object));
-        assertNotEquals(object, decoded);
-    }
+//    @Test
+//    public void test_do_not_retain_extends() throws JJJRMIException{
+//        Translator translator = new Translator();
+//        DoNotRetainExtends object = new DoNotRetainExtends();
+//        TranslatorResult encoded = translator.encode(object);        
+//        Object decoded = translator.decode(encoded.toString()).getRoot();
+//        assertFalse(translator.hasReferredObject(object));
+//        assertNotEquals(object, decoded);
+//    }
     
     /**
      * The encoded object only has the annotation.
@@ -378,13 +378,13 @@ public class TranslatorCorrectnessTest {
      * produce a new object.
      * @throws JJJRMIException 
      */    
-    @Test
-    public void test_do_not_retain_anno() throws JJJRMIException{
-        Translator translator = new Translator();
-        DoNotRetainAnno object = new DoNotRetainAnno();
-        TranslatorResult encoded = translator.encode(object);        
-        Object decoded = translator.decode(encoded.toString()).getRoot();
-        assertFalse(translator.hasReferredObject(object));
-        assertNotEquals(object, decoded);        
-    }    
+//    @Test
+//    public void test_do_not_retain_anno() throws JJJRMIException{
+//        Translator translator = new Translator();
+//        DoNotRetainAnno object = new DoNotRetainAnno();
+//        TranslatorResult encoded = translator.encode(object);        
+//        Object decoded = translator.decode(encoded.toString()).getRoot();
+//        assertFalse(translator.hasReferredObject(object));
+//        assertNotEquals(object, decoded);        
+//    }    
 }

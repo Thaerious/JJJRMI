@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -24,10 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import static org.apache.logging.log4j.Level.DEBUG;
-import static org.apache.logging.log4j.Level.ERROR;
-import static org.apache.logging.log4j.Level.OFF;
-import static org.apache.logging.log4j.Level.TRACE;
+import static org.apache.logging.log4j.Level.*;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -118,7 +114,7 @@ public class CLI {
             case "--xml":
                 printXML = true;
                 break;
-            case "-s":
+            case "-s":           
                 Configurator.setRootLevel(ERROR);
                 break;
             case "-ss":

@@ -326,12 +326,12 @@ public class JSClassBuilder<T> {
             boolean isSubtype = anImport.isSubtypeOf(jjjObjectRef);
             boolean hasAnno = new JJJOptionsHandler(anImport).hasJJJ();
 
-            if (anImport.getDeclaration() == null) {
-                LOGGER.warn(" - unknown type required: " + anImport.getSimpleName());
+            if (anImport.getTypeDeclaration() == null) {
+                LOGGER.warn(" - unknown type required: " + anImport.getQualifiedName());
             } else if (!isSubtype && !hasAnno) {
-                LOGGER.warn(" - non-transpiled type required: " + anImport.getSimpleName());
+                LOGGER.warn(" - non-transpiled type required: " + anImport.getQualifiedName());
             } else {
-                LOGGER.log(VERY_VERBOSE, String.format("Generating require for %s", anImport.getSimpleName()));
+                LOGGER.log(VERY_VERBOSE, String.format("Generating require for %s", anImport.getQualifiedName()));
                 appendRequire(builder, anImport);
             }
         }

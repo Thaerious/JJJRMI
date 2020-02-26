@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Ed Armstrong
  */
-public class JavaToJSTest {
+public class JavaToJS {
     
     @Test
     public void test_none() throws IOException, JJJRMIException{

@@ -81,3 +81,15 @@ compile tests
 
 run a single test class
 > mvn -Dtest=UsersServiceImplTest test
+
+Dependent Version Management
+----------------------------
+see: https://www.baeldung.com/maven-dependency-latest-version
+
+List avaialable updates
+`> mvn versions:display-dependency-updates`
+
+Update all dependencies (use one)
+`> mvn versions:use-next-releases`
+`> mvn versions:use-latest-releases`
+
