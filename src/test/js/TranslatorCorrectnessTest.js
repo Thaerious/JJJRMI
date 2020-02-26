@@ -10,7 +10,7 @@ const readline = require("readline");
 class TranslatorCorrectnessTest {
     test_has_handler(){
         let translator = new Translator();
-        translator.classRegistry.registerPackage(require("./testclasses/packageFile.js"));
+        translator.registerPackage(require("./testclasses/packageFile.js"));
         let object = new HasHandler(2, 5);
         let encoded = translator.encode(object);
         console.log(encoded);

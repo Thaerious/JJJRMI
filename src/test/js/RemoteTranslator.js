@@ -11,7 +11,7 @@ function log(string) {
 class RemoteTranslator {
     constructor() {
         this.translator = new Translator();
-        this.translator.classRegistry.registerPackage(require("./testclasses/packageFile"));
+        this.translator.registerPackage(require("./testclasses/packageFile"));
     }
 
     echo(string) {

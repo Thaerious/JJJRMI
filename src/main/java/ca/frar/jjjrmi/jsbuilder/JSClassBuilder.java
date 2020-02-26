@@ -1,4 +1,5 @@
 package ca.frar.jjjrmi.jsbuilder;
+
 import static ca.frar.jjjrmi.Global.LOGGER;
 import static ca.frar.jjjrmi.Global.VERBOSE;
 import static ca.frar.jjjrmi.Global.VERY_VERBOSE;
@@ -46,7 +47,8 @@ public class JSClassBuilder<T> {
     protected List<CtField<?>> staticFields = new ArrayList<>();
     protected List<JSCodeElement> sequel = new ArrayList<>();
     protected JSClassBuilder<?> container = null;
-    protected HashSet<CtTypeReference> requireSet = new HashSet<>(); // js require statements
+    protected HashSet<JSRequire> requireSet = new HashSet<>(); // js require statements
+    protected HashSet<CtTypeReference> classRequires = new HashSet<>(); // js require statements
     protected ArrayList<JSClassBuilder> nested = new ArrayList<>();
 
     /* locally defined classes and enums (not fully implemented) */
@@ -73,7 +75,7 @@ public class JSClassBuilder<T> {
 
     JSClassBuilder<T> build() {
         LOGGER.trace("JSClassBuilder.build()");
-        
+
         this.setHeader(new JSHeaderBuilder().setName(jjjOptions.getName()));
         this.addJJJMethods();
         this.buildExtendsSuper();
@@ -83,13 +85,15 @@ public class JSClassBuilder<T> {
         this.buildInnerTypes();
         this.constructStaticFields();
         this.reportReferences();
-        
+        this.convertClassRequires();
+        this.extractAnnotatedRequires();
+
         return this;
     }
 
     protected void reportReferences() {
-        for (CtTypeReference<?> ctTypeRef : this.requireSet) {
-            LOGGER.log(VERY_VERBOSE, "reference: " + ctTypeRef.getQualifiedName());
+        for (JSRequire jsRequire : this.requireSet) {
+            LOGGER.log(VERY_VERBOSE, "jsRequire: " + jsRequire.name());
         }
         LOGGER.log(VERY_VERBOSE, this.requireSet.size() + " reference" + (this.requireSet.size() == 1 ? "" : "s") + " found");
     }
@@ -118,7 +122,7 @@ public class JSClassBuilder<T> {
                 LOGGER.log(VERBOSE, "adding method: " + ctMethod.getSimpleName());
                 JSMethodBuilder jsMethodBuilder = new JSMethodGenerator(ctMethod.getSimpleName(), ctMethod, ctMethod).run();
                 this.methods.add(jsMethodBuilder);
-                this.requireSet.addAll(jsMethodBuilder.getRequires());
+                this.classRequires.addAll(jsMethodBuilder.getRequires());
             } else {
                 LOGGER.log(VERY_VERBOSE, "skipping method: " + ctMethod.getSimpleName());
             }
@@ -151,11 +155,11 @@ public class JSClassBuilder<T> {
         } else if (isSubtype) {
             LOGGER.log(VERBOSE, "Super is subtype of JJJObject : " + superclass.getSimpleName());
             this.getHeader().setExtend(superclass.getSimpleName());
-            requireSet.add(superclass);
+            this.addRequire(superclass.getSimpleName(), "./" + superclass.getSimpleName(), "");
         } else if (hasAnno) {
             LOGGER.log(VERY_VERBOSE, "Super has @JJJ: " + superclass.getSimpleName());
             this.getHeader().setExtend(superclass.getSimpleName());
-            requireSet.add(superclass);
+            this.addRequire(superclass.getSimpleName(), "./" + superclass.getSimpleName(), "");
         } else {
             LOGGER.log(VERY_VERBOSE, "Super not subtype of JJJObject and is not annotated: " + superclass.getSimpleName());
         }
@@ -188,14 +192,14 @@ public class JSClassBuilder<T> {
                 JSMethodBuilder jsMethodBuilder = new JSMethodGenerator("constructor", ctConstructor, ctConstructor).run();
                 this.constructor = jsMethodBuilder;
                 try {
-                    this.requireSet.addAll(jsMethodBuilder.getRequires());
+                    this.classRequires.addAll(jsMethodBuilder.getRequires());
                 } catch (TypeDeclarationNotFoundWarning ex) {
                     ex.setClass(this.getQualifiedName());
                     throw ex;
                 }
             }
         }
-        this.requireSet.addAll(this.constructor.getRequires());
+        this.classRequires.addAll(this.constructor.getRequires());
 
         /* test for and insert super call */
         boolean requiresSuper = false;
@@ -289,6 +293,75 @@ public class JSClassBuilder<T> {
     public void addSequel(JSCodeElement jsCodeElement) {
         this.sequel.add(jsCodeElement);
     }
+    
+    public void addRequire(String name, String value, String postfix) {
+        JSRequire jsRequire = new JSRequire() {
+            @Override
+            public Class<? extends Annotation> annotationType() {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public String name() {
+                return name;
+            }
+
+            @Override
+            public String postfix() {
+                if (postfix == null) return "";
+                return postfix;
+            }
+
+            @Override
+            public String value() {
+                return value;
+            }
+        };
+
+        this.requireSet.add(jsRequire);
+    }
+
+    void convertClassRequires() {
+        for (CtTypeReference anImport : this.classRequires) {
+            LOGGER.log(VERY_VERBOSE, String.format("Considering require '%s' in '%s'", anImport.getSimpleName(), this.getSimpleName()));
+
+            if (anImport.getTypeDeclaration() == this.getCtClass()) {
+                LOGGER.log(VERY_VERBOSE, "Omitting require for same class");
+                continue;
+            }
+
+            if (anImport.isEnum() && new JJJOptionsHandler(anImport.getTypeDeclaration()).hasJJJ()) {
+                LOGGER.log(VERY_VERBOSE, String.format("Generating require for annotated enum %s", anImport.getSimpleName()));
+                JJJOptionsHandler jjjOptionsHandler = new JJJOptionsHandler(anImport);
+                this.addRequire(jjjOptionsHandler.getName(), "./" + jjjOptionsHandler.getName(), "");
+                continue;
+            }
+
+            CtTypeReference<JJJObject> jjjObjectRef = ctClass.getFactory().Type().createReference(JJJObject.class);
+            boolean isSubtype = anImport.isSubtypeOf(jjjObjectRef);
+            boolean hasAnno = new JJJOptionsHandler(anImport).hasJJJ();
+
+            if (anImport.getTypeDeclaration() == null) {
+                LOGGER.warn(" - unknown type required: " + anImport.getQualifiedName());
+            } else if (!isSubtype && !hasAnno) {
+                LOGGER.warn(" - non-transpiled type required: " + anImport.getQualifiedName());
+            } else {
+                LOGGER.log(VERY_VERBOSE, String.format("Generating require for %s", anImport.getQualifiedName()));
+                JJJOptionsHandler jjjOptionsHandler = new JJJOptionsHandler(anImport);
+                this.addRequire(jjjOptionsHandler.getName(), "./" + jjjOptionsHandler.getName(), "");
+            }
+        }
+    }
+
+    void extractAnnotatedRequires() {
+        List<CtAnnotation<? extends Annotation>> annotations = ctClass.getAnnotations();
+        for (CtAnnotation<?> ctAnnotation : annotations) {
+            Annotation actualAnnotation = ctAnnotation.getActualAnnotation();
+            if (actualAnnotation instanceof JSRequire) {
+                this.requireSet.add((JSRequire) actualAnnotation);
+            }
+        }
+    }
 
     public String fullString() throws JSBuilderException {
         if (header == null) {
@@ -301,41 +374,15 @@ public class JSClassBuilder<T> {
         List<CtAnnotation<? extends Annotation>> annotations = ctClass.getAnnotations();
         for (CtAnnotation ctAnnotation : annotations) {
             Annotation actualAnnotation = ctAnnotation.getActualAnnotation();
-            if (actualAnnotation instanceof JSRequire) {
-                appendRequire(builder, (JSRequire) actualAnnotation);
-            } else if (actualAnnotation instanceof JSPrequel) {
-                appendPrequel(builder, (JSPrequel) actualAnnotation);
+            if (actualAnnotation instanceof JSPrequel) {
+                printPrequel(builder, (JSPrequel) actualAnnotation);
             }
         }
 
-        for (CtTypeReference anImport : this.requireSet) {
-            LOGGER.log(VERY_VERBOSE, String.format("Considering require '%s' in '%s'", anImport.getSimpleName(), this.getSimpleName()));
-
-            if (anImport.getTypeDeclaration() == this.getCtClass()) {
-                LOGGER.log(VERY_VERBOSE, "Omitting require for same class");
-                continue;
-            }
-
-            if (anImport.isEnum() && new JJJOptionsHandler(anImport.getTypeDeclaration()).hasJJJ()) {
-                LOGGER.log(VERY_VERBOSE, String.format("Generating require for annotated enum %s", anImport.getSimpleName()));
-                appendRequire(builder, anImport);
-                continue;
-            };
-
-            CtTypeReference<JJJObject> jjjObjectRef = ctClass.getFactory().Type().createReference(JJJObject.class);
-            boolean isSubtype = anImport.isSubtypeOf(jjjObjectRef);
-            boolean hasAnno = new JJJOptionsHandler(anImport).hasJJJ();
-
-            if (anImport.getTypeDeclaration() == null) {
-                LOGGER.warn(" - unknown type required: " + anImport.getQualifiedName());
-            } else if (!isSubtype && !hasAnno) {
-                LOGGER.warn(" - non-transpiled type required: " + anImport.getQualifiedName());
-            } else {
-                LOGGER.log(VERY_VERBOSE, String.format("Generating require for %s", anImport.getQualifiedName()));
-                appendRequire(builder, anImport);
-            }
+        for (JSRequire jsRequire : this.requireSet){
+            this.printRequire(builder, jsRequire);
         }
-
+        
         builder.append(header.fullString(this.jjjOptions.getName()));
         builder.append(bodyString());
 
@@ -365,7 +412,7 @@ public class JSClassBuilder<T> {
         builder.append(";\n");
     }
 
-    private void appendRequire(StringBuilder builder, JSRequire jsRequire) {
+    private void printRequire(StringBuilder builder, JSRequire jsRequire) {
         builder.append("const ");
         builder.append(jsRequire.name());
         builder.append(" = require(\"");
@@ -377,7 +424,7 @@ public class JSClassBuilder<T> {
         builder.append(";\n");
     }
 
-    public void appendRequire(StringBuilder builder, CtTypeReference ref) {
+    private void appendRequire(StringBuilder builder, CtTypeReference ref) {
         JJJOptionsHandler jjjOptionsHandler = new JJJOptionsHandler(ref);
         builder.append("const ");
         builder.append(jjjOptionsHandler.getName());
@@ -387,7 +434,7 @@ public class JSClassBuilder<T> {
         builder.append(";\n");
     }
 
-    private void appendPrequel(StringBuilder builder, JSPrequel jsPrequel) {
+    private void printPrequel(StringBuilder builder, JSPrequel jsPrequel) {
         LOGGER.log(VERBOSE, "@JSPrequel: " + jsPrequel.value());
         builder.append(jsPrequel.value());
         builder.append("\n");
@@ -513,6 +560,6 @@ public class JSClassBuilder<T> {
         JSMethodBuilder jsMethodBuilder = new JSMethodBuilder("__init");
         jsMethodBuilder.setBody(jsElementList);
         this.addMethod(jsMethodBuilder);
-        this.requireSet.addAll(jsMethodBuilder.getRequires());
+        this.classRequires.addAll(jsMethodBuilder.getRequires());
     }
 }

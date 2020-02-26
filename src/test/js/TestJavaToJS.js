@@ -76,7 +76,7 @@ class Tests {
      */
     test_none() {
         let translator = new Translator();
-        translator.classRegistry.registerPackage(PackageFile);
+        translator.registerPackage(PackageFile);
         let text = JSON.stringify(this.json.none);
         let object = translator.decode(text).getRoot();
         Assert.equals("ca.frar.jjjrmi.testclasses.None", object.constructor.__getClass());
@@ -86,7 +86,7 @@ class Tests {
      */
     test_simple() {
         let translator = new Translator();
-        translator.classRegistry.registerPackage(PackageFile);
+        translator.registerPackage(PackageFile);
         let text = JSON.stringify(this.json.simple);
         let object = translator.decode(text).getRoot();
         Assert.equals("ca.frar.jjjrmi.testclasses.Simple", object.constructor.__getClass());
@@ -99,7 +99,7 @@ class Tests {
      */
     test_primitives() {
         let translator = new Translator();
-        translator.classRegistry.registerPackage(PackageFile);
+        translator.registerPackage(PackageFile);
         let text = JSON.stringify(this.json.primitives);
         let object = translator.decode(text).getRoot();
         Assert.equals("ca.frar.jjjrmi.testclasses.Primitives", object.constructor.__getClass());
@@ -110,7 +110,7 @@ class Tests {
      */
     test_primitivesExtended() {
         let translator = new Translator();
-        translator.classRegistry.registerPackage(PackageFile);
+        translator.registerPackage(PackageFile);
         let text = JSON.stringify(this.json.primitivesExtended);
         let object = translator.decode(text).getRoot();
         Assert.equals("ca.frar.jjjrmi.testclasses.PrimitivesExtended", object.constructor.__getClass());
@@ -121,7 +121,7 @@ class Tests {
      */
     test_hasNull() {
         let translator = new Translator();
-        translator.classRegistry.registerPackage(PackageFile);
+        translator.registerPackage(PackageFile);
         let text = JSON.stringify(this.json.hasNull);
         let object = translator.decode(text).getRoot();
         Assert.equals("ca.frar.jjjrmi.testclasses.Has", object.constructor.__getClass());
@@ -133,7 +133,7 @@ class Tests {
      */
     test_referecedRoot() {
         let translator = new Translator();
-        translator.classRegistry.registerPackage(PackageFile);
+        translator.registerPackage(PackageFile);
         let text1 = JSON.stringify(this.json.hasRoot);
         let object1 = translator.decode(text1).getRoot();
         let text2 = JSON.stringify(this.json.hasRef);
@@ -146,7 +146,7 @@ class Tests {
      */
     test_referecedField() {
         let translator = new Translator();
-        translator.classRegistry.registerPackage(PackageFile);
+        translator.registerPackage(PackageFile);
         let text1 = JSON.stringify(this.json.hasRoot);
         let object1 = translator.decode(text1).getRoot();
         let text2 = JSON.stringify(this.json.hasField);
@@ -158,7 +158,7 @@ class Tests {
      */
     test_emptyArray() {
         let translator = new Translator();
-        translator.classRegistry.registerPackage(PackageFile);
+        translator.registerPackage(PackageFile);
         let text = JSON.stringify(this.json.emptyArray);
         let object = translator.decode(text).getRoot();
         Assert.equals(true, object.t instanceof Array);
@@ -169,7 +169,7 @@ class Tests {
      */
     test_nonEmptyArray() {
         let translator = new Translator();
-        translator.classRegistry.registerPackage(PackageFile);
+        translator.registerPackage(PackageFile);
         let text = JSON.stringify(this.json.nonEmptyArray);
         let object = translator.decode(text).getRoot();
         Assert.equals(true, object.t instanceof Array);
@@ -184,7 +184,7 @@ class Tests {
      */
     test_circular(){
         let translator = new Translator();
-        translator.classRegistry.registerPackage(PackageFile);
+        translator.registerPackage(PackageFile);
         let text = JSON.stringify(this.json.circular);
         let object = translator.decode(text).getRoot();
         let target = object.target;

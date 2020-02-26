@@ -148,5 +148,23 @@ public class JSParserTest {
         String contents = new String(Files.readAllBytes(Paths.get(OUT_DIR + "/" + className + ".js")));
         String assertString = "super();";
         assertTrue(contents.contains(assertString));
-    }        
+    }     
+    
+    /**
+     * Java classes directly extending the AHandler class will produce JS
+     * classes which extend the jjjrmi/AHandler class.
+     * @throws JJJRMIException
+     * @throws MojoExecutionException
+     * @throws MojoFailureException
+     * @throws JSBuilderException
+     * @throws IOException 
+     */
+    @Test
+    public void test_is_handler() throws JJJRMIException, MojoExecutionException, MojoFailureException, JSBuilderException, IOException {
+        String className = "IsHandler";
+        CLI.main("-s", "-d", IN_DIR, "-i", className, "-o", OUT_DIR);
+        String contents = new String(Files.readAllBytes(Paths.get(OUT_DIR + "/" + className + ".js")));
+        assertTrue(contents.contains("extends AHandler"));
+        assertTrue(contents.contains("const AHandler = require(\"jjjrmi/translator/AHandler\");"));
+    }         
 }

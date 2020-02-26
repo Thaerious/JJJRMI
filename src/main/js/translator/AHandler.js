@@ -33,6 +33,9 @@ class AHandler {
             let toJSON = new Encoder(value, this.encodedResult).encode();
             this.jsonFields[field] = toJSON;
         }
+        static __isHandler() {
+            return true;
+        }
 };
 
 if (typeof module !== "undefined") module.exports = AHandler;

@@ -8,7 +8,7 @@ const readline = require("readline");
 class RemoteTranslator {
     constructor() {
         this.translator = new Translator();
-        this.translator.classRegistry.registerPackage(require("./testclasses/packageFile"));
+        this.translator.registerPackage(require("./testclasses/packageFile"));
         this.stack = [];
     }
 

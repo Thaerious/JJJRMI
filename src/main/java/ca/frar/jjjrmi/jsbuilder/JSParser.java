@@ -48,9 +48,14 @@ public class JSParser extends AbstractProcessor<CtClass<?>> {
     }
 
     private JSClassBuilder<?> makeBuilder(CtClass<?> ctClass){
+        LOGGER.debug(new JJJOptionsHandler(ctClass).isHandler());
+        
         if (ctClass.isEnum()){
             return new JSEnumBuilder<>((CtEnum<?>) ctClass);
         } 
+        else if (new JJJOptionsHandler(ctClass).isHandler()){
+            return new JSHandlerBuilder<>(ctClass); 
+        }
         else if (new JJJOptionsHandler(ctClass).isSocket()){
             return new JSSocketBuilder(ctClass, packageFileName);
         }

@@ -1,6 +1,7 @@
 "use strict";
 const TranslatorResult = require("./TranslatorResult");
 const ClassRegistry = require("./ClassRegistry");
+const HandlerRegistry = require("./HandlerRegistry");
 const BiMap = require("./BiMap");
 
 class Translator {
@@ -12,7 +13,14 @@ class Translator {
         this.tempReferences = [];
         this.nextKey = 0;
         this.classRegistry = new ClassRegistry();
+        this.handlerRegistry = new HandlerRegistry();
     }
+    
+    registerPackage(pkg){
+        this.classRegistry.registerPackage(pkg);
+        this.handlerRegistry.registerPackage(pkg);
+    }
+    
     addDecodeListener(lst) {
         this.decodeListeners.add(lst);
     }
