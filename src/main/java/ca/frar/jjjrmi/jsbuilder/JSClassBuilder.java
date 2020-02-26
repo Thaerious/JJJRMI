@@ -1,5 +1,4 @@
 package ca.frar.jjjrmi.jsbuilder;
-
 import static ca.frar.jjjrmi.Global.LOGGER;
 import static ca.frar.jjjrmi.Global.VERBOSE;
 import static ca.frar.jjjrmi.Global.VERY_VERBOSE;
@@ -74,26 +73,28 @@ public class JSClassBuilder<T> {
 
     JSClassBuilder<T> build() {
         LOGGER.trace("JSClassBuilder.build()");
-        if (jjjOptions.insertJJJMethods()) addJJJMethods();
-        setHeader(new JSHeaderBuilder().setName(jjjOptions.getName()));
+        
+        this.setHeader(new JSHeaderBuilder().setName(jjjOptions.getName()));
+        this.addJJJMethods();
+        this.buildExtendsSuper();
+        this.buildInitMethod();
+        this.buildConstructor();
+        this.buildAllMethods();
+        this.buildInnerTypes();
+        this.constructStaticFields();
+        this.reportReferences();
+        
+        return this;
+    }
 
-        buildExtendsSuper();
-        buildInitMethod();
-        buildConstructor();
-
-        /* process all the methods */
-        Set<CtMethod<?>> allMethods = ctClass.getMethods();
-        for (CtMethod<?> ctMethod : allMethods) {
-            if (testGenerateMethod(ctClass, ctMethod)) {
-                LOGGER.log(VERBOSE, "adding method: " + ctMethod.getSimpleName());
-                JSMethodBuilder jsMethodBuilder = new JSMethodGenerator(ctMethod.getSimpleName(), ctMethod, ctMethod).run();
-                this.methods.add(jsMethodBuilder);
-                this.requireSet.addAll(jsMethodBuilder.getRequires());
-            } else {
-                LOGGER.log(VERY_VERBOSE, "skipping method: " + ctMethod.getSimpleName());
-            }
+    protected void reportReferences() {
+        for (CtTypeReference<?> ctTypeRef : this.requireSet) {
+            LOGGER.log(VERY_VERBOSE, "reference: " + ctTypeRef.getQualifiedName());
         }
+        LOGGER.log(VERY_VERBOSE, this.requireSet.size() + " reference" + (this.requireSet.size() == 1 ? "" : "s") + " found");
+    }
 
+    protected void buildInnerTypes() {
         /* process all inner types (enum only atm) */
         Set<CtType<?>> nestedTypes = ctClass.getNestedTypes();
         for (CtType ctType : nestedTypes) {
@@ -107,19 +108,24 @@ public class JSClassBuilder<T> {
                 this.nested.add(jsEnumBuilder);
             }
         }
-
-        this.constructStaticFields();
-
-        for (CtTypeReference<?> ctTypeRef : this.requireSet) {
-            LOGGER.log(VERY_VERBOSE, "reference: " + ctTypeRef.getQualifiedName());
-        }
-        int sz = this.requireSet.size();
-        LOGGER.log(VERY_VERBOSE, this.requireSet.size() + " reference" + (sz == 1 ? "" : "s") + " found");
-
-        return this;
     }
 
-    private void buildExtendsSuper() {
+    /* process all the methods */
+    protected void buildAllMethods() {
+        Set<CtMethod<?>> allMethods = ctClass.getMethods();
+        for (CtMethod<?> ctMethod : allMethods) {
+            if (testGenerateMethod(ctClass, ctMethod)) {
+                LOGGER.log(VERBOSE, "adding method: " + ctMethod.getSimpleName());
+                JSMethodBuilder jsMethodBuilder = new JSMethodGenerator(ctMethod.getSimpleName(), ctMethod, ctMethod).run();
+                this.methods.add(jsMethodBuilder);
+                this.requireSet.addAll(jsMethodBuilder.getRequires());
+            } else {
+                LOGGER.log(VERY_VERBOSE, "skipping method: " + ctMethod.getSimpleName());
+            }
+        }
+    }
+
+    protected void buildExtendsSuper() {
         /* determine superclass, first by jjjoptions then by extends */
         CtTypeReference<?> superclass = ctClass.getSuperclass();
 
@@ -155,7 +161,7 @@ public class JSClassBuilder<T> {
         }
     }
 
-    private void buildConstructor() {
+    protected void buildConstructor() {
         /* Constructor Generation */
         Set<? extends CtConstructor<?>> allConstructors = ctClass.getConstructors();
 
@@ -227,7 +233,8 @@ public class JSClassBuilder<T> {
         return serverSide || nativeJS;
     }
 
-    void addJJJMethods() {
+    protected void addJJJMethods() {
+        if (!jjjOptions.insertJJJMethods()) return;
         JSMethodBuilder jsTransMethod = new JSMethodBuilder();
         jsTransMethod.setStatic(true);
         jsTransMethod.setName("__isTransient");
@@ -318,14 +325,12 @@ public class JSClassBuilder<T> {
             CtTypeReference<JJJObject> jjjObjectRef = ctClass.getFactory().Type().createReference(JJJObject.class);
             boolean isSubtype = anImport.isSubtypeOf(jjjObjectRef);
             boolean hasAnno = new JJJOptionsHandler(anImport).hasJJJ();
-            
-            if (anImport.getDeclaration() == null){
-                LOGGER.warn(" - unknown type required: " + anImport.getSimpleName());            
-            }
-            else if (!isSubtype && !hasAnno){
-                LOGGER.warn(" - non-transpiled type required: " + anImport.getSimpleName());                        
-            }
-            else{ 
+
+            if (anImport.getDeclaration() == null) {
+                LOGGER.warn(" - unknown type required: " + anImport.getSimpleName());
+            } else if (!isSubtype && !hasAnno) {
+                LOGGER.warn(" - non-transpiled type required: " + anImport.getSimpleName());
+            } else {
                 LOGGER.log(VERY_VERBOSE, String.format("Generating require for %s", anImport.getSimpleName()));
                 appendRequire(builder, anImport);
             }

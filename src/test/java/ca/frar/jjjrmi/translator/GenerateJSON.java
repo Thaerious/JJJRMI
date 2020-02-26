@@ -8,6 +8,7 @@ package ca.frar.jjjrmi.translator;
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
 import ca.frar.jjjrmi.testclasses.CircularRef;
 import ca.frar.jjjrmi.testclasses.Has;
+import ca.frar.jjjrmi.testclasses.HasHandler;
 import ca.frar.jjjrmi.testclasses.None;
 import ca.frar.jjjrmi.testclasses.Primitives;
 import ca.frar.jjjrmi.testclasses.PrimitivesExtended;
@@ -75,50 +76,55 @@ public class GenerateJSON {
         return null;
     }    
     
-    public TranslatorResult generate_circular() throws JJJRMIException {
+    public TranslatorResult generate_handled() throws JJJRMIException {
         Translator translator = new Translator();
-        return translator.encode(new CircularRef());
+        return translator.encode(new HasHandler(2, 7));
     }        
-    
-    public TranslatorResult generate_nonEmptyArray() throws JJJRMIException {
-        Translator translator = new Translator();
-        int[] array = new int[]{1, 3, 7};
-        return translator.encode(new Has<>(array));
-    }        
-    
-    public TranslatorResult generate_emptyArray() throws JJJRMIException {
-        Translator translator = new Translator();
-        int[] array = new int[0];
-        return translator.encode(new Has<>(array));
-    }    
-    
-    public TranslatorResult generate_hasNull() throws JJJRMIException {
-        Translator translator = new Translator();
-        return translator.encode(new Has<>(null));
-    }
-    
-    public TranslatorResult generate_primitivesExtended() throws JJJRMIException {
-        Translator translator = new Translator();
-        return translator.encode(new PrimitivesExtended(16));
-    }
-
-    public TranslatorResult generate_simple() throws JJJRMIException {
-        Translator translator = new Translator();
-        return translator.encode(new Simple());
-    }
-
-    public TranslatorResult generate_none() throws JJJRMIException {
-        Translator translator = new Translator();
-        return translator.encode(new None());
-    }
-
-    public TranslatorResult generate_primitives() throws JJJRMIException {
-        Translator translator = new Translator();
-        return translator.encode(new Primitives(9));
-    }
-
-    public TranslatorResult generate_arrayWrapper() throws JJJRMIException {
-        Translator translator = new Translator();
-        return translator.encode(new Primitives(9));
-    }
+//        
+//    public TranslatorResult generate_circular() throws JJJRMIException {
+//        Translator translator = new Translator();
+//        return translator.encode(new CircularRef());
+//    }        
+//    
+//    public TranslatorResult generate_nonEmptyArray() throws JJJRMIException {
+//        Translator translator = new Translator();
+//        int[] array = new int[]{1, 3, 7};
+//        return translator.encode(new Has<>(array));
+//    }        
+//    
+//    public TranslatorResult generate_emptyArray() throws JJJRMIException {
+//        Translator translator = new Translator();
+//        int[] array = new int[0];
+//        return translator.encode(new Has<>(array));
+//    }    
+//    
+//    public TranslatorResult generate_hasNull() throws JJJRMIException {
+//        Translator translator = new Translator();
+//        return translator.encode(new Has<>(null));
+//    }
+//    
+//    public TranslatorResult generate_primitivesExtended() throws JJJRMIException {
+//        Translator translator = new Translator();
+//        return translator.encode(new PrimitivesExtended(16));
+//    }
+//
+//    public TranslatorResult generate_simple() throws JJJRMIException {
+//        Translator translator = new Translator();
+//        return translator.encode(new Simple());
+//    }
+//
+//    public TranslatorResult generate_none() throws JJJRMIException {
+//        Translator translator = new Translator();
+//        return translator.encode(new None());
+//    }
+//
+//    public TranslatorResult generate_primitives() throws JJJRMIException {
+//        Translator translator = new Translator();
+//        return translator.encode(new Primitives(9));
+//    }
+//
+//    public TranslatorResult generate_arrayWrapper() throws JJJRMIException {
+//        Translator translator = new Translator();
+//        return translator.encode(new Primitives(9));
+//    }
 }

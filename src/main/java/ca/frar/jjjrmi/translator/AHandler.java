@@ -49,6 +49,15 @@ abstract public class AHandler<T> {
 
     abstract public void encode(T object) throws JJJRMIException;
 
+    /**
+     * Decode the JSON field 'jsonFieldName' and place the result into
+     * 'pojoFieldName'.
+     * @param <T>
+     * @param jsonFieldName
+     * @param pojoFieldName
+     * @return
+     * @throws DecoderException 
+     */
     public final <T> T decodeField(String jsonFieldName, String pojoFieldName) throws DecoderException {  
         Field field = this.fields.get(pojoFieldName);        
         JSONObject jsonField = this.json.getJSONObject(Constants.FieldsParam).getJSONObject(jsonFieldName);
@@ -66,7 +75,7 @@ abstract public class AHandler<T> {
     }
 
     /**
-     * Will encode 'value' and set 'field' to that value.
+     * Will encode 'value' and set the JSON 'field' to the encoding.
      * @param name
      * @param value
      * @throws EncoderException 

@@ -52,7 +52,7 @@ public class JSEnumBuilder <T extends Enum> extends JSClassBuilder<T>{
         return new JSCodeSnippet(builder.toString());
     }
 
-    void addJJJMethods() {
+    protected void addJJJMethods() {
         JSMethodBuilder jsToStringMethod = new JSMethodBuilder();
         jsToStringMethod.setName("toString");
         jsToStringMethod.getBody().add(new JSCodeSnippet("return this.__value;"));
