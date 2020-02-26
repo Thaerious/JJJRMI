@@ -26,21 +26,21 @@ Run JS tests, then browse to '.../rmi/target/site/nyc/index.html'.
 
 Compiling
 ---------
-mvn install
-mvn jjjrmi:generate-js
-add /target/jjjrmi/jjjrmi to any npm dependencies
+`mvn install`
+`mvn jjjrmi:generate-js`
+`add /target/jjjrmi/jjjrmi to any npm dependencies`
 
 Command Line Interface
 ----------------------
 Copy dependencies to the target directory.
-> mvn install dependency:copy-dependencies 
+`> mvn install dependency:copy-dependencies`
 
 Run setup.  This must be run everytime a new shell is started.  It does not change
 the path in .bashrc
-> source /bin/setup
+`> source /bin/setup`
 
 You can now run the jjjrmi script which calls the CLI.
-> jjjrmi -d src/test/java/ca/frar/jjjrmi/jsbuilder/code/JSLambdaCode.java -p deleteme
+`> jjjrmi -d src/test/java/ca/frar/jjjrmi/jsbuilder/code/JSLambdaCode.java -p deleteme`
 
 running "jjjrmi ." will source and output to the current directory.
 
@@ -77,9 +77,11 @@ Output verbosity options
 Running Tests
 -------------
 compile tests
+
 > mvn test-compile
 
 run a single test class
+
 > mvn -Dtest=UsersServiceImplTest test
 
 Dependent Version Management
@@ -87,9 +89,11 @@ Dependent Version Management
 see: https://www.baeldung.com/maven-dependency-latest-version
 
 List avaialable updates
+
 `> mvn versions:display-dependency-updates`
 
 Update all dependencies (use one)
+
 `> mvn versions:use-next-releases`
 `> mvn versions:use-latest-releases`
 
