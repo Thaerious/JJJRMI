@@ -5,3 +5,4 @@
 /src/test/js/testclasses/
 /node_modules/
 /bin/jjjrmi
+/.nyc_output/
