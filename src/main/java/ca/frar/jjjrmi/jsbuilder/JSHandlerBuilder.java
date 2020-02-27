@@ -7,6 +7,7 @@ package ca.frar.jjjrmi.jsbuilder;
 
 import static ca.frar.jjjrmi.Global.LOGGER;
 import static ca.frar.jjjrmi.Global.VERY_VERBOSE;
+import ca.frar.jjjrmi.exceptions.JJJRMIException;
 import spoon.reflect.declaration.CtClass;
 
 /**
@@ -19,12 +20,11 @@ public class JSHandlerBuilder<T> extends JSClassBuilder<T>{
         super(ctClass);
     }
     
-    JSClassBuilder<T> build() {
+    JSClassBuilder<T> build() throws JJJRMIException {
         LOGGER.log(VERY_VERBOSE, "Building AHandler");
         JSClassBuilder<T> builder = super.build();
         builder.getHeader().setExtend("AHandler");
         builder.addRequire("AHandler", "jjjrmi/translator/AHandler", "");
-
         return this;
     }
     

@@ -10,6 +10,7 @@ import ca.frar.jjjrmi.annotations.JSRequire;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.annotations.ServerSide;
 import ca.frar.jjjrmi.annotations.Transient;
+import ca.frar.jjjrmi.exceptions.JJJRMIException;
 import ca.frar.jjjrmi.exceptions.TypeDeclarationNotFoundWarning;
 import ca.frar.jjjrmi.jsbuilder.code.JSCodeElement;
 import ca.frar.jjjrmi.jsbuilder.code.JSCodeSnippet;
@@ -21,8 +22,10 @@ import ca.frar.jjjrmi.utility.JJJOptionsHandler;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.apache.logging.log4j.Level;
 import spoon.reflect.code.CtExpression;
@@ -38,7 +41,6 @@ import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 
 public class JSClassBuilder<T> {
-
     protected JSHeaderBuilder header = new JSHeaderBuilder();
     protected JSMethodBuilder constructor = new JSMethodBuilder("constructor");
     protected final CtClass<T> ctClass;
@@ -47,7 +49,7 @@ public class JSClassBuilder<T> {
     protected List<CtField<?>> staticFields = new ArrayList<>();
     protected List<JSCodeElement> sequel = new ArrayList<>();
     protected JSClassBuilder<?> container = null;
-    protected HashSet<JSRequire> requireSet = new HashSet<>(); // js require statements
+    protected HashSet<RequireRecord> requireSet = new HashSet<>(); // js require statements
     protected HashSet<CtTypeReference> classRequires = new HashSet<>(); // js require statements
     protected ArrayList<JSClassBuilder> nested = new ArrayList<>();
 
@@ -92,8 +94,8 @@ public class JSClassBuilder<T> {
     }
 
     protected void reportReferences() {
-        for (JSRequire jsRequire : this.requireSet) {
-            LOGGER.log(VERY_VERBOSE, "jsRequire: " + jsRequire.name());
+        for (RequireRecord jsRequire : this.requireSet) {
+            LOGGER.log(VERY_VERBOSE, "jsRequire: " + jsRequire.name);
         }
         LOGGER.log(VERY_VERBOSE, this.requireSet.size() + " reference" + (this.requireSet.size() == 1 ? "" : "s") + " found");
     }
@@ -293,32 +295,9 @@ public class JSClassBuilder<T> {
     public void addSequel(JSCodeElement jsCodeElement) {
         this.sequel.add(jsCodeElement);
     }
-    
+
     public void addRequire(String name, String value, String postfix) {
-        JSRequire jsRequire = new JSRequire() {
-            @Override
-            public Class<? extends Annotation> annotationType() {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            }
-
-            @Override
-            public String name() {
-                return name;
-            }
-
-            @Override
-            public String postfix() {
-                if (postfix == null) return "";
-                return postfix;
-            }
-
-            @Override
-            public String value() {
-                return value;
-            }
-        };
-
-        this.requireSet.add(jsRequire);
+        this.requireSet.add(new RequireRecord(name, value, postfix));
     }
 
     void convertClassRequires() {
@@ -358,7 +337,8 @@ public class JSClassBuilder<T> {
         for (CtAnnotation<?> ctAnnotation : annotations) {
             Annotation actualAnnotation = ctAnnotation.getActualAnnotation();
             if (actualAnnotation instanceof JSRequire) {
-                this.requireSet.add((JSRequire) actualAnnotation);
+                System.out.println(actualAnnotation);
+                this.requireSet.add(new RequireRecord((JSRequire) actualAnnotation));
             }
         }
     }
@@ -379,10 +359,10 @@ public class JSClassBuilder<T> {
             }
         }
 
-        for (JSRequire jsRequire : this.requireSet){
-            this.printRequire(builder, jsRequire);
+        for (RequireRecord record : this.requireSet) {
+            this.printRequire(builder, record);
         }
-        
+
         builder.append(header.fullString(this.jjjOptions.getName()));
         builder.append(bodyString());
 
@@ -412,14 +392,14 @@ public class JSClassBuilder<T> {
         builder.append(";\n");
     }
 
-    private void printRequire(StringBuilder builder, JSRequire jsRequire) {
+    private void printRequire(StringBuilder builder, RequireRecord record) {
         builder.append("const ");
-        builder.append(jsRequire.name());
+        builder.append(record.name);
         builder.append(" = require(\"");
-        builder.append(jsRequire.value());
+        builder.append(record.value);
         builder.append("\")");
-        if (!jsRequire.postfix().isEmpty()) {
-            builder.append(".").append(jsRequire.postfix());
+        if (!record.postfix.isEmpty()) {
+            builder.append(".").append(record.postfix);
         }
         builder.append(";\n");
     }

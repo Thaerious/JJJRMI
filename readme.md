@@ -33,7 +33,7 @@ Compiling
 Command Line Interface
 ----------------------
 Copy dependencies to the target directory.  
-`> mvn install dependency:copy-dependencies`
+`> mvn compile dependency:copy-dependencies`
 
 Run setup.  This must be run everytime a new shell is started.  It does not change
 the path in .bashrc  
