@@ -5,6 +5,7 @@
  */
 package ca.frar.jjjrmi.testclasses;
 
+import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.socket.JJJObject;
 
 /**
@@ -16,6 +17,7 @@ public class HasHandler extends JJJObject{
     public float y;
     public float z;
     
+    @NativeJS
     public HasHandler(int x, float y){
         this.x = x;
         this.y = y;

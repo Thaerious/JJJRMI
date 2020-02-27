@@ -1,6 +1,5 @@
 "use strict";
 const Constants = require("./Constants");
-const HandlerFactory = require("./HandlerFactory");
 const Decoder = require("./Decoder").Decoder;
 
 class ObjectDecoder {
@@ -9,8 +8,8 @@ class ObjectDecoder {
         this.translator = translator;
         this.translatorResult = translatorResult;
     }
-    decode() {
-        if (HandlerFactory.getInstance().hasHandler(this.aClass)){
+    decode() {        
+        if (this.handler){
             this.handler.doDecode(this.result, this.json);
         }
         else {
@@ -26,12 +25,13 @@ class ObjectDecoder {
             return;
         }
         
-        this.aClass = this.translator.classRegistry.getClass(this.json[Constants.TypeParam]);    
+        let className = this.json[Constants.TypeParam];
+        this.aClass = this.translator.classRegistry.getClass(className);    
         if (this.aClass === null) throw new Error("ca.frar.jjjrmi.exceptions.UnknownClassException: " + this.json[Constants.TypeParam]);
-
-        if (HandlerFactory.getInstance().hasHandler(this.aClass)) {
-            let handlerClass = HandlerFactory.getInstance().getHandler(this.aClass);
-            this.handler = handlerClass.getConstructor(EncodedResult.class).newInstance(this.translatorResult);
+        
+        if (this.translator.handlerRegistry.hasClass(className)) {
+            let handlerClass = this.translator.handlerRegistry.getClass(className);
+            this.handler = new handlerClass(this.translatorResult);            
             this.result = this.handler.doGetInstance();
         } else {
             this.result = new this.aClass();

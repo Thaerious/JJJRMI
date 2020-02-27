@@ -8,7 +8,6 @@ class Translator {
     constructor() {
         this.handlers = new Map();
         this.encodeListeners = [];
-        this.decodeListeners = [];
         this.objectMap = new BiMap();
         this.tempReferences = [];
         this.nextKey = 0;
@@ -19,10 +18,6 @@ class Translator {
     registerPackage(pkg){
         this.classRegistry.registerPackage(pkg);
         this.handlerRegistry.registerPackage(pkg);
-    }
-    
-    addDecodeListener(lst) {
-        this.decodeListeners.add(lst);
     }
     addEncodeListener(lst) {
         this.encodeListeners.add(lst);
@@ -49,7 +44,7 @@ class Translator {
         }
         this.tempReferences = [];
     }
-    decode(source) {
+    decode(source) {                
         return new TranslatorResult(this).decodeFromString(source);
     }
     encode(object) {
@@ -72,11 +67,6 @@ class Translator {
     }
     hasReferredObject(object) {
         return this.objectMap.containsValue(object);
-    }
-    notifyDecode(object) {
-        for (let decodeListener of this.decodeListeners) {
-            decodeListener.accept(object);
-        }
     }
     notifyEncode(object) {
         for (let encodeListener of this.encodeListeners) {

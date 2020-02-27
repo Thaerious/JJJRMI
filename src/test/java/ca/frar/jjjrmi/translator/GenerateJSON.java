@@ -58,6 +58,11 @@ public class GenerateJSON {
         bos.close();
         fos.close();
     }
+            
+    public TranslatorResult generate_circular() throws JJJRMIException {
+        Translator translator = new Translator();
+        return translator.encode(new CircularRef());
+    } 
     
     public TranslatorResult generate_referenceAsRoot() throws JJJRMIException {
         Translator translator = new Translator();
@@ -74,11 +79,7 @@ public class GenerateJSON {
         Translator translator = new Translator();
         return translator.encode(new HasHandler(2, 7));
     }        
-        
-    public TranslatorResult generate_circular() throws JJJRMIException {
-        Translator translator = new Translator();
-        return translator.encode(new CircularRef());
-    }        
+       
     
     public TranslatorResult generate_nonEmptyArray() throws JJJRMIException {
         Translator translator = new Translator();

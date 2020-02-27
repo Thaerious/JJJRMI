@@ -10,7 +10,6 @@ import ca.frar.jjjrmi.annotations.JSRequire;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.annotations.ServerSide;
 import ca.frar.jjjrmi.annotations.Transient;
-import ca.frar.jjjrmi.exceptions.JJJRMIException;
 import ca.frar.jjjrmi.exceptions.TypeDeclarationNotFoundWarning;
 import ca.frar.jjjrmi.jsbuilder.code.JSCodeElement;
 import ca.frar.jjjrmi.jsbuilder.code.JSCodeSnippet;
@@ -22,10 +21,8 @@ import ca.frar.jjjrmi.utility.JJJOptionsHandler;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import org.apache.logging.log4j.Level;
 import spoon.reflect.code.CtExpression;
@@ -40,19 +37,21 @@ import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtFieldReference;
 import spoon.reflect.reference.CtTypeReference;
 
+@SuppressWarnings("ProtectedField")
 public class JSClassBuilder<T> {
+
     protected JSHeaderBuilder header = new JSHeaderBuilder();
     protected JSMethodBuilder constructor = new JSMethodBuilder("constructor");
     protected final CtClass<T> ctClass;
     protected final JJJOptionsHandler jjjOptions;
-    protected List<JSMethodBuilder> methods = new ArrayList<>();
+    protected Set<JSMethodBuilder> methods = new HashSet<>();
     protected List<CtField<?>> staticFields = new ArrayList<>();
     protected List<JSCodeElement> sequel = new ArrayList<>();
     protected JSClassBuilder<?> container = null;
     protected HashSet<RequireRecord> requireSet = new HashSet<>(); // js require statements
     protected HashSet<CtTypeReference> classRequires = new HashSet<>(); // js require statements
     protected ArrayList<JSClassBuilder> nested = new ArrayList<>();
-
+    
     /* locally defined classes and enums (not fully implemented) */
     JSClassBuilder(CtClass<T> ctClass) {
         this.ctClass = ctClass;
@@ -78,7 +77,8 @@ public class JSClassBuilder<T> {
     JSClassBuilder<T> build() {
         LOGGER.trace("JSClassBuilder.build()");
 
-        this.setHeader(new JSHeaderBuilder().setName(jjjOptions.getName()));
+        this.header.setName(jjjOptions.getName());
+        
         this.addJJJMethods();
         this.buildExtendsSuper();
         this.buildInitMethod();
@@ -209,8 +209,7 @@ public class JSClassBuilder<T> {
 
         int indexOfSuper = this.constructor.getBody().firstIndexOf(JSSuperConstructor.class);
 
-        LOGGER.debug(indexOfSuper);
-
+        LOGGER.debug("this.getHeader().hasExtend() " + this.getHeader().hasExtend());
         if (this.ctClass.getAnnotation(InvokeSuper.class) != null || this.getHeader().hasExtend()) {
             requiresSuper = true;
         }
@@ -227,6 +226,15 @@ public class JSClassBuilder<T> {
             LOGGER.log(VERY_VERBOSE, "Inserting init invocation");
             this.constructor.getBody().add(indexOfSuper + 1, snippet);
         }
+    }
+
+    /**
+     * Insert an empty super call if it doesn't already exist.
+     */
+    protected void insertSuper() {
+        int indexOfSuper = this.constructor.getBody().firstIndexOf(JSSuperConstructor.class);
+        if (indexOfSuper != -1) return;
+        this.constructor.getBody().add(0, new JSSuperConstructor());
     }
 
     protected boolean hasNativeJS(CtTypeReference<?> ctTypeReference) {
@@ -262,10 +270,12 @@ public class JSClassBuilder<T> {
         jsIsEnumMethod.setName("__isEnum");
         jsIsEnumMethod.getBody().add(new JSCodeSnippet("return false;"));
         addMethod(jsIsEnumMethod);
-    }
 
-    public void setHeader(JSHeaderBuilder header) {
-        this.header = header;
+        JSMethodBuilder jsIsHandlerMethod = new JSMethodBuilder();
+        jsIsHandlerMethod.setStatic(true);
+        jsIsHandlerMethod.setName("__isHandler");
+        jsIsHandlerMethod.getBody().add(new JSCodeSnippet("return false;"));
+        addMethod(jsIsHandlerMethod);
     }
 
     public JSHeaderBuilder getHeader() {
@@ -276,6 +286,7 @@ public class JSClassBuilder<T> {
         if (method.getName().equals("constructor")) {
             this.constructor = method;
         } else {
+            if (this.methods.contains(method)) this.methods.remove(method);
             this.methods.add(method);
         }
     }

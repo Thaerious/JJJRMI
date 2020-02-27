@@ -4,7 +4,7 @@ const fs = require("fs");
 const filename = process.argv[2];
 const method = process.argv[3];
 const Translator = require("../../main/js/translator/Translator");
-const PackageFile = require("./testclasses/packageFile");
+const packageFile = require("./testclasses/packageFile");
 
 function getAllMethodNames(obj) {
     let methods = new Set();
@@ -32,64 +32,70 @@ class GenerateJSON {
         let r = this[method]();
         if (r) this.json[method.substring(9)] = r;
     }
-    
+
     generate_circular(){
         let translator = new Translator();
-        return translator.encode(new PackageFile.CircularRef());
+        return translator.encode(new packageFile.CircularRef());
     }
-    
+
     generate_referenceAsRoot(){
         let translator = new Translator();
-        let has = new PackageFile.Has(null);
-        
+        let has = new packageFile.Has(null);
+
         this.json['hasRoot'] = translator.encode(has).toJSON();
         this.json['hasRef'] = translator.encode(has).toJSON();
-        this.json['hasField'] = translator.encode(new PackageFile.Has(has)).toJSON();
-        
+        this.json['hasField'] = translator.encode(new packageFile.Has(has)).toJSON();
+
         return null;
-    }    
-    
+    }
+
+    generate_handled(){
+        let translator = new Translator();
+        translator.registerPackage(packageFile);
+        return translator.encode(new packageFile.HasHandler(2, 7));
+    }
+
     generate_nonEmptyArray(){
         let translator = new Translator();
         let array = [1, 3, 7];
-        return translator.encode(new PackageFile.Has(array));
-    }        
-    
+        return translator.encode(new packageFile.Has(array));
+    }
+
     generate_emptyArray(){
         let translator = new Translator();
         let array = [];
-        return translator.encode(new PackageFile.Has(array));
-    }    
-    
+        return translator.encode(new packageFile.Has(array));
+    }
+
     generate_hasNull(){
         let translator = new Translator();
-        return translator.encode(new PackageFile.Has(null));
+        return translator.encode(new packageFile.Has(null));
     }
-    
+
     generate_primitivesExtended(){
         let translator = new Translator();
-        return translator.encode(new PackageFile.PrimitivesExtended(16));
+        return translator.encode(new packageFile.PrimitivesExtended(16));
     }
 
     generate_simple(){
         let translator = new Translator();
-        return translator.encode(new PackageFile.Simple());
+        return translator.encode(new packageFile.Simple());
     }
 
     generate_none(){
         let translator = new Translator();
-        return translator.encode(new PackageFile.None());
+        return translator.encode(new packageFile.None());
     }
 
     generate_primitives(){
         let translator = new Translator();
-        return translator.encode(new PackageFile.Primitives(9));
+        return translator.encode(new packageFile.Primitives(9));
     }
 
     generate_arrayWrapper(){
         let translator = new Translator();
-        return translator.encode(new PackageFile.Primitives(9));
-    }    
+        return translator.encode(new packageFile.Primitives(9));
+    }
 }
 
 let generateJSON = new GenerateJSON();

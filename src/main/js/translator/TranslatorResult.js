@@ -1,6 +1,5 @@
 "use strict";
 const Constants = require("./Constants");
-const HandlerFactory = require("./HandlerFactory");
 const EncodedObject = require("./Encoder").EncodedObject;
 const ObjectDecoder = require("./ObjectDecoder");
 
@@ -27,14 +26,14 @@ class TranslatorResult {
         return this;
     }
     encodeFromObject(object) {
-        if (!object) throw new Error("ca.frar.jjjrmi.exceptions.RootException");
+        let handlerRegistry = this.translator.handlerRegistry;
 
         this.json = {};
         this.json[Constants.NewObjects] = {};
         if (this.translator.hasReferredObject(object)){
             this.setRoot(this.translator.getReference(object));
         }
-        else if (object.constructor.__getClass && HandlerFactory.getInstance().hasHandler(object.constructor.__getClass())){
+        else if (object.constructor.__getClass && handlerRegistry.hasClass(object.constructor.__getClass())){
             this.encodeHandled(object);
         }
         else{
@@ -45,16 +44,12 @@ class TranslatorResult {
         return this;
     }
     encodeHandled(object) {
-        try {
-            let handlerClass = HandlerFactory.getInstance().getHandler(object.getClass());
-            let handler = handlerClass.getConstructor(TranslatorResult.class).newInstance(this);
-            let encodedObject = handler.doEncode(object);
-            this.put(encodedObject);
-            this.setRoot(this.translator.getReference(object));
-        } catch (ex) {
-            throw new Error("ca.frar.jjjrmi.exceptions.EncoderException");
-        }
-
+        let handlerRegistry = this.translator.handlerRegistry;
+        let handlerClass = handlerRegistry.getClass(object.constructor.__getClass());
+        let handler = new handlerClass(this);
+        let encodedObject = handler.doEncode(object);
+        this.put(encodedObject);
+        this.setRoot(this.translator.getReference(object));
     }
     encodeUnhandled(object) {
         let encodedObject = new EncodedObject(object, this);

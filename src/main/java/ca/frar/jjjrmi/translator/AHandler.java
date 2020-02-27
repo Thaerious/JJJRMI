@@ -14,15 +14,16 @@ import org.json.JSONObject;
  *
  * @author Ed Armstrong
  */
+@JJJ
 abstract public class AHandler<T> {
-    private TranslatorResult encodedResult;
+    private TranslatorResult translatorResult;
     private HashMap<String, Field> fields = new HashMap<>();
     private T instance;
     private EncodedObject encodedObject;
     private JSONObject json;
     
-    public AHandler(TranslatorResult encodedResult){
-        this.encodedResult = encodedResult;        
+    public AHandler(TranslatorResult translatorResult){
+        this.translatorResult = translatorResult;        
     }
 
     public final T doGetInstance(){
@@ -31,7 +32,7 @@ abstract public class AHandler<T> {
     }
     
     public final EncodedObject doEncode(Object object) throws JJJRMIException{
-        this.encodedObject = new EncodedObject(object, encodedResult);        
+        this.encodedObject = new EncodedObject(object, translatorResult);        
         this.encode((T) object);
         return encodedObject;
     }
@@ -61,7 +62,7 @@ abstract public class AHandler<T> {
     public final <T> T decodeField(String jsonFieldName, String pojoFieldName) throws DecoderException {  
         Field field = this.fields.get(pojoFieldName);        
         JSONObject jsonField = this.json.getJSONObject(Constants.FieldsParam).getJSONObject(jsonFieldName);
-        Translator translator = encodedResult.getTranslator();
+        Translator translator = translatorResult.getTranslator();
         Class<?> type = field.getType();
         Object decoded = new Decoder(jsonField, translator, type).decode();
         
@@ -82,7 +83,7 @@ abstract public class AHandler<T> {
      */
     public final void encodeField(String name, Object value) throws JJJRMIException {
         try {
-            JSONObject toJSON = new Encoder(value, this.encodedResult).encode();
+            JSONObject toJSON = new Encoder(value, this.translatorResult).encode();
             this.encodedObject.setFieldData(name, toJSON);
         } catch (IllegalArgumentException | IllegalAccessException ex) {
             throw new EncoderException(ex);

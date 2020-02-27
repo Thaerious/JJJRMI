@@ -21,6 +21,7 @@ import ca.frar.jjjrmi.translator.TranslatorResult;
 @JJJ
 public class IsHandler extends AHandler<HasHandler>{
 
+    @NativeJS
     public IsHandler(TranslatorResult encodedResult) {
         super(encodedResult);
     }

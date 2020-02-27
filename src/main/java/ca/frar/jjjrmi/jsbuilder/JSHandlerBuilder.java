@@ -7,7 +7,9 @@ package ca.frar.jjjrmi.jsbuilder;
 
 import static ca.frar.jjjrmi.Global.LOGGER;
 import static ca.frar.jjjrmi.Global.VERY_VERBOSE;
+import ca.frar.jjjrmi.annotations.Handles;
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
+import ca.frar.jjjrmi.jsbuilder.code.JSCodeSnippet;
 import spoon.reflect.declaration.CtClass;
 
 /**
@@ -20,11 +22,30 @@ public class JSHandlerBuilder<T> extends JSClassBuilder<T>{
         super(ctClass);
     }
     
-    JSClassBuilder<T> build() throws JJJRMIException {
+    JSClassBuilder<T> build() {
         LOGGER.log(VERY_VERBOSE, "Building AHandler");
-        JSClassBuilder<T> builder = super.build();
-        builder.getHeader().setExtend("AHandler");
-        builder.addRequire("AHandler", "jjjrmi/translator/AHandler", "");
+        
+        Handles handles = ctClass.getAnnotation(Handles.class);
+        if (handles == null) throw new NullPointerException("@Handles missing in: " + this.ctClass.getQualifiedName());
+        
+        getHeader().setExtend("AHandler");
+        addRequire("AHandler", "jjjrmi/translator/AHandler", "");
+        
+        super.build();        
+        
+        JSMethodBuilder jsIsHandlerMethod = new JSMethodBuilder();
+        jsIsHandlerMethod.setStatic(true);
+        jsIsHandlerMethod.setName("__isHandler");
+        jsIsHandlerMethod.getBody().add(new JSCodeSnippet("return true;"));
+        addMethod(jsIsHandlerMethod);         
+        
+        JSMethodBuilder jsGetHandlesMethod = new JSMethodBuilder();
+        jsGetHandlesMethod.setStatic(true);
+        jsGetHandlesMethod.setName("__getHandles");
+        String string = String.format("return '%s';", handles.value());
+        jsGetHandlesMethod.getBody().add(new JSCodeSnippet(string));
+        addMethod(jsGetHandlesMethod);            
+        
         return this;
     }
     

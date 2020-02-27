@@ -8,6 +8,7 @@ import ca.frar.jjjrmi.jsbuilder.code.JSElementList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Objects;
 import java.util.Set;
 import spoon.reflect.reference.CtTypeReference;
 
@@ -32,6 +33,8 @@ public class JSMethodBuilder {
 
     public JSMethodBuilder() {
     }
+
+
 
     /**
      * Retrieve all js 'requires' from and all methods.
@@ -192,4 +195,19 @@ public class JSMethodBuilder {
         return builder.toString();
     }
 
+    @Override
+    public int hashCode(){
+        return this.name.hashCode();
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
+        final JSMethodBuilder other = (JSMethodBuilder) obj;
+        if (!Objects.equals(this.name, other.name)) return false;
+        return true;
+    }    
+    
 }

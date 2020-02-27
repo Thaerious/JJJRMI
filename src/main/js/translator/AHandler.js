@@ -5,37 +5,37 @@ const EncodedObject = require("./Encoder").EncodedObject;
 const Decoder = require("./Decoder").Decoder;
 
 class AHandler {
-	constructor(encodedResult) {
-            this.encodedResult = encodedResult;
-        }
-	decodeField(fieldName, type) {
-            let jsonField = this.jsonFields[fieldName];
-            let translator = this.encodedResult.getTranslator();
-            let decoded = new Decoder(jsonField, translator).decode();
-            return decoded;
-        }
-        doGetInstance(){
-            this.instance = this.getInstance();
-            return this.instance;
-        }        
-	doDecode(t, json) {
-            this.jsonFields = json[Constants.FieldsParam];
-            this.decode(t);
-            return t;
-        }
-	doEncode(object) {
-            let encodedObject = new EncodedObject(object, this.encodedResult);
-            this.jsonFields = encodedObject.json[Constants.FieldsParam];
-            this.encode(object);
-            return encodedObject;
-        }
-	encodeField(field, value) {
-            let toJSON = new Encoder(value, this.encodedResult).encode();
-            this.jsonFields[field] = toJSON;
-        }
-        static __isHandler() {
-            return true;
-        }
-};
+    constructor(translatorResult) {
+        this.translatorResult = translatorResult;
+        this.instance = undefined;
+        this.encodedObject = undefined;
+        this.json = undefined;
+    }
+    decodeField(jsonFieldName, pojoFieldName) {
+        let jsonField = this.json[Constants.FieldsParam][jsonFieldName];
+        let translator = this.translatorResult.getTranslator();
+        let decoded = new Decoder(jsonField, translator).decode();
+        this.instance[pojoFieldName] = decoded;
+        return decoded;
+    }
+    encodeField(name, value) {
+        let toJSON = new Encoder(value, this.translatorResult).encode();
+        this.encodedObject.setFieldData(name, toJSON);
+    }
+    doEncode(object) {
+        this.encodedObject = new EncodedObject(object, this.translatorResult);
+        this.encode(object);
+        return this.encodedObject;
+    }
+    doDecode(t, json) {
+        this.json = json;
+        this.decode(t);
+        return t;
+    }
+    doGetInstance() {
+        this.instance = this.getInstance();
+        return this.instance;
+    }
+}
 
 if (typeof module !== "undefined") module.exports = AHandler;
