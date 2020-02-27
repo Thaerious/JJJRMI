@@ -78,10 +78,10 @@ Output verbosity options
 Running Tests
 -------------
 compile tests  
-> mvn test-compile
+`> mvn test-compile`  
 
 run a single test class  
-> mvn -Dtest=UsersServiceImplTest test
+`> mvn -Dtest=UsersServiceImplTest test`  
 
 Dependent Version Management
 ----------------------------
