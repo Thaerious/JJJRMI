@@ -21,6 +21,10 @@ Build coverage reports, then browse to '.../rmi/target/site/jacoco/index.html'.
 Prepare data files for JS tests (requires mvn test-compile).  
 `> java -cp target/classes/:target/test-classes/:target/dependency/* ca.frar.jjjrmi.translator.GenerateJSON ./target/test-data/from-java.json`
 
+Install JJJRMI into test directory  
+`> cd src/test/js`  
+`> npm i`  
+
 Run JS tests, then browse to '.../rmi/target/site/nyc/index.html'.  
 `> nyc --report-dir=target/site/nyc --reporter=html bash jstest.sh`
 
