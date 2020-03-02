@@ -14,6 +14,7 @@ import ca.frar.jjjrmi.testclasses.None;
 import ca.frar.jjjrmi.testclasses.Primitives;
 import ca.frar.jjjrmi.testclasses.PrimitivesExtended;
 import ca.frar.jjjrmi.testclasses.Simple;
+import ca.frar.jjjrmi.testclasses.TransientField;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.Consumer;
@@ -42,7 +43,7 @@ public class TranslatorCorrectnessTest {
         assertEquals(Simple.class, decoded.getClass());
         assertEquals(object, decoded);
     }
-    
+
     @Test
     public void test_none() throws JJJRMIException {
         Translator translator = new Translator();
@@ -53,7 +54,7 @@ public class TranslatorCorrectnessTest {
         assertEquals(None.class, decoded.getClass());
         assertEquals(object, decoded);
         assertEquals(1, translator.size());
-    }    
+    }
 
     /**
      * Changing the local copies values will be maintained.
@@ -165,11 +166,12 @@ public class TranslatorCorrectnessTest {
         Has<Object> decoded = (Has<Object>) translator.decode(encoded.toString()).getRoot();
         assertEquals(null, decoded.get());
     }
-    
+
     /**
-     * The same object has been encoded twice.  The second encoding sent
-     * returns a reference to the first.
-     * @throws JJJRMIException 
+     * The same object has been encoded twice. The second encoding sent returns
+     * a reference to the first.
+     *
+     * @throws JJJRMIException
      */
     @Test
     public void test_reference_as_root() throws JJJRMIException {
@@ -180,10 +182,11 @@ public class TranslatorCorrectnessTest {
         Object decoded = translator.decode(encoded.toString()).getRoot();
         assertEquals(object, decoded);
     }
-    
+
     /**
      * The wrapping object is new, the wrapped object is the same.
-     * @throws JJJRMIException 
+     *
+     * @throws JJJRMIException
      */
     @Test
     public void test_reference_as_field() throws JJJRMIException {
@@ -192,34 +195,34 @@ public class TranslatorCorrectnessTest {
         Has<Simple> has1 = new Has<>(simple);
         translator.encode(has1);
         Has<Simple> has2 = new Has<>(simple);
-        TranslatorResult encoded = translator.encode(has2); 
+        TranslatorResult encoded = translator.encode(has2);
         translator.removeTrackedObject(has2);
         Has<Simple> decoded = (Has<Simple>) translator.decode(encoded.toString()).getRoot();
         assertEquals(has1.get(), decoded.get());
-    }    
-    
-    public void test_remove_untracked(){
-            assertThrows(UntrackedObjectException.class, () -> {
+    }
+
+    public void test_remove_untracked() {
+        assertThrows(UntrackedObjectException.class, () -> {
             Translator translator = new Translator();
             Object obj = new None();
             translator.removeTrackedObject(obj);
-        });    
+        });
     }
-    
-    public void test_unknown_reference_0(){
-            assertThrows(UnknownReferenceException.class, () -> {
+
+    public void test_unknown_reference_0() {
+        assertThrows(UnknownReferenceException.class, () -> {
             Translator translator = new Translator();
             translator.getReferredObject("X");
-        });    
-    }    
-    
-    public void test_unknown_reference_1(){
-            assertThrows(UntrackedObjectException.class, () -> {
+        });
+    }
+
+    public void test_unknown_reference_1() {
+        assertThrows(UntrackedObjectException.class, () -> {
             Translator translator = new Translator();
             translator.getReference(new None());
-        });    
-    }        
-        
+        });
+    }
+
     @Test
     public void test_array_of_empty() throws JJJRMIException {
         Translator translator = new Translator();
@@ -230,7 +233,7 @@ public class TranslatorCorrectnessTest {
         Has<Object[]> decoded = (Has<Object[]>) translator.decode(encoded.toString()).getRoot();
         assertEquals(0, decoded.get().length);
     }
-   
+
     @Test
     public void test_string_generic() throws JJJRMIException {
         Translator translator = new Translator();
@@ -239,8 +242,8 @@ public class TranslatorCorrectnessTest {
         translator.clear();
         Has<String> decoded = (Has<String>) translator.decode(encoded.toString()).getRoot();
         assertEquals("i am string", decoded.get());
-    }   
-    
+    }
+
     @Test
     public void test_int_generic() throws JJJRMIException {
         Translator translator = new Translator();
@@ -249,8 +252,8 @@ public class TranslatorCorrectnessTest {
         translator.clear();
         Has<Integer> decoded = (Has<Integer>) translator.decode(encoded.toString()).getRoot();
         assertTrue(5 == decoded.get());
-    }       
-    
+    }
+
     @Test
     public void test_bool_generic() throws JJJRMIException {
         Translator translator = new Translator();
@@ -259,8 +262,8 @@ public class TranslatorCorrectnessTest {
         translator.clear();
         Has<Boolean> decoded = (Has<Boolean>) translator.decode(encoded.toString()).getRoot();
         assertTrue(decoded.get());
-    }  
-    
+    }
+
     @Test
     public void test_double_generic() throws JJJRMIException {
         Translator translator = new Translator();
@@ -269,11 +272,12 @@ public class TranslatorCorrectnessTest {
         translator.clear();
         Has<Double> decoded = (Has<Double>) translator.decode(encoded.toString()).getRoot();
         assertTrue(5.1 == decoded.get());
-    }          
-    
+    }
+
     /**
      * Has handler z = x * y, after decode z = x + y;
-     * @throws JJJRMIException 
+     *
+     * @throws JJJRMIException
      */
     @Test
     public void test_handler() throws JJJRMIException {
@@ -283,11 +287,12 @@ public class TranslatorCorrectnessTest {
         translator.clear();
         HasHandler decoded = (HasHandler) translator.decode(encoded.toString()).getRoot();
         assertEquals(7, decoded.z);
-    }      
-    
+    }
+
     /**
      * Get all object on new translator, is empty.
-     * @throws JJJRMIException 
+     *
+     * @throws JJJRMIException
      */
     @Test
     public void test_get_all_tracked_0() throws JJJRMIException {
@@ -295,37 +300,40 @@ public class TranslatorCorrectnessTest {
         Collection<Object> all = translator.getAllTrackedObjects();
         assertEquals(0, all.size());
     }
-    
+
     /**
      * Get all object on simple tracked object.
-     * @throws JJJRMIException 
+     *
+     * @throws JJJRMIException
      */
     @Test
     public void test_get_all_tracked_1() throws JJJRMIException {
         Translator translator = new Translator();
         translator.encode(new None());
         Collection<Object> all = translator.getAllTrackedObjects();
-        assertEquals(1, all.size());        
+        assertEquals(1, all.size());
     }
-    
+
     /**
      * Get all object on multiple tracked objects.
-     * @throws JJJRMIException 
+     *
+     * @throws JJJRMIException
      */
     @Test
     public void test_get_all_tracked_2() throws JJJRMIException {
-        Translator translator = new Translator();        
+        Translator translator = new Translator();
         translator.encode(new None());
         translator.encode(new None());
         translator.encode(new None());
         Collection<Object> all = translator.getAllTrackedObjects();
         assertEquals(3, translator.size());
-        assertEquals(3, all.size());          
-    }    
-    
+        assertEquals(3, all.size());
+    }
+
     /**
      * Get all object after clear, is empty.
-     * @throws JJJRMIException 
+     *
+     * @throws JJJRMIException
      */
     @Test
     public void test_get_all_tracked_3() throws JJJRMIException {
@@ -335,17 +343,18 @@ public class TranslatorCorrectnessTest {
         translator.encode(new None());
         translator.clear();
         Collection<Object> all = translator.getAllTrackedObjects();
-        assertEquals(0, all.size());         
-    }    
-    
-    class TestConsumer implements Consumer<Object>{
+        assertEquals(0, all.size());
+    }
+
+    class TestConsumer implements Consumer<Object> {
+
         public Object accepted = null;
 
-        public void accept(Object t){
+        public void accept(Object t) {
             accepted = t;
         }
-    };    
-    
+    };
+
     @Test
     public void test_encode_listener() throws JJJRMIException {
         Translator translator = new Translator();
@@ -353,38 +362,59 @@ public class TranslatorCorrectnessTest {
         translator.addEncodeListener(lst);
         None none = new None();
         translator.encode(none);
-        assertEquals(none, lst.accepted);         
-    }      
-    
+        assertEquals(none, lst.accepted);
+    }
+
     /**
-     * The encoded object both extends JJJObject and has the annotation.
-     * The object will not be tracked by the translator, and decoding will 
-     * produce a new object.
-     * @throws JJJRMIException 
+     * The encoded object both extends JJJObject and has the annotation. The
+     * object will not be tracked by the translator, and decoding will produce a
+     * new object.
+     *
+     * @throws JJJRMIException
      */
-//    @Test
-//    public void test_do_not_retain_extends() throws JJJRMIException{
-//        Translator translator = new Translator();
-//        DoNotRetainExtends object = new DoNotRetainExtends();
-//        TranslatorResult encoded = translator.encode(object);        
-//        Object decoded = translator.decode(encoded.toString()).getRoot();
-//        assertFalse(translator.hasReferredObject(object));
-//        assertNotEquals(object, decoded);
-//    }
-    
+    @Test
+    public void test_do_not_retain_extends() throws JJJRMIException {
+        Translator translator = new Translator();
+        DoNotRetainExtends object = new DoNotRetainExtends();
+        TranslatorResult encoded = translator.encode(object);
+        Object decoded = translator.decode(encoded.toString()).getRoot();
+        assertFalse(translator.hasReferredObject(object));
+        assertNotEquals(object, decoded);
+    }
+
     /**
-     * The encoded object only has the annotation.
-     * The object will not be tracked by the translator, and decoding will 
-     * produce a new object.
-     * @throws JJJRMIException 
-     */    
-//    @Test
-//    public void test_do_not_retain_anno() throws JJJRMIException{
-//        Translator translator = new Translator();
-//        DoNotRetainAnno object = new DoNotRetainAnno();
-//        TranslatorResult encoded = translator.encode(object);        
-//        Object decoded = translator.decode(encoded.toString()).getRoot();
-//        assertFalse(translator.hasReferredObject(object));
-//        assertNotEquals(object, decoded);        
-//    }    
+     * The encoded object only has the annotation. The object will not be
+     * tracked by the translator, and decoding will produce a new object.
+     *
+     * @throws JJJRMIException
+     */
+    @Test
+    public void test_do_not_retain_anno() throws JJJRMIException {
+        Translator translator = new Translator();
+        DoNotRetainAnno object = new DoNotRetainAnno();
+        TranslatorResult encoded = translator.encode(object);
+        Object decoded = translator.decode(encoded.toString()).getRoot();
+        assertFalse(translator.hasReferredObject(object));
+        assertNotEquals(object, decoded);
+    }
+
+    /**
+     * Transient annotations prevent the field from being encoded. When this
+     * object is encoded the default value set in the constructor will remain,
+     * while any value set after will be ignored.   The non-transient field will
+     * not be ignored.
+     *
+     * @author Ed Armstrong
+     */
+    @Test
+    public void test_transient_field() throws JJJRMIException {
+        Translator translator = new Translator();
+        TransientField object = new TransientField();
+        object.set(9);
+        TranslatorResult encoded = translator.encode(object);        
+        translator.clear();
+        TransientField decoded = (TransientField) translator.decode(encoded.toString()).getRoot();
+        assertNotEquals(decoded.getTransientField(), object.getTransientField());
+        assertEquals(decoded.getNonTransientField(), object.getNonTransientField());
+    }
 }

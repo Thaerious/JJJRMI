@@ -14,7 +14,7 @@ class Translator {
         this.classRegistry = new ClassRegistry();
         this.handlerRegistry = new HandlerRegistry();
     }
-    
+
     registerPackage(pkg){
         this.classRegistry.registerPackage(pkg);
         this.handlerRegistry.registerPackage(pkg);
@@ -29,9 +29,13 @@ class Translator {
         this.objectMap.put(reference, object);
         this.tempReferences.push(reference);
     }
-    allocReference(object) {
+    allocReference(object, retain = true) {
         let key = Translator.referencePrequel + this.nextKey++;
-        this.addReference(key, object);
+        if (retain){
+            this.addReference(key, object);
+        } else {
+            this.addTempReference(key, object);
+        }
         return key;
     }
     clear() {
@@ -44,11 +48,17 @@ class Translator {
         }
         this.tempReferences = [];
     }
-    decode(source) {                
-        return new TranslatorResult(this).decodeFromString(source);
+    decode(source) {
+        let result = new TranslatorResult(this).decodeFromString(source);
+        result.finalizeRoot();
+        this.clearTempReferences();
+        return result;
     }
     encode(object) {
-        return new TranslatorResult(this).encodeFromObject(object);
+        let result = new TranslatorResult(this).encodeFromObject(object);
+        result.finalizeRoot();
+        this.clearTempReferences();
+        return result;
     }
     getAllReferredObjects() {
         let allReferredObjects = [];

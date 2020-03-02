@@ -37,10 +37,10 @@ class ObjectDecoder {
             this.result = new this.aClass();
         }
         
-        if (this.result.constructor.__isTransient()){
-            this.translator.addTempReference(this.json[Constants.KeyParam], this.result);
-        } else {
+        if (this.result.constructor.__isRetained()){
             this.translator.addReference(this.json[Constants.KeyParam], this.result);
+        } else {            
+            this.translator.addTempReference(this.json[Constants.KeyParam], this.result);
         }
     }
 }

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ca.frar.jjjrmi.translator;
+package ca.frar.jjjrmi.utility;
 
 import ca.frar.jjjrmi.exceptions.DecoderException;
 import java.io.BufferedReader;

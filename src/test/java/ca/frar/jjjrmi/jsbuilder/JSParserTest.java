@@ -6,12 +6,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
-import spoon.reflect.declaration.CtClass;
 
 /**
  * Test basic functionality of the JSParser.
@@ -38,7 +36,6 @@ public class JSParserTest {
     /**
      * File will generate because Simple extends JJJObject.
      *
-     * @throws JJJRMIException
      */
     @Test
     public void test_simple() throws JJJRMIException, MojoExecutionException, MojoFailureException, JSBuilderException, IOException {
@@ -50,11 +47,6 @@ public class JSParserTest {
     /**
      * 'Simple.js' will require 'Shapes' because 'Shapes' is invoked in a field.
      *
-     * @throws JJJRMIException
-     * @throws MojoExecutionException
-     * @throws MojoFailureException
-     * @throws JSBuilderException
-     * @throws IOException
      */
     @Test
     public void test_simple_has_require() throws JJJRMIException, MojoExecutionException, MojoFailureException, JSBuilderException, IOException {
@@ -70,7 +62,6 @@ public class JSParserTest {
      * File will generate because ExtendsSimple extends Simple which in turn
      * extends JJJObject.
      *
-     * @throws JJJRMIException
      */
     @Test
     public void test_son_of_a_simple() throws JJJRMIException, MojoExecutionException, MojoFailureException, JSBuilderException, IOException {
@@ -156,11 +147,6 @@ public class JSParserTest {
      * Java classes directly extending the AHandler class will produce JS
      * classes which extend the jjjrmi/AHandler class.
      *
-     * @throws JJJRMIException
-     * @throws MojoExecutionException
-     * @throws MojoFailureException
-     * @throws JSBuilderException
-     * @throws IOException
      */
     @Test
     public void test_is_handler() throws JJJRMIException, MojoExecutionException, MojoFailureException, JSBuilderException, IOException {
@@ -172,19 +158,28 @@ public class JSParserTest {
     }
 
     /**
-     * A class with a non-transpiled (unknown) reference will produce output.
-     * @throws JJJRMIException
-     * @throws MojoExecutionException
-     * @throws MojoFailureException
-     * @throws JSBuilderException
-     * @throws IOException 
+     * Classes annotated with @JJJ(retain=false) will set the __isRetained to
+     * false.
      */
     @Test
-    public void test_known_non_jjj() throws JJJRMIException, MojoExecutionException, MojoFailureException, JSBuilderException, IOException {
-        String className = "KnownNonJJJ";
+    public void test_do_not_retain() throws JJJRMIException, MojoExecutionException, MojoFailureException, JSBuilderException, IOException {
+        String className = "NoRetain";
         CLI.main("-s", "-d", IN_DIR, "-i", className, "-o", OUT_DIR);
         String contents = new String(Files.readAllBytes(Paths.get(OUT_DIR + "/" + className + ".js")));
-//        assertTrue(contents.contains("extends AHandler"));
-//        assertTrue(contents.contains("const AHandler = require(\"jjjrmi/translator/AHandler\");"));
+        contents = contents.replaceAll("[ \t\r\n]+", " ");
+        assertTrue(contents.contains("__isRetained() { return false; }"));
+    }
+
+    /**
+     * Classes annotated without @JJJ(retain=false) will set the __isRetained to
+     * true.
+     */
+    @Test
+    public void test_retain() throws JJJRMIException, MojoExecutionException, MojoFailureException, JSBuilderException, IOException {
+        String className = "None";
+        CLI.main("-s", "-d", IN_DIR, "-i", className, "-o", OUT_DIR);
+        String contents = new String(Files.readAllBytes(Paths.get(OUT_DIR + "/" + className + ".js")));
+        contents = contents.replaceAll("[ \t\r\n]+", " ");
+        assertTrue(contents.contains("__isRetained() { return true; }"));
     }
 }

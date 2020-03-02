@@ -96,6 +96,20 @@ class GenerateJSON {
         let translator = new Translator();
         return translator.encode(new packageFile.Primitives(9));
     }
+    
+    generate_doNotRetainExtends(){
+        let translator = new Translator();
+        return translator.encode(new packageFile.DoNotRetainExtends(5));
+    }
+    
+    generate_doNotRetainAnno(){
+        let translator = new Translator();
+        return translator.encode(new packageFile.DoNotRetainAnno(5));
+    }        
+    generate_transientField(){
+        let translator = new Translator();
+        return translator.encode(new packageFile.TransientField().set(9));
+    }      
 }
 
 let generateJSON = new GenerateJSON();

@@ -35,13 +35,13 @@ class EncodedArray {
 }
 
 class EncodedObject {
-    constructor(object, translatorResult) {
+    constructor(object, translatorResult, retain = true) {
         this.object = object;
         this.json = {};
         this.translatorResult = translatorResult;
-
+        
         this.json = {};
-        this.json[Constants.KeyParam] = translatorResult.getTranslator().allocReference(object);
+        this.json[Constants.KeyParam] = translatorResult.getTranslator().allocReference(object, retain);
         this.json[Constants.TypeParam] = object.constructor.__getClass ? object.constructor.__getClass() : null;
         this.json[Constants.FieldsParam] = {};
     }
@@ -106,7 +106,7 @@ class Encoder {
             this.translatorResult.put(encodedObject);
             return new EncodedReference(this.translatorResult.getTranslator().getReference(this.object));
         } else {
-            let encodedObject = new EncodedObject(this.object, this.translatorResult);
+            let encodedObject = new EncodedObject(this.object, this.translatorResult, this.object.constructor.__isRetained());
             this.translatorResult.put(encodedObject);
             encodedObject.encode();
             return new EncodedReference(this.translatorResult.getTranslator().getReference(this.object));

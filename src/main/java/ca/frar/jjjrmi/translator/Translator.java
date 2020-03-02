@@ -3,18 +3,14 @@ import ca.frar.jjjrmi.exceptions.UntrackedObjectException;
 import ca.frar.jjjrmi.annotations.JJJ;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.exceptions.DecoderException;
-import ca.frar.jjjrmi.exceptions.EncoderException;
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
 import ca.frar.jjjrmi.exceptions.UnknownReferenceException;
-import ca.frar.jjjrmi.exceptions.RootException;
-import ca.frar.jjjrmi.exceptions.TranslatorException;
 import ca.frar.jjjrmi.utility.BiMap;
-import java.lang.reflect.InvocationTargetException;
+import ca.frar.jjjrmi.utility.JJJOptionsHandler;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.function.Consumer;
-import org.json.JSONObject;
 
 /**
  * Class for encoding and decoding RMI classes. Classes added to the encoder
@@ -27,15 +23,15 @@ import org.json.JSONObject;
  * @author edward
  */
 @JJJ(insertJJJMethods = false)
-public final class Translator {
+public class Translator {
     final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");
-    private HashMap<String, Class<? extends AHandler<?>>> handlers = new HashMap<>();
-    private ArrayList<Consumer<Object>> encodeListeners = new ArrayList<>();
-    private ArrayList<Consumer<Object>> decodeListeners = new ArrayList<>();
+    private static final String referencePrequel = "S";
+    private final HashMap<String, Class<? extends AHandler<?>>> handlers = new HashMap<>();
+    private final ArrayList<Consumer<Object>> encodeListeners = new ArrayList<>();
+    private final ArrayList<Consumer<Object>> decodeListeners = new ArrayList<>();
     private final BiMap<String, Object> objectMap = new BiMap<>();
     private final ArrayList<String> tempReferences = new ArrayList<>();
     private int nextKey = 0;
-    private static String referencePrequel = "S";
 
     /**
      * Add a reference that will be removed when this round of
@@ -73,8 +69,25 @@ public final class Translator {
      */
     @NativeJS
     String allocReference(Object object) {
+        return this.allocReference(object, true);
+    }
+
+    /**
+     * Create a new reference with a new unique key.
+     *
+     * @param object
+     * @return
+     */
+    @NativeJS
+    String allocReference(Object object, boolean isRetained) {
         String key = referencePrequel + (nextKey++);
-        this.addReference(key, object);
+
+        if (new JJJOptionsHandler(object).retain()){
+            this.addReference(key, object);
+        } else {
+            this.addTempReference(key, object);
+        }
+
         return key;
     }
 
@@ -151,7 +164,7 @@ public final class Translator {
 
     /**
      * Remove object from this translator.  On subsequent encodes a new full
-     * encoding will take place.  If the object is not tracked by this 
+     * encoding will take place.  If the object is not tracked by this
      * translator, an exception will be thrown.
      * @param object
      * @return The reference to the object.
@@ -162,7 +175,7 @@ public final class Translator {
         this.objectMap.remove(objectMap.getKey(object));
         return reference;
     }
-    
+
     /**
      * Clear all memory of sent objects. Use if the client of a websocket
      * refreshes the browser before resending objects. Does not reset the
@@ -187,7 +200,10 @@ public final class Translator {
      */
     @NativeJS
     public final TranslatorResult encode(Object object) throws JJJRMIException {
-        return new TranslatorResult(this).encodeFromObject(object);
+        TranslatorResult encodeFromObject = new TranslatorResult(this).encodeFromObject(object);
+        encodeFromObject.finalizeRoot();
+        this.clearTempReferences();
+        return encodeFromObject;
     }
 
     /**
@@ -200,7 +216,10 @@ public final class Translator {
      */
     @NativeJS
     public final TranslatorResult decode(String source) throws DecoderException {
-        return new TranslatorResult(this).decodeFromString(source);
+        TranslatorResult decodeFromString = new TranslatorResult(this).decodeFromString(source);
+        decodeFromString.finalizeRoot();
+        this.clearTempReferences();
+        return decodeFromString;
     }
 
     @NativeJS

@@ -13,6 +13,7 @@ import ca.frar.jjjrmi.exceptions.EncoderException;
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
 import ca.frar.jjjrmi.exceptions.UnknownReferenceException;
 import ca.frar.jjjrmi.exceptions.RootException;
+import ca.frar.jjjrmi.utility.JJJOptionsHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import org.json.JSONObject;
@@ -27,6 +28,7 @@ import org.json.JSONObject;
 public class TranslatorResult {
     private final Translator translator;
     private JSONObject json;
+    private Object root;
 
     @NativeJS
     TranslatorResult(Translator translator) {
@@ -45,9 +47,8 @@ public class TranslatorResult {
             encodeHandled(object);
         } else {
             encodeUnhandled(object);
-        }        
-        
-        this.translator.clearTempReferences();
+        }
+
         return this;
     }
 
@@ -67,7 +68,7 @@ public class TranslatorResult {
     @NativeJS
     private void encodeUnhandled(Object object) throws JJJRMIException {
         try {
-            EncodedObject encodedObject = new EncodedObject(object, this);
+            EncodedObject encodedObject = new EncodedObject(object, this, new JJJOptionsHandler(object).retain());
             this.put(encodedObject);
             this.setRoot(this.translator.getReference(object));
             encodedObject.encode();
@@ -110,10 +111,14 @@ public class TranslatorResult {
         this.json.put(Constants.RootObject, rootKey);
     }
 
+    void finalizeRoot() throws UnknownReferenceException{
+        String key = this.json.getString(Constants.RootObject);
+        this.root = this.translator.getReferredObject(key);
+    }
+
     @NativeJS
     public Object getRoot() throws UnknownReferenceException {
-        String key = this.json.getString(Constants.RootObject);
-        return this.translator.getReferredObject(key);        
+        return this.root;
     }
 
     @NativeJS
@@ -122,27 +127,27 @@ public class TranslatorResult {
         JSONObject toJSON = encodedObject.toJSON();
         this.json.getJSONObject(Constants.NewObjects).put(key, toJSON);
     }
-    
+
     @NativeJS
     /**
-     * Returns the number of new objects in this result.  
+     * Returns the number of new objects in this result.
      * @return the number of new objects.
      */
     public int newObjectCount(){
         return this.json.getJSONObject(Constants.NewObjects).keySet().size();
     }
-    
+
     public JSONObject toJSON(){
         return this.json;
     }
-    
+
     public String toString(){
         return this.json.toString();
     }
-    
+
     @NativeJS
     @JSParam(name="indentFactor", init="0")
     public String toString(int indentFactor){
         return this.json.toString(indentFactor);
-    }    
+    }
 }

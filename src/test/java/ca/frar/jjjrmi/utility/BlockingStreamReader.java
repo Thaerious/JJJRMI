@@ -1,4 +1,5 @@
-package ca.frar.jjjrmi.translator;
+package ca.frar.jjjrmi.utility;
+import ca.frar.jjjrmi.utility.JSGetter;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;

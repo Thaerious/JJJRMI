@@ -4,7 +4,7 @@
  * > node node src/test/js/TestJavaToJS ./target/test-data/from-java.json
  * > node node src/test/js/TestJavaToJS [file-name]
  * > node node src/test/js/TestJavaToJS [file-name] [test-name]
- * 
+ *
  * Will output the failed tests, and the counts.
  */
 
@@ -21,7 +21,7 @@ class TestJavaToJS extends TestFramework{
         super();
         this.json = json;
     }
-    
+
     /**
      * Sanity test to make sure the translator loads and processes.
      */
@@ -32,7 +32,7 @@ class TestJavaToJS extends TestFramework{
         let object = translator.decode(text).getRoot();
         Assert.equals("ca.frar.jjjrmi.testclasses.None", object.constructor.__getClass());
     }
-    
+
     /**
      * A class will be populated with default values.
      */
@@ -41,7 +41,7 @@ class TestJavaToJS extends TestFramework{
         translator.registerPackage(PackageFile);
         let text = JSON.stringify(this.json.simple);
         let object = translator.decode(text).getRoot();
-        
+
         Assert.equals("ca.frar.jjjrmi.testclasses.Simple", object.constructor.__getClass());
         Assert.equals(5, object.x);
         Assert.equals(7, object.y);
@@ -80,7 +80,7 @@ class TestJavaToJS extends TestFramework{
         Assert.equals("ca.frar.jjjrmi.testclasses.Has", object.constructor.__getClass());
         Assert.equals(null, object.t);
     }
-    
+
     /**
      * Decoding the same object twice will return the same object.
      */
@@ -91,8 +91,8 @@ class TestJavaToJS extends TestFramework{
         let object1 = translator.decode(text).getRoot();
         let object2 = translator.decode(text).getRoot();
         Assert.equals(object1, object2);
-    }        
-    
+    }
+
     /**
      * Cached objects can be retrieved by reference.  This reference can be the
      * root object.
@@ -144,7 +144,7 @@ class TestJavaToJS extends TestFramework{
         Assert.equals(3, object.t[1]);
         Assert.equals(7, object.t[2]);
     }
-    
+
     /**
      * Circular references will point to each other.
      */
@@ -154,11 +154,11 @@ class TestJavaToJS extends TestFramework{
         let text = JSON.stringify(this.json.circular);
         let object = translator.decode(text).getRoot();
         let target = object.target;
-        
+
         Assert.equals("ca.frar.jjjrmi.testclasses.CircularRef", object.constructor.__getClass());
         Assert.equals(object, target.target);
     }
-    
+
     /**
      * A class with a registered handler, will invoke the handler methods to
      * decode instead of the default.
@@ -166,13 +166,30 @@ class TestJavaToJS extends TestFramework{
      */
     test_hasHandler(){
         let translator = new Translator();
-        translator.registerPackage(PackageFile);        
+        translator.registerPackage(PackageFile);
         let text = JSON.stringify(this.json.handled);
         let object = translator.decode(text).getRoot();
-        
+
         Assert.equals("ca.frar.jjjrmi.testclasses.HasHandler", object.constructor.__getClass());
         Assert.equals(9, object.z);
-    }    
+    }
+    /**
+     * The encoded object both extends JJJObject and has the annotation.
+     * The object will not be tracked by the translator, and decoding will
+     * produce a new object.
+     * @throws JJJRMIException
+     */
+    test_doNotRetainExtends(){
+        let translator = new Translator();
+        translator.registerPackage(PackageFile);
+        let text = JSON.stringify(this.json.doNotRetainExtends);
+        let object1 = translator.decode(text).getRoot();
+        let object2 = translator.decode(text).getRoot();
+
+        Assert.equals("ca.frar.jjjrmi.testclasses.DoNotRetainExtends", object1.constructor.__getClass());
+        Assert.equals("ca.frar.jjjrmi.testclasses.DoNotRetainExtends", object2.constructor.__getClass());
+        Assert.notEquals(object1, object2);
+    }
 }
 
 if (process.argv.length < 3){

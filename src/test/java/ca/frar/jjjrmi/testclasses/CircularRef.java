@@ -15,7 +15,7 @@ import ca.frar.jjjrmi.annotations.NativeJS;
  */
 @JJJ
 public class CircularRef {
-    private final CircularRef target;
+    public final CircularRef target;
  
     public CircularRef(){
         this.target = new CircularRef(this);

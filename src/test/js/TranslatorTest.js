@@ -39,6 +39,42 @@ class TranslatorTest extends TestFramework{
         
         Assert.equals(7, result.getRoot().z);
     }
+    test_retain(){
+        let translator = new Translator();
+        translator.registerPackage(packageFile);
+        
+        let object = new packageFile.None();
+        let tResult = translator.encode(object);
+        let decoded = translator.decode(tResult.toString());
+        Assert.equals(object, decoded.getRoot());
+    }
+    test_doNotRetain(){
+        let translator = new Translator();
+        translator.registerPackage(packageFile);
+        
+        let object = new packageFile.NoRetain();
+        let tResult = translator.encode(object);
+        let decoded = translator.decode(tResult.toString());
+        Assert.notEquals(object, decoded.getRoot());
+    }    
+    /**
+     * Transient field do not apply to objects both encoded and decoded in 
+     * javascript.  This behaviour may change.  The transient field should not
+     * be decoded into java even when it exists in the encoded string.
+     *
+     * @author Ed Armstrong
+     */
+    test_transient_field(){
+        let translator = new Translator();
+        translator.registerPackage(packageFile);
+        let object = new packageFile.TransientField();
+        object.set(9);
+        let encoded = translator.encode(object);
+        translator.clear();
+        let decoded = translator.decode(encoded.toString()).getRoot();
+        Assert.equals(decoded.getTransientField(), object.getTransientField());
+        Assert.equals(decoded.getNonTransientField(), object.getNonTransientField());
+    }    
 };
 
 const test = new TranslatorTest();

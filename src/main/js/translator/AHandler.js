@@ -18,12 +18,18 @@ class AHandler {
         this.instance[pojoFieldName] = decoded;
         return decoded;
     }
+    decodeObject(jsonFieldName){
+        let jsonField = this.json[Constants.FieldsParam][jsonFieldName];
+        let translator = this.translatorResult.getTranslator();
+        let decoded = new Decoder(jsonField, translator).decode();
+        return decoded;        
+    }
     encodeField(name, value) {
         let toJSON = new Encoder(value, this.translatorResult).encode();
         this.encodedObject.setFieldData(name, toJSON);
     }
     doEncode(object) {
-        this.encodedObject = new EncodedObject(object, this.translatorResult);
+        this.encodedObject = new EncodedObject(object, this.translatorResult, this.isRetained());
         this.encode(object);
         return this.encodedObject;
     }
@@ -35,6 +41,9 @@ class AHandler {
     doGetInstance() {
         this.instance = this.getInstance();
         return this.instance;
+    }
+    isRetained(){
+        return true;
     }
 }
 

@@ -24,6 +24,12 @@ class Assert {
         }
     }
     
+    static notEquals(expected, found) {
+        if (expected === found) {
+            throw new AssertError(`not equals expected, "${expected}" === "${found}"`);
+        }
+    }    
+    
     static true(found) {
         if (found !== true) {
             throw new AssertError(`expected "true" found "${found}"`);
@@ -65,7 +71,7 @@ class TestFramework {
             this.count++;
             this.doTest(method);
         }
-        console.log(`run: ${this.count} failed: ${this.failed.length}`);
+        console.log(`${this.constructor.name} run: ${this.count} failed: ${this.failed.length}`);
     }
     doTest(method) {
         try {

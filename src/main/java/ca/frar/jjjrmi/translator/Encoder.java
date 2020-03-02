@@ -5,13 +5,9 @@ import ca.frar.jjjrmi.annotations.JJJ;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.exceptions.EncoderException;
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
-import ca.frar.jjjrmi.exceptions.TranslatorException;
-import ca.frar.jjjrmi.exceptions.UntrackedObjectException;
-import ca.frar.jjjrmi.translator.Constants;
 import ca.frar.jjjrmi.translator.HandlerFactory;
+import ca.frar.jjjrmi.utility.JJJOptionsHandler;
 import java.lang.reflect.InvocationTargetException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.lang3.ClassUtils;
 import org.json.JSONObject;
 
@@ -65,7 +61,7 @@ class Encoder {
             } else {
                 LOGGER.trace(" -- object");
                 try {
-                    EncodedObject encodedObject = new EncodedObject(object, this.encodedResult);
+                    EncodedObject encodedObject = new EncodedObject(object, this.encodedResult, new JJJOptionsHandler(object).retain());
                     encodedResult.put(encodedObject);
                     encodedObject.encode();
                     return new EncodedReference(encodedResult.getTranslator().getReference(object));

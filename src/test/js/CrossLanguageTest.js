@@ -1,4 +1,4 @@
-clear/* global process */
+/* global process */
 "use strict";
 const Translator = require("../../main/js/translator/Translator");
 const None = require("./testclasses/None");
@@ -21,13 +21,13 @@ class CrossLanguageTest {
     constructor(){
         this.translator = new Translator();
     }
-    
+
     resend(){
         let encoded = this.translator.encode(this.lastObject);
         log(encoded.toString(2));
     }
-    
-    get_primitives_extended() {        
+
+    get_primitives_extended() {
         this.lastObject = new PrimitivesExtended(65);
         let encoded = this.translator.encode(this.lastObject);
         log(encoded.toString(2));
@@ -36,17 +36,17 @@ class CrossLanguageTest {
         this.lastObject = new ArrayWrapper();
         let encoded = this.translator.encode(this.lastObject);
         log(encoded.toString(2));
-    }    
+    }
     get_simple() {
         this.lastObject = new Simple();
         let encoded = this.translator.encode(this.lastObject);
         log(encoded.toString(2));
-    }    
+    }
     get_array_wrapper() {
         this.lastObject = new ArrayWrapper();
         let encoded = this.translator.encode(this.lastObject);
         log(encoded.toString(2));
-    }   
+    }
     get_none() {
         this.lastObject = new None();
         let encoded = this.translator.encode(this.lastObject);
@@ -84,14 +84,14 @@ if (process.argv.length === 2) {
         terminal: false
     });
 
-    rl.on('line', function (line) {     
+    rl.on('line', function (line) {
         line = line.toLowerCase();
         if (line === "exit") process.exit();
         line = line.replace(/ /g, "_");
         if (!test[line]){
             console.log("unknown command: " + line);
         } else {
-            test[line]();        
+            test[line]();
         }
     });
 } else {

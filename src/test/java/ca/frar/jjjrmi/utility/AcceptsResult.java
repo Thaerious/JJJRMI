@@ -3,13 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ca.frar.jjjrmi.translator;
+package ca.frar.jjjrmi.utility;
 
 /**
  *
  * @author Ed Armstrong
  */
-public interface HasTranslator {
-    Translator getTranslator();
-    void addResult(TranslatorResult result);
+public interface AcceptsResult<T> {
+    void addResult(T result);
 }

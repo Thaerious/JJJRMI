@@ -102,7 +102,7 @@ public class JJJOptionsHandler {
     }
 
     public boolean retain() {
-        if (jjj == null) return false;
+        if (jjj == null) return true;
         return jjj.retain();
     }
 

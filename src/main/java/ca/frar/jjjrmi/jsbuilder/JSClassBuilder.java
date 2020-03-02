@@ -251,11 +251,11 @@ public class JSClassBuilder<T> {
         if (!jjjOptions.insertJJJMethods()) return;
         JSMethodBuilder jsTransMethod = new JSMethodBuilder();
         jsTransMethod.setStatic(true);
-        jsTransMethod.setName("__isTransient");
+        jsTransMethod.setName("__isRetained");
         if (this.jjjOptions.retain()) {
-            jsTransMethod.getBody().add(new JSCodeSnippet("return false;"));// note JS asks isTransient = !retain
-        } else {
             jsTransMethod.getBody().add(new JSCodeSnippet("return true;"));
+        } else {
+            jsTransMethod.getBody().add(new JSCodeSnippet("return false;"));
         }
         addMethod(jsTransMethod);
 

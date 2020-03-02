@@ -3,7 +3,7 @@ import ca.frar.jjjrmi.annotations.JJJ;
 import ca.frar.jjjrmi.annotations.JSParam;
 import ca.frar.jjjrmi.annotations.NativeJS;
 
-@JJJ(retain = false)
+@JJJ()
 public class Primitives {
     public String string = "alpha";
     public boolean bt = true;

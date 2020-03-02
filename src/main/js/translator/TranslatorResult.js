@@ -7,11 +7,11 @@ class TranslatorResult {
     constructor(translator) {
         this.translator = translator;
     }
-    decodeFromString(source) {        
+    decodeFromString(source) {
         this.json = JSON.parse(source);
         let list = [];
         let newObjects = this.json[Constants.NewObjects];
-        
+
         for (let key in newObjects) {
             if (this.translator.hasReference(key)) continue;
             let jsonObject = newObjects[key];
@@ -39,8 +39,7 @@ class TranslatorResult {
         else{
             this.encodeUnhandled(object);
         }
-
-        this.translator.clearTempReferences();
+        
         return this;
     }
     encodeHandled(object) {
@@ -52,14 +51,13 @@ class TranslatorResult {
         this.setRoot(this.translator.getReference(object));
     }
     encodeUnhandled(object) {
-        let encodedObject = new EncodedObject(object, this);
+        let encodedObject = new EncodedObject(object, this, object.constructor.__isRetained());
         this.put(encodedObject);
         this.setRoot(this.translator.getReference(object));
         encodedObject.encode();
     }
     getRoot() {
-        let key = this.json[Constants.RootObject];
-        return this.translator.getReferredObject(key);
+        return this.root;
     }
     getTranslator() {
         return this.translator;
@@ -75,9 +73,13 @@ class TranslatorResult {
     setRoot(rootKey) {
         this.json[Constants.RootObject] = rootKey;
     }
+    finalizeRoot(){
+        let key = this.json[Constants.RootObject];
+        this.root = this.translator.getReferredObject(key);
+    }    
     toString(indentFactor = 0) {
         return JSON.stringify(this.json, null, indentFactor);
-    }        
+    }
     toJSON(){
         return this.json;
     }

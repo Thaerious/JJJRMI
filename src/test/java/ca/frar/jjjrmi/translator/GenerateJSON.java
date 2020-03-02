@@ -1,12 +1,15 @@
 package ca.frar.jjjrmi.translator;
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
 import ca.frar.jjjrmi.testclasses.CircularRef;
+import ca.frar.jjjrmi.testclasses.DoNotRetainAnno;
+import ca.frar.jjjrmi.testclasses.DoNotRetainExtends;
 import ca.frar.jjjrmi.testclasses.Has;
 import ca.frar.jjjrmi.testclasses.HasHandler;
 import ca.frar.jjjrmi.testclasses.None;
 import ca.frar.jjjrmi.testclasses.Primitives;
 import ca.frar.jjjrmi.testclasses.PrimitivesExtended;
 import ca.frar.jjjrmi.testclasses.Simple;
+import ca.frar.jjjrmi.testclasses.TransientField;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -58,46 +61,46 @@ public class GenerateJSON {
         bos.close();
         fos.close();
     }
-            
+
     public TranslatorResult generate_circular() throws JJJRMIException {
         Translator translator = new Translator();
         return translator.encode(new CircularRef());
-    } 
-    
+    }
+
     public TranslatorResult generate_referenceAsRoot() throws JJJRMIException {
         Translator translator = new Translator();
         Has<Object> has = new Has<>(null);
-        
+
         this.json.put("hasRoot", translator.encode(has).toJSON());
         this.json.put("hasRef", translator.encode(has).toJSON());
         this.json.put("hasField", translator.encode(new Has<>(has)).toJSON());
-        
+
         return null;
-    }    
-    
+    }
+
     public TranslatorResult generate_handled() throws JJJRMIException {
         Translator translator = new Translator();
         return translator.encode(new HasHandler(2, 7));
-    }        
-       
-    
+    }
+
+
     public TranslatorResult generate_nonEmptyArray() throws JJJRMIException {
         Translator translator = new Translator();
         int[] array = new int[]{1, 3, 7};
         return translator.encode(new Has<>(array));
-    }        
-    
+    }
+
     public TranslatorResult generate_emptyArray() throws JJJRMIException {
         Translator translator = new Translator();
         int[] array = new int[0];
         return translator.encode(new Has<>(array));
-    }    
-    
+    }
+
     public TranslatorResult generate_hasNull() throws JJJRMIException {
         Translator translator = new Translator();
         return translator.encode(new Has<>(null));
     }
-    
+
     public TranslatorResult generate_primitivesExtended() throws JJJRMIException {
         Translator translator = new Translator();
         return translator.encode(new PrimitivesExtended(16));
@@ -121,5 +124,20 @@ public class GenerateJSON {
     public TranslatorResult generate_arrayWrapper() throws JJJRMIException {
         Translator translator = new Translator();
         return translator.encode(new Primitives(9));
+    }
+
+    public TranslatorResult generate_doNotRetainExtends() throws JJJRMIException {
+        Translator translator = new Translator();
+        return translator.encode(new DoNotRetainExtends(5));
+    }
+
+    public TranslatorResult generate_doNotRetainAnno() throws JJJRMIException {
+        Translator translator = new Translator();
+        return translator.encode(new DoNotRetainAnno(5));
+    }
+
+    public TranslatorResult generate_transientField() throws JJJRMIException {
+        Translator translator = new Translator();
+        return translator.encode(new TransientField().set(9));
     }
 }

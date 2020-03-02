@@ -32,7 +32,7 @@ abstract public class AHandler<T> {
     }
     
     public final EncodedObject doEncode(Object object) throws JJJRMIException{
-        this.encodedObject = new EncodedObject(object, translatorResult);        
+        this.encodedObject = new EncodedObject(object, translatorResult, this.isRetained());        
         this.encode((T) object);
         return encodedObject;
     }
@@ -44,15 +44,23 @@ abstract public class AHandler<T> {
         return (T)t;
     }
 
+    public boolean isRetained(){
+        return true;
+    }
+    
     abstract public T getInstance();
     
+    /**
+     * @param t The object that was returned by 'getInstance'.
+     * @throws DecoderException 
+     */
     abstract public void decode(T t) throws DecoderException;
 
-    abstract public void encode(T object) throws JJJRMIException;
+    abstract public void encode(T t) throws JJJRMIException;
 
     /**
      * Decode the JSON field 'jsonFieldName' and place the result into
-     * 'pojoFieldName'.
+     * 'pojoFieldName' of the object returned from 'getInstance'.
      * @param <T>
      * @param jsonFieldName
      * @param pojoFieldName
@@ -76,7 +84,22 @@ abstract public class AHandler<T> {
     }
 
     /**
-     * Will encode 'value' and set the JSON 'field' to the encoding.
+     * Decode the field 'jsonFieldName' and return the resulting object.
+     * @param <T>
+     * @param jsonFieldName the 'name' used for the corresponding 'encodeField'
+     * call.
+     * @return 
+     */
+    public final <T> T decodeObject(Class<T> type, String jsonFieldName) throws DecoderException{
+        JSONObject jsonField = this.json.getJSONObject(Constants.FieldsParam).getJSONObject(jsonFieldName);
+        Translator translator = translatorResult.getTranslator();
+        Object decoded = new Decoder(jsonField, translator, type).decode(); 
+        return (T) decoded; /* todo add more generics down the call stack? */
+    }
+    
+    /**
+     * Will encode the object 'value' as JSON, and set the JSON field 'field'
+     * to it.
      * @param name
      * @param value
      * @throws EncoderException 

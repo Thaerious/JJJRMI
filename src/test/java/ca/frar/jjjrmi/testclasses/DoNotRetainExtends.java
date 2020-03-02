@@ -18,6 +18,10 @@ public class DoNotRetainExtends extends JJJObject{
     private int x = 0;
     
     @NativeJS
+    public DoNotRetainExtends(int x){
+        this.x = x;
+    }    
+    
     public DoNotRetainExtends(){
     }
     

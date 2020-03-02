@@ -17,6 +17,10 @@ public class DoNotRetainAnno{
     private int x = 0;
     
     @NativeJS
+    public DoNotRetainAnno(int x){
+        this.x = x;
+    }
+        
     public DoNotRetainAnno(){
     }
     

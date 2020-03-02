@@ -3,9 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ca.frar.jjjrmi.translator;
+package ca.frar.jjjrmi.utility;
 
+import ca.frar.jjjrmi.utility.JSGetter;
 import ca.frar.jjjrmi.exceptions.DecoderException;
+import ca.frar.jjjrmi.translator.TranslatorResult;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
