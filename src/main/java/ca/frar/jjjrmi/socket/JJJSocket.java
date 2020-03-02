@@ -65,7 +65,6 @@ public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, S
     }
 
     private class MsgHandler implements MessageHandler.Whole<String> {
-
         private final Session session;
         private final JJJSocket<T> socket;
 
@@ -176,7 +175,7 @@ public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, S
 
             translator.addEncodeListener((obj) -> {
                 if (obj instanceof HasWebsockets) ((HasWebsockets) obj).addWebsocket(this);
-            });            
+            });
             
             session.addMessageHandler(new MsgHandler(this, session));
 
@@ -208,7 +207,6 @@ public abstract class JJJSocket<T> extends Endpoint implements InvokesMethods, S
 
     /**
      * Encode an object as a JJJ string and send it to the client.
-     *
      * @param obj
      */
     private final void sendObject(Session session, JJJMessage msg) throws InvalidJJJSessionException, JJJRMIException, IOException {
