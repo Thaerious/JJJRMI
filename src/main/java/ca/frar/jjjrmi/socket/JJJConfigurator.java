@@ -34,7 +34,7 @@ public class JJJConfigurator extends ServerEndpointConfig.Configurator {
         LOGGER.trace("JJJConfigurator.addSocket(httpSession, " + socket.getClass().getSimpleName() + ")");
         httpSession.setAttribute(socket.getClass().getCanonicalName(), socket);
         ServletContext servletContext = httpSession.getServletContext();
-        socket.setContext(servletContext);
+//        socket.setContext(servletContext);
     }
 
     /**
@@ -98,7 +98,7 @@ public class JJJConfigurator extends ServerEndpointConfig.Configurator {
         HttpSession httpSession = (HttpSession) request.getHttpSession();
         this.instance = (JJJSocket<?>) createInstance(httpSession);
         JJJConfigurator.addSocket(httpSession, this.instance);       
-        this.instance.observers.handshake(new JJJHandshakeEvent(request, response));
+//        this.instance.observers.handshake(new JJJHandshakeEvent(request, response));
     }
 
     @Override

@@ -20,6 +20,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.websocket.Endpoint;
 import javax.websocket.EndpointConfig;
 import javax.websocket.MessageHandler;
 import javax.websocket.Session;
@@ -34,17 +35,15 @@ import javax.websocket.Session;
  * to be implemented.
  * @author Ed Armstrong
  */
-public abstract class ARMIHandle<T> implements InvokesMethods {
-    private T root;
+public abstract class ARMIHandle<T> extends Endpoint implements InvokesMethods {
     private MethodBank methodBank;
     private final Translator translator;
     private int uid;
 
-    public ARMIHandle(T root) {
+    public ARMIHandle() {
         this.methodBank = new MethodBank();
         this.translator = new Translator();
         this.uid = 0;
-        this.root = root;
 
         translator.addEncodeListener((obj) -> {
             if (obj instanceof HasWebsockets) ((HasWebsockets) obj).addWebsocket(this);
@@ -52,13 +51,10 @@ public abstract class ARMIHandle<T> implements InvokesMethods {
     }
 
     public abstract void sendText(String text);
-
-    public T getRoot(){
-        return root;
-    }
+    public abstract T getRoot();
     
-    public void setReady(){
-        try {
+    public void makeReady(){
+        try {            
             this.sendObject(new ReadyMessage<>(this.getRoot()));
         } catch (InvalidJJJSessionException | JJJRMIException | IOException ex) {
             Logger.getLogger(ARMIHandle.class.getName()).log(Level.SEVERE, null, ex);
@@ -66,7 +62,7 @@ public abstract class ARMIHandle<T> implements InvokesMethods {
     }
     
     @SuppressWarnings("UseSpecificCatch")
-    void processRequest(String message) {
+    protected void processRequest(String message) {
         try {
             synchronized (this) {
                 ClientMessage clientMessage = (ClientMessage) translator.decode(message).getRoot();
