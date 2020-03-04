@@ -13,5 +13,8 @@
     "main": "packageFile.js",
     "files": [
         "*"
-    ]
+    ],
+    "dependencies": {
+        "ws": "^7.2.1"
+    }
 }

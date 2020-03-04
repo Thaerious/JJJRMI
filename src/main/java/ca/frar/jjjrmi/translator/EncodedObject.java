@@ -1,12 +1,8 @@
 package ca.frar.jjjrmi.translator;
-import ca.frar.jjjrmi.translator.TranslatorResult;
-import ca.frar.jjjrmi.annotations.JJJ;
-import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.annotations.Transient;
 import ca.frar.jjjrmi.exceptions.EncoderException;
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
 import ca.frar.jjjrmi.socket.JJJObject;
-import ca.frar.jjjrmi.translator.Constants;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import org.json.JSONObject;
@@ -22,14 +18,12 @@ import org.json.JSONObject;
  * }
  * @author Ed Armstrong
  */
-@JJJ(insertJJJMethods=false)
 class EncodedObject {    
     final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JSONObject");
     private final Object object;
     protected final JSONObject json;
     private final TranslatorResult encodedResult;
 
-    @NativeJS
     EncodedObject(Object object, TranslatorResult encodedResult, boolean retain) throws EncoderException {        
         this.object = object;
         this.json = new JSONObject();
@@ -45,7 +39,6 @@ class EncodedObject {
     @throws IllegalArgumentException
     @throws IllegalAccessException
     */
-    @NativeJS
     void encode() throws IllegalArgumentException, IllegalAccessException, JJJRMIException {
         LOGGER.trace("EncodedObject.encode() : " + this.object.getClass().getSimpleName());        
 
@@ -61,12 +54,10 @@ class EncodedObject {
         encodedResult.getTranslator().notifyEncode(object);
     }
   
-    @NativeJS
     void setFieldData(String name, JSONObject json) throws EncoderException, IllegalArgumentException, IllegalAccessException {
         this.json.getJSONObject(Constants.FieldsParam).put(name, json);
     }    
     
-    @NativeJS
     void setField(Field field) throws JJJRMIException, IllegalArgumentException, IllegalAccessException {
         field.setAccessible(true);
         if (field.getAnnotation(Transient.class) != null) return;

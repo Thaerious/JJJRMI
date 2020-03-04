@@ -16,15 +16,15 @@ public class JJJObject implements HasWebsockets {
     private final ArrayList<InvokesMethods> websockets = new ArrayList<>();
 
     @Override
-    synchronized public Collection<InvokesMethods> getWebsockets() {
+    synchronized public Collection<InvokesMethods> getRemoteInvokers() {
         return new ArrayList<>(websockets);
     }
 
-    synchronized public void addWebsocket(InvokesMethods socket) {
+    synchronized public void addInvoker(InvokesMethods socket) {
         this.websockets.add(socket);
     }
 
-    synchronized public void removeWebsocket(InvokesMethods socket) {
+    synchronized public void removeInvoker(InvokesMethods socket) {
         this.websockets.remove(socket);
     }
 
@@ -34,7 +34,7 @@ public class JJJObject implements HasWebsockets {
 
     @DoNotInvoke
     synchronized public void invokeClientMethod(String method, Object... args) {
-        for (ca.frar.jjjrmi.socket.InvokesMethods invokes : this.getWebsockets()) {
+        for (ca.frar.jjjrmi.socket.InvokesMethods invokes : this.getRemoteInvokers()) {
             invokes.invokeClientMethod(this, method, args);
         }
     }

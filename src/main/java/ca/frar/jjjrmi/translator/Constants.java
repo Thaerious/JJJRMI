@@ -1,7 +1,5 @@
 package ca.frar.jjjrmi.translator;
-import ca.frar.jjjrmi.annotations.JJJ;
 
-@JJJ(insertJJJMethods=false)
 public class Constants {
     public final static String KeyParam = "key";
     public final static String FlagParam = "flags";

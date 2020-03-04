@@ -6,9 +6,9 @@ import java.util.Collections;
 
 @JJJ(generateJS=false)
 public interface JJJTransientObject extends HasWebsockets{    
-    @Override default Collection<InvokesMethods> getWebsockets() {return Collections.EMPTY_LIST;}
-    @Override default void addWebsocket(InvokesMethods socket) {}
-    @Override default public void removeWebsocket(InvokesMethods socket) {}
+    @Override default Collection<InvokesMethods> getRemoteInvokers() {return Collections.EMPTY_LIST;}
+    @Override default void addInvoker(InvokesMethods socket) {}
+    @Override default public void removeInvoker(InvokesMethods socket) {}
     @Override default public void forget() {}
     @Override @DoNotInvoke default void invokeClientMethod(String method, Object... args) {}
 }

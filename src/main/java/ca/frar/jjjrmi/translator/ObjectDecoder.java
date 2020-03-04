@@ -1,9 +1,6 @@
 package ca.frar.jjjrmi.translator;
-import ca.frar.jjjrmi.annotations.JJJ;
-import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.annotations.Transient;
 import ca.frar.jjjrmi.exceptions.DecoderException;
-import ca.frar.jjjrmi.exceptions.EncoderException;
 import ca.frar.jjjrmi.exceptions.MissingConstructorException;
 import ca.frar.jjjrmi.exceptions.UnknownClassException;
 import ca.frar.jjjrmi.socket.JJJObject;
@@ -16,7 +13,6 @@ import java.util.LinkedList;
 import java.util.List;
 import org.json.JSONObject;
 
-@JJJ(insertJJJMethods=false)
 class ObjectDecoder {
     private Class<?> aClass;
     private final TranslatorResult encodedResult;
@@ -27,7 +23,6 @@ class ObjectDecoder {
     private List<String> fieldNames;
     private HashMap<String, Field> fields = new HashMap<>();
 
-    @NativeJS
     ObjectDecoder(TranslatorResult encodedResult, JSONObject json) {
         this.json = json;
         this.translator = encodedResult.getTranslator();
@@ -37,7 +32,6 @@ class ObjectDecoder {
     /**
      * Runs once to prepare for decoding.
      */
-    @NativeJS
     void makeReady() throws DecoderException {
         try {
             this.aClass = Class.forName(json.getString(Constants.TypeParam));
@@ -70,7 +64,6 @@ class ObjectDecoder {
     /**
      * Fill in the object's fields.
      */
-    @NativeJS
     final void decode() throws DecoderException {
         if (HandlerFactory.getInstance().hasHandler(this.aClass)) {
             this.handler.doDecode(this.result, this.json);
@@ -89,7 +82,6 @@ class ObjectDecoder {
         }
     }
 
-    @NativeJS
     private void setupFields() {
         Class<?> current = aClass;
         while (current != Object.class && current != JJJObject.class) {

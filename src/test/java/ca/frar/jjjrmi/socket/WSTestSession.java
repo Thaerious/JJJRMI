@@ -3,14 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ca.frar.jjjrmi.server;
-
+package ca.frar.jjjrmi.socket;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,14 +27,12 @@ import javax.websocket.WebSocketContainer;
  * @author Ed Armstrong
  */
 public class WSTestSession implements Session, Runnable {
-
     private final InputStream inputStream;
     private final OutputStream outputStream;
     private final ArrayList<MessageHandler.Whole<String>> messageHandlers;
     private boolean openFlag = true;
 
     private class Message {
-
         String message;
         int opcode;
 
@@ -50,7 +45,21 @@ public class WSTestSession implements Session, Runnable {
     public void run() {
         try {
             while (this.isOpen()) {
-                this.readNextFrame();
+                Message message = this.readNextFrame();
+                System.out.println("message opcode : " + message.opcode);
+                switch (message.opcode){
+                    case 1:
+                    for (MessageHandler.Whole<String> msghnd : messageHandlers){
+                        msghnd.onMessage(message.message);
+                    }
+                    break;
+                    case 8:
+                        this.sendClose();
+                        this.openFlag = false;
+                        this.inputStream.close();
+                        this.outputStream.close();
+                    break;
+                }
             }
         } catch (IOException ex) {
             Logger.getLogger(WSTestSession.class.getName()).log(Level.SEVERE, null, ex);
@@ -69,11 +78,9 @@ public class WSTestSession implements Session, Runnable {
     }
 
     void sendClose() throws IOException {
-        byte[] buffer = new byte[6];
-        buffer[0] = (byte) 0B10001000;
-        buffer[1] = (byte) 0B10000000;
-        this.outputStream.write(buffer);
-        this.outputStream.flush();
+        byte[] frame = WSRemoteEndpoint.buildFrame(8, "");
+        outputStream.write(frame);
+        outputStream.flush();        
     }
 
     private Message readNextFrame() throws IOException {
@@ -233,6 +240,8 @@ public class WSTestSession implements Session, Runnable {
     public void close() throws IOException {
         this.sendClose();
         this.openFlag = false;
+        this.inputStream.close();
+        this.outputStream.close();
     }
 
     @Override

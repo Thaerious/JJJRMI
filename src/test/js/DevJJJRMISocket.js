@@ -1,20 +1,8 @@
 "use strict";
-const WebSocket = require('ws');
 
-console.log("JS connecting...");
-const ws = new WebSocket("ws://127.0.0.1:8000");
+const JJJRMISocket = require("jjjrmi").JJJRMISocket;
+const testPackage = require("./socket-testclasses/packageFile.js");
 
-function run(){
-    console.log("open");
-    ws.send("ima message!");
-    ws.send("so am I!");
-}
-
-ws.on("open", function open(){
-    run();
-});
-
-ws.on("message", function message(data){
-    console.log("js> " + data);
-});
-
+let socket = new JJJRMISocket("test");
+socket.registerPackage(testPackage);
+socket.connect("ws://127.0.0.1:8000");

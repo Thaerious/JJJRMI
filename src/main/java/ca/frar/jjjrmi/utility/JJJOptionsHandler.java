@@ -1,6 +1,7 @@
 package ca.frar.jjjrmi.utility;
 import static ca.frar.jjjrmi.Global.LOGGER;
 import ca.frar.jjjrmi.annotations.DoNotPackage;
+import ca.frar.jjjrmi.annotations.Handles;
 import ca.frar.jjjrmi.annotations.JJJ;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
@@ -27,7 +28,7 @@ public class JJJOptionsHandler {
         name = object.getClass().getSimpleName();
         isSocket = object.getClass().getAnnotation(IsSocket.class);
         doNotPackage = object.getClass().getAnnotation(DoNotPackage.class);
-        isHandler = object instanceof AHandler;
+        isHandler = object.getClass().getAnnotation(Handles.class) != null;
     }
 
     public JJJOptionsHandler(Class<?> aClass) {
@@ -35,7 +36,7 @@ public class JJJOptionsHandler {
         name = aClass.getSimpleName();
         isSocket = aClass.getAnnotation(IsSocket.class);
         doNotPackage = aClass.getAnnotation(DoNotPackage.class);
-        isHandler = AHandler.class.isAssignableFrom(aClass);
+        isHandler = aClass.getAnnotation(Handles.class) != null;
     }
 
     public JJJOptionsHandler(CtType<?> ctType) {
@@ -45,7 +46,7 @@ public class JJJOptionsHandler {
         doNotPackage = ctType.getAnnotation(DoNotPackage.class);
         
         CtTypeReference<AHandler> hndRef = ctType.getFactory().Type().createReference(AHandler.class);
-        isHandler = ctType.isSubtypeOf(hndRef);
+        isHandler = ctType.getAnnotation(Handles.class) != null;
     }
 
     public JJJOptionsHandler(CtTypeReference<?> ctTypeReference) {

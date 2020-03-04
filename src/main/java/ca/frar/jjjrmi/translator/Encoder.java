@@ -1,11 +1,6 @@
 package ca.frar.jjjrmi.translator;
-
-import ca.frar.jjjrmi.translator.TranslatorResult;
-import ca.frar.jjjrmi.annotations.JJJ;
-import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.exceptions.EncoderException;
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
-import ca.frar.jjjrmi.translator.HandlerFactory;
 import ca.frar.jjjrmi.utility.JJJOptionsHandler;
 import java.lang.reflect.InvocationTargetException;
 import org.apache.commons.lang3.ClassUtils;
@@ -17,20 +12,17 @@ import org.json.JSONObject;
  *
  * @author edward
  */
-@JJJ(insertJJJMethods = false)
 class Encoder {
 
     final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");
     private final Object object;
     private final TranslatorResult encodedResult;
 
-    @NativeJS
     Encoder(Object object, TranslatorResult encodedResult) {
         this.object = object;
         this.encodedResult = encodedResult;
     }
 
-    @NativeJS
     JSONObject encode() throws JJJRMIException {
         try {
             if (this.object != null) LOGGER.trace("Encoder.encode() : " + this.object.getClass().getSimpleName());

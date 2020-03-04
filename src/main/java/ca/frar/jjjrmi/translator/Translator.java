@@ -1,7 +1,5 @@
 package ca.frar.jjjrmi.translator;
 import ca.frar.jjjrmi.exceptions.UntrackedObjectException;
-import ca.frar.jjjrmi.annotations.JJJ;
-import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.exceptions.DecoderException;
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
 import ca.frar.jjjrmi.exceptions.UnknownReferenceException;
@@ -22,7 +20,6 @@ import java.util.function.Consumer;
  *
  * @author edward
  */
-@JJJ(insertJJJMethods = false)
 public class Translator {
     final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");
     private static final String referencePrequel = "S";
@@ -43,7 +40,6 @@ public class Translator {
      * @param reference
      * @param object
      */
-    @NativeJS
     void addTempReference(String reference, Object object) {
         this.objectMap.put(reference, object);
         this.tempReferences.add(reference);
@@ -53,7 +49,6 @@ public class Translator {
      * Remove all temporary references from this translator. They will get
      * re-encoded when next encountered.
      */
-    @NativeJS
     void clearTempReferences() {
         for (String ref : this.tempReferences) {
             this.objectMap.remove(ref);
@@ -67,7 +62,6 @@ public class Translator {
      * @param object
      * @return
      */
-    @NativeJS
     String allocReference(Object object) {
         return this.allocReference(object, true);
     }
@@ -78,7 +72,6 @@ public class Translator {
      * @param object
      * @return
      */
-    @NativeJS
     String allocReference(Object object, boolean isRetained) {
         String key = referencePrequel + (nextKey++);
 
@@ -97,7 +90,6 @@ public class Translator {
      * @param reference
      * @param object
      */
-    @NativeJS
     void addReference(String reference, Object object) {
         this.objectMap.put(reference, object);
     }
@@ -108,7 +100,6 @@ public class Translator {
      * @param reference
      * @return
      */
-    @NativeJS
     boolean hasReference(String reference) {
         return objectMap.containsKey(reference);
     }
@@ -119,7 +110,6 @@ public class Translator {
      * @param object
      * @return
      */
-    @NativeJS
     boolean hasReferredObject(Object object) {
         return objectMap.containsValue(object);
     }
@@ -130,7 +120,6 @@ public class Translator {
      * @param reference
      * @return
      */
-    @NativeJS
     public Object getReferredObject(String reference) throws UnknownReferenceException {
         if (!objectMap.containsKey(reference)) {
             throw new UnknownReferenceException(reference);
@@ -145,7 +134,6 @@ public class Translator {
      * @param object
      * @return A JSON encoded reference
      */
-    @NativeJS
     public String getReference(Object object) throws UntrackedObjectException {
         if (!this.hasReferredObject(object)) throw new UntrackedObjectException(object);
         return objectMap.getKey(object);
@@ -156,7 +144,6 @@ public class Translator {
      *
      * @return
      */
-    @NativeJS
     public Collection<Object> getAllTrackedObjects() {
         Collection<Object> values = this.objectMap.values();
         return new ArrayList<>(values);
@@ -183,7 +170,6 @@ public class Translator {
      *
      * @return All objects previously in memory.
      */
-    @NativeJS
     public final Object[] clear() {
         Object[] values = objectMap.values().toArray();
         objectMap.clear();
@@ -198,7 +184,6 @@ public class Translator {
      * @param object
      * @return
      */
-    @NativeJS
     public final TranslatorResult encode(Object object) throws JJJRMIException {
         TranslatorResult encodeFromObject = new TranslatorResult(this).encodeFromObject(object);
         encodeFromObject.finalizeRoot();
@@ -214,7 +199,6 @@ public class Translator {
      * @return a new object
      * @throws ca.frar.jjjrmi.exceptions.DecoderException
      */
-    @NativeJS
     public final TranslatorResult decode(String source) throws DecoderException {
         TranslatorResult decodeFromString = new TranslatorResult(this).decodeFromString(source);
         decodeFromString.finalizeRoot();
@@ -222,12 +206,10 @@ public class Translator {
         return decodeFromString;
     }
 
-    @NativeJS
     public void addEncodeListener(Consumer<Object> lst) {
         this.encodeListeners.add(lst);
     }
 
-    @NativeJS
     public void notifyEncode(Object object) {
         for (Consumer<Object> encodeListener : this.encodeListeners) encodeListener.accept(object);
     }
@@ -237,7 +219,6 @@ public class Translator {
      *
      * @return
      */
-    @NativeJS
     public int size() {
         return objectMap.size();
     }

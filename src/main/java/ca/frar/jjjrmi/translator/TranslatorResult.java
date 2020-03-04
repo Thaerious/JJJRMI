@@ -1,13 +1,5 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package ca.frar.jjjrmi.translator;
-
-import ca.frar.jjjrmi.annotations.JJJ;
 import ca.frar.jjjrmi.annotations.JSParam;
-import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.exceptions.DecoderException;
 import ca.frar.jjjrmi.exceptions.EncoderException;
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
@@ -24,18 +16,15 @@ import org.json.JSONObject;
  *
  * @author Ed Armstrong
  */
-@JJJ(insertJJJMethods = false)
 public class TranslatorResult {
     private final Translator translator;
     private JSONObject json;
     private Object root;
 
-    @NativeJS
     TranslatorResult(Translator translator) {
         this.translator = translator;
     }
 
-    @NativeJS
     TranslatorResult encodeFromObject(Object object) throws JJJRMIException{
         if (object == null) throw new RootException();
         this.json = new JSONObject();
@@ -52,7 +41,6 @@ public class TranslatorResult {
         return this;
     }
 
-    @NativeJS
     private void encodeHandled(Object object) throws JJJRMIException {
         try {
             Class<? extends AHandler<?>> handlerClass = HandlerFactory.getInstance().getHandler(object.getClass());
@@ -65,7 +53,6 @@ public class TranslatorResult {
         }
     }
 
-    @NativeJS
     private void encodeUnhandled(Object object) throws JJJRMIException {
         try {
             EncodedObject encodedObject = new EncodedObject(object, this, new JJJOptionsHandler(object).retain());
@@ -77,7 +64,6 @@ public class TranslatorResult {
         }
     }
 
-    @NativeJS
     TranslatorResult decodeFromString(String source) throws DecoderException {
         this.json = new JSONObject(source);
         ArrayList<ObjectDecoder> list = new ArrayList<>();
@@ -101,12 +87,10 @@ public class TranslatorResult {
     /**
      * @return the translator
      */
-    @NativeJS
     Translator getTranslator() {
         return translator;
     }
 
-    @NativeJS
     void setRoot(String rootKey) {
         this.json.put(Constants.RootObject, rootKey);
     }
@@ -116,19 +100,16 @@ public class TranslatorResult {
         this.root = this.translator.getReferredObject(key);
     }
 
-    @NativeJS
     public Object getRoot() throws UnknownReferenceException {
         return this.root;
     }
 
-    @NativeJS
     void put(EncodedObject encodedObject) {
         String key = encodedObject.getKey();
         JSONObject toJSON = encodedObject.toJSON();
         this.json.getJSONObject(Constants.NewObjects).put(key, toJSON);
     }
 
-    @NativeJS
     /**
      * Returns the number of new objects in this result.
      * @return the number of new objects.
@@ -145,7 +126,6 @@ public class TranslatorResult {
         return this.json.toString();
     }
 
-    @NativeJS
     @JSParam(name="indentFactor", init="0")
     public String toString(int indentFactor){
         return this.json.toString(indentFactor);

@@ -5,8 +5,8 @@
  */
 package ca.frar.jjjrmi.rmi;
 
-import ca.frar.jjjrmi.rmi.testclasses.TestSocket;
-import ca.frar.jjjrmi.server.WSTestServer;
+import ca.frar.jjjrmi.socket.testclasses.TestSocket;
+import ca.frar.jjjrmi.socket.WSTestServer;
 import org.junit.jupiter.api.Test;
 
 /**

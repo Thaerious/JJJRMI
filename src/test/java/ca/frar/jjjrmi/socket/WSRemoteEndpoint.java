@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ca.frar.jjjrmi.server;
+package ca.frar.jjjrmi.socket;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -20,15 +20,14 @@ import javax.websocket.RemoteEndpoint;
  *
  * @author Ed Armstrong
  */
-class WSRemoteEndpoint implements RemoteEndpoint.Basic{
+class WSRemoteEndpoint implements RemoteEndpoint.Basic {
     private final OutputStream outputStream;
 
-    WSRemoteEndpoint(OutputStream outputStream){
+    WSRemoteEndpoint(OutputStream outputStream) {
         this.outputStream = outputStream;
     }
-    
-    @Override
-    public void sendText(String message) throws IOException {
+
+    public static byte[] buildFrame(int opcode, String message) throws IOException {
         int len = message.length();
         byte[] buffer;
         int i;
@@ -39,34 +38,48 @@ class WSRemoteEndpoint implements RemoteEndpoint.Basic{
             i = 2;
         } else if (len <= 65536) {
             buffer = new byte[8 + message.length()];
-            for (i = 0; i < 2; i++) {
-                buffer[i + 2] = (byte) ((len >> 24) & 0xff);
+            buffer[1] = (byte) (254);
+            int shift = 0;
+            for (i = 3; i >= 2; i--) {
+                buffer[i] = (byte) (len >> shift);
+                shift += 8;
             }
+            i = 4;
         } else {
             buffer = new byte[14 + message.length()];
-            for (i = 0; i < 8; i++) {
-                buffer[i + 2] = (byte) ((len >> 24) & 0xff);
+            buffer[1] = (byte) (255);
+            int shift = 0;
+            for (i = 9; i >= 2; i++) {
+                buffer[i] = (byte) (len >> shift);
+                shift += 8;
             }
+            i = 10;
         }
 
-        buffer[0] = (byte) 0B10000001;
+        buffer[0] = (byte)opcode;
+        buffer[0] += 128;
 
         try {
             String source = "" + System.currentTimeMillis();
             byte[] key = MessageDigest.getInstance("SHA-1").digest((source).getBytes("UTF-8"));
-            for (byte b : key) buffer[i++] = b;
+            for (int j = 0; j < 4; j++) buffer[i++] = key[j];
 
             byte[] msgBytes = message.getBytes();
             for (int j = 0; j < msgBytes.length; j++) {
                 buffer[i++] = (byte) (msgBytes[j] ^ key[j & 0x3]);
             }
-
         } catch (NoSuchAlgorithmException ex) {
             Logger.getLogger(WSTestServer.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        this.outputStream.write(buffer);
-        this.outputStream.flush();
+        return buffer;
+    }
+
+    @Override
+    public void sendText(String message) throws IOException {
+        byte[] frame = WSRemoteEndpoint.buildFrame(1, message);
+        outputStream.write(frame);
+        outputStream.flush();        
     }
 
     @Override
@@ -123,5 +136,5 @@ class WSRemoteEndpoint implements RemoteEndpoint.Basic{
     public void sendPong(ByteBuffer applicationData) throws IOException, IllegalArgumentException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
 }

@@ -98,3 +98,7 @@ Update all dependencies (use one)
 `> mvn versions:use-next-releases`  
 `> mvn versions:use-latest-releases`  
 
+Testing the Socket
+------------------
+Create socket test classes  
+`> jjjrmi -d src/test/java/ca/frar/jjjrmi/socket/testclasses/ -o src/test/js/socket-testclasses -p`

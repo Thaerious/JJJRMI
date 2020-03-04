@@ -3,7 +3,8 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ca.frar.jjjrmi.rmi.testclasses;
+package ca.frar.jjjrmi.socket.testclasses;
+
 import ca.frar.jjjrmi.socket.JJJSocket;
 
 /**
@@ -18,5 +19,4 @@ public class TestSocket extends JJJSocket<TestRoot>{
         if (this.root == null) this.root = new TestRoot();
         return this.root;
     }
-    
 }

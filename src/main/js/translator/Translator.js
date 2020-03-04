@@ -20,7 +20,7 @@ class Translator {
         this.handlerRegistry.registerPackage(pkg);
     }
     addEncodeListener(lst) {
-        this.encodeListeners.add(lst);
+        this.encodeListeners.push(lst);
     }
     addReference(reference, object) {
         this.objectMap.put(reference, object);
@@ -69,7 +69,9 @@ class Translator {
         return this.objectMap.getKey(object);
     }
     getReferredObject(reference) {
-        if (!this.objectMap.containsKey(reference)) throw new Error("ca.frar.jjjrmi.exceptions.MissingReferenceException");
+        if (!this.objectMap.containsKey(reference)){
+            throw new Error("MissingReferenceException: " + reference);
+        }
         return this.objectMap.get(reference);
     }
     hasReference(reference) {

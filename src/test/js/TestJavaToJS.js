@@ -190,6 +190,24 @@ class TestJavaToJS extends TestFramework{
         Assert.equals("ca.frar.jjjrmi.testclasses.DoNotRetainExtends", object2.constructor.__getClass());
         Assert.notEquals(object1, object2);
     }
+    
+/**
+     * The encoded object both extends JJJObject and has the annotation.
+     * The object will not be tracked by the translator, and decoding will
+     * produce a new object.
+     * @throws JJJRMIException
+     */
+    test_doNotRetainAnno(){
+        let translator = new Translator();
+        translator.registerPackage(PackageFile);
+        let text = JSON.stringify(this.json.doNotRetainAnno);
+        let object1 = translator.decode(text).getRoot();
+        let object2 = translator.decode(text).getRoot();
+
+        Assert.equals("ca.frar.jjjrmi.testclasses.DoNotRetainAnno", object1.constructor.__getClass());
+        Assert.equals("ca.frar.jjjrmi.testclasses.DoNotRetainAnno", object2.constructor.__getClass());
+        Assert.notEquals(object1, object2);
+    }    
 }
 
 if (process.argv.length < 3){

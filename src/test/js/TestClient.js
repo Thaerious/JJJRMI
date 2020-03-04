@@ -8,6 +8,7 @@ function run(){
     console.log("open");
     ws.send("ima message!");
     ws.send("so am I!");
+    ws.close();
 }
 
 ws.on("open", function open(){
@@ -16,5 +17,10 @@ ws.on("open", function open(){
 
 ws.on("message", function message(data){
     console.log("js> " + data);
+});
+
+ws.on('close', function clear() {
+    console.log("close receieved");
+    ws.terminate();
 });
 

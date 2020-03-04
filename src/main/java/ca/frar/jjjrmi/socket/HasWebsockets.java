@@ -6,11 +6,11 @@ import java.util.Collection;
 
 public interface HasWebsockets {
 
-    Collection<InvokesMethods> getWebsockets();
+    Collection<InvokesMethods> getRemoteInvokers();
 
-    void addWebsocket(InvokesMethods socket);
+    void addInvoker(InvokesMethods socket);
 
-    void removeWebsocket(InvokesMethods socket);
+    void removeInvoker(InvokesMethods socket);
 
     void forget();
 

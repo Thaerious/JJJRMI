@@ -14,7 +14,6 @@ import org.json.JSONObject;
  *
  * @author Ed Armstrong
  */
-@JJJ
 abstract public class AHandler<T> {
     private TranslatorResult translatorResult;
     private HashMap<String, Field> fields = new HashMap<>();
