@@ -3,6 +3,7 @@
 /deleteme/
 /src/test/js/node_modules/
 /src/test/js/testclasses/
+/src/test/js/socket-testclasses/
 /node_modules/
 /bin/jjjrmi
 /.nyc_output/
