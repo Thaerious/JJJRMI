@@ -31,7 +31,7 @@ Run JS tests, then browse to '.../rmi/target/site/nyc/index.html'.
 Compiling
 ---------
 `mvn install`
-`mvn jjjrmi:generate-js`
+`mvn jjjrmi:generate-js` or `jjjrmi -d src/main/java/ -o src/main/js/generated/`
 `add /target/jjjrmi/jjjrmi to any npm dependencies`
 
 Command Line Interface
@@ -98,7 +98,13 @@ Update all dependencies (use one)
 `> mvn versions:use-next-releases`  
 `> mvn versions:use-latest-releases`  
 
-Testing the Socket
-------------------
+Testing the Socket (with Node)
+------------------------------
 Create socket test classes  
 `> jjjrmi -d src/test/java/ca/frar/jjjrmi/socket/testclasses/ -o src/test/js/socket-testclasses -p`
+
+Start the Test Server  
+`> java -cp target/dependency/*:target/classes/:target/test-classes/ ca.frar.jjjrmi.socket.WSTestServer &`
+
+Run the JS Client  
+`> node src/test/js/DevJJJRMISocket.js`

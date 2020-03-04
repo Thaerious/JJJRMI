@@ -1,5 +1,6 @@
 package ca.frar.jjjrmi.rmi;
 import ca.frar.jjjrmi.annotations.JJJ;
+import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.annotations.ProcessLevel;
 import ca.frar.jjjrmi.annotations.SkipJS;
 import static ca.frar.jjjrmi.rmi.ClientMessageType.METHOD_REQUEST;
@@ -23,6 +24,7 @@ public class MethodRequest extends ClientMessage{
         super(METHOD_REQUEST);
     }
 
+    @NativeJS
     public MethodRequest(String uid, String ptr, String methodName, Object[] args){
         super(METHOD_REQUEST);
         this.uid = uid;

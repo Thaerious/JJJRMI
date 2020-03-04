@@ -7,7 +7,7 @@ const BiMap = require("./BiMap");
 class Translator {
     constructor() {
         this.handlers = new Map();
-        this.encodeListeners = [];
+        this.referenceListeners = [];
         this.objectMap = new BiMap();
         this.tempReferences = [];
         this.nextKey = 0;
@@ -19,11 +19,20 @@ class Translator {
         this.classRegistry.registerPackage(pkg);
         this.handlerRegistry.registerPackage(pkg);
     }
-    addEncodeListener(lst) {
-        this.encodeListeners.push(lst);
+    
+    /**
+     * Notify listeners whenever a tracked object is added.
+     * @param {type} lst
+     * @returns {undefined}
+     */
+    addReferenceListener(lst) {
+        this.referenceListeners.push(lst);
     }
     addReference(reference, object) {
         this.objectMap.put(reference, object);
+        for (let listener of this.referenceListeners){
+            listener(object);
+        }
     }
     addTempReference(reference, object) {
         this.objectMap.put(reference, object);
@@ -79,12 +88,7 @@ class Translator {
     }
     hasReferredObject(object) {
         return this.objectMap.containsValue(object);
-    }
-    notifyEncode(object) {
-        for (let encodeListener of this.encodeListeners) {
-            encodeListener.accept(object);
-        }
-    }
+    }    
     removeByValue(obj) {
         if (!this.objectMap.containsValue(obj)) return false;
 

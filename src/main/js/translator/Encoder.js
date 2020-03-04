@@ -51,7 +51,6 @@ class EncodedObject {
             let encoded = new Encoder(this.object[field], this.translatorResult).encode();
             this.json[Constants.FieldsParam][field] = encoded;
         }
-        this.translatorResult.getTranslator().notifyEncode(this.object);
     }
 
     toJSON() {
