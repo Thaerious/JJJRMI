@@ -6,6 +6,10 @@ class Logger {
         console.log(message);
     }
     
+    static warn(message){
+        Logger.log("WARN", message);
+    }    
+    
     static verbose(category, message){
         if (Logger.flags[category.toUpperCase()] !== "verbose") return;
         console.log(message);
@@ -23,7 +27,8 @@ Logger.flags = {
     ONMESSAGE: false, /* describe the action taken when a message is received */
     SENT: false, /* show the send object, versbose shows the json text as well */
     RECEIVED: false, /* show all received server objects, verbose shows the json text as well */
-    ONREGISTER: false /* report classes as they are registered */
+    ONREGISTER: false, /* report classes as they are registered */
+    WARN: true /* report classes as they are registered */
 };
 
 module.exports = Logger;

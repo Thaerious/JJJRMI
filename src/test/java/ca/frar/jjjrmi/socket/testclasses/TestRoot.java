@@ -7,6 +7,8 @@ package ca.frar.jjjrmi.socket.testclasses;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.annotations.ServerSide;
 import ca.frar.jjjrmi.socket.JJJObject;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -22,7 +24,9 @@ public class TestRoot extends JJJObject{
      * @param value 
      */
     @ServerSide
-    public void setPersistantValue(int value){
+    public void setPersistantValue(int value) throws InterruptedException{
+        int ms = (int) (Math.random() * 1000);
+        Thread.sleep(ms);
         this.value = value;
     }
 
@@ -31,7 +35,9 @@ public class TestRoot extends JJJObject{
      * @param value 
      */
     @ServerSide
-    public void mirrorPersistantValue(int value){
+    public void mirrorPersistantValue(int value) throws InterruptedException{
+        int ms = (int) (Math.random() * 1000);
+        Thread.sleep(ms);
         this.value = value;
         this.invokeClientMethod("setValue", value);
     }
@@ -41,7 +47,9 @@ public class TestRoot extends JJJObject{
      * @param value
      */
     @ServerSide
-    public int getPersistantValue(){
+    public int getPersistantValue() throws InterruptedException{
+        int ms = (int) (Math.random() * 1000);
+        Thread.sleep(ms);
         return value;
     }    
     

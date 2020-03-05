@@ -7,11 +7,11 @@ package ca.frar.jjjrmi.socket;
 
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
 import ca.frar.jjjrmi.rmi.ReadyMessage;
-import ca.frar.jjjrmi.translator.Translator;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.websocket.CloseReason;
 import javax.websocket.Endpoint;
 import javax.websocket.EndpointConfig;
 import javax.websocket.Session;
@@ -27,10 +27,7 @@ import javax.websocket.Session;
  * @author Ed Armstrong
  */
 public abstract class JJJSocket<T> extends Endpoint  {
-    private HashMap<Session, Translator> sessions = new HashMap<>();
-
-    public JJJSocket() {
-    }
+    private HashMap<Session, MsgHandler> handlerMap = new HashMap<>();
 
     public abstract T getRoot();
     
@@ -39,6 +36,7 @@ public abstract class JJJSocket<T> extends Endpoint  {
         synchronized (this) {
             try {
                 MsgHandler msgHandler = new MsgHandler(session);
+                handlerMap.put(session, msgHandler);
                 session.addMessageHandler(String.class, msgHandler);
                 ReadyMessage<T> readyMessage = new ReadyMessage<>(this.getRoot());
                 msgHandler.sendObject(readyMessage);
@@ -47,4 +45,10 @@ public abstract class JJJSocket<T> extends Endpoint  {
             }
         }
     }
+    
+    public void onClose(Session session, CloseReason closeReason) {
+        ca.frar.jjjrmi.Global.LOGGER.info("Closing session: " + session.hashCode());
+        MsgHandler handler = handlerMap.remove(session);
+        handler.close();
+    }    
 }

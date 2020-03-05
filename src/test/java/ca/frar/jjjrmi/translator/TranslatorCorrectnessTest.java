@@ -359,7 +359,7 @@ public class TranslatorCorrectnessTest {
     public void test_encode_listener() throws JJJRMIException {
         Translator translator = new Translator();
         TestConsumer lst = new TestConsumer();
-        translator.addEncodeListener(lst);
+        translator.addReferenceListener(lst);
         None none = new None();
         translator.encode(none);
         assertEquals(none, lst.accepted);

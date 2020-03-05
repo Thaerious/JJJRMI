@@ -50,8 +50,6 @@ class EncodedObject {
             }
             aClass = aClass.getSuperclass();
         }
-        
-        encodedResult.getTranslator().notifyEncode(object);
     }
   
     void setFieldData(String name, JSONObject json) throws EncoderException, IllegalArgumentException, IllegalAccessException {

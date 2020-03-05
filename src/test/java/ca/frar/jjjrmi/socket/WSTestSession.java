@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package ca.frar.jjjrmi.socket;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,16 +17,13 @@ import javax.websocket.RemoteEndpoint;
 import javax.websocket.Session;
 import javax.websocket.WebSocketContainer;
 
-/**
- *
- * @author Ed Armstrong
- */
 public class WSTestSession implements Session, Runnable {
     private final InputStream inputStream;
     private final OutputStream outputStream;
-    private final ArrayList<MessageHandler.Whole<String>> messageHandlers;
+    private final ArrayList<MessageHandler.Whole<String>> messageHandlers = new ArrayList<>();
     private boolean openFlag = true;
-
+    private final JJJSocket socket;
+    
     private class Message {
         String message;
         int opcode;
@@ -42,23 +34,39 @@ public class WSTestSession implements Session, Runnable {
         }
     }
 
+    /**
+     *
+     * @param inputStream read from input
+     * @param outputStream write to output
+     */
+    WSTestSession(JJJSocket socket, InputStream inputStream, OutputStream outputStream) {
+        this.inputStream = inputStream;
+        this.outputStream = outputStream;
+        this.socket = socket;
+    }
+
     public void run() {
         try {
-            while (this.isOpen()) {
+            while (openFlag) {
                 Message message = this.readNextFrame();
-                System.out.println("message opcode : " + message.opcode);
-                switch (message.opcode){
+
+                System.out.println("+-----------------------");
+                System.out.println("| session : " + this.hashCode());
+                System.out.println("| opcode : " + message.opcode);
+                System.out.println("| hnd-cnt: " + this.messageHandlers.size());
+                System.out.println("| in: " + this.inputStream.hashCode());
+                System.out.println("| out: " + this.outputStream.hashCode());
+                System.out.println("+-----------------------");
+
+                switch (message.opcode) {
                     case 1:
-                    for (MessageHandler.Whole<String> msghnd : messageHandlers){
-                        msghnd.onMessage(message.message);
-                    }
-                    break;
+                        for (MessageHandler.Whole<String> msghnd : messageHandlers) {
+                            msghnd.onMessage(message.message);
+                        }
+                        break;
                     case 8:
-                        this.sendClose();
-                        this.openFlag = false;
-                        this.inputStream.close();
-                        this.outputStream.close();
-                    break;
+                        this.close();
+                        break;
                 }
             }
         } catch (IOException ex) {
@@ -66,21 +74,10 @@ public class WSTestSession implements Session, Runnable {
         }
     }
 
-    /**
-     *
-     * @param inputStream read from input
-     * @param outputStream write to output
-     */
-    WSTestSession(InputStream inputStream, OutputStream outputStream) {
-        this.messageHandlers = new ArrayList<>();
-        this.inputStream = inputStream;
-        this.outputStream = outputStream;
-    }
-
     void sendClose() throws IOException {
         byte[] frame = WSRemoteEndpoint.buildFrame(8, "");
         outputStream.write(frame);
-        outputStream.flush();        
+        outputStream.flush();
     }
 
     private Message readNextFrame() throws IOException {
@@ -108,13 +105,12 @@ public class WSTestSession implements Session, Runnable {
     }
 
     private long readLen() throws IOException {
-        long len = 0;
         byte buffer[] = new byte[8];
 
         int read = inputStream.read(buffer, 0, 1);
         if (read <= 0) throw new IOException("Websocket terminated early.");
 
-        len = 128 + buffer[0];
+        long len = 128 + buffer[0];
 
         if (len == 126) {
             read = inputStream.read(buffer, 0, 2);
@@ -238,15 +234,24 @@ public class WSTestSession implements Session, Runnable {
 
     @Override
     public void close() throws IOException {
+        if (!this.openFlag) return;
+        System.out.println(": closing socket");
         this.sendClose();
         this.openFlag = false;
         this.inputStream.close();
         this.outputStream.close();
+        this.socket.onClose(this, null);
     }
 
     @Override
     public void close(CloseReason closeReason) throws IOException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (!this.openFlag) return;
+        System.out.println(": closing socket");
+        this.sendClose();
+        this.openFlag = false;
+        this.inputStream.close();
+        this.outputStream.close();
+        this.socket.onClose(this, null);
     }
 
     @Override

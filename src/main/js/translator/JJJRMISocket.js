@@ -6,16 +6,6 @@ const jjjPackage = require("../generated/packageFile");
 const JJJMessageType = jjjPackage.JJJMessageType;
 const MethodRequest = jjjPackage.MethodRequest;
 
-LOGGER.flags = {
-    DEBUG: true, /* print all debug messages */
-    EXCEPTION: true, /* print exceptions to console */
-    CONNECT: true, /* show the subset of ONMESSAGE that deals with the initial connection */
-    ONMESSAGE: true, /* describe the action taken when a message is received */
-    SENT: true, /* show the send object, versbose shows the json text as well */
-    RECEIVED: true, /* show all received server objects, verbose shows the json text as well */
-    ONREGISTER: true /* report classes as they are registered */
-};
-
 class JJJRMISocket {
     constructor(socketName) {
         this.jjjSocketName = socketName;
@@ -45,6 +35,11 @@ class JJJRMISocket {
 
         return new Promise(cb);
     }
+    
+    close(){
+        this.socket.close();
+    }
+        
     /**
      * All received messages are parsed by this method.  All messages must of the java type 'RMIResponse' which will
      * always contain the field 'type:RMIResponseType'.
@@ -59,12 +54,6 @@ class JJJRMISocket {
         LOGGER.log("received", rmiMessage);
 
         switch (rmiMessage.type) {
-            case JJJMessageType.FORGET:
-            {
-                LOGGER.log("onmessage", this.jjjSocketName + " FORGET");
-                this.translator.removeByKey(rmiMessage.key);
-                break;
-            }
             case JJJMessageType.READY:
             {
                 LOGGER.log("onmessage", this.jjjSocketName + " READY");
@@ -98,13 +87,6 @@ class JJJRMISocket {
                 callback.reject(rmiMessage);
                 break;
             }
-            case JJJMessageType.REJECTED_CONNECTION:
-            {
-                LOGGER.log("connect", this.jjjSocketName + " REJECTED_CONNECTION");
-                LOGGER.log("onmessage", this.jjjSocketName + " REJECTED_CONNECTION");
-                this.onreject();
-                break;
-            }
         }
     }
     /**
@@ -134,19 +116,13 @@ class JJJRMISocket {
     methodRequest(src, methodName, args) {
         /* method requests come after an object has been sent, this is a sanity check */
         if (!this.translator.hasReferredObject(src)) {
-            console.warn("see window.debug for source");
+            LOGGER.warn("see window.debug for source");
             window.debug = src;
             throw new Error(`Attempting to call server side method on non-received object: ${src.constructor.name}.${methodName}`);
         }
         
         let uid = this.nextUID++;
         let ptr = this.translator.getReference(src);
-
-        console.log("methodRequest");
-        console.log(src);
-        console.log(methodName);
-        console.log(args);
-        console.log(ptr);
 
         let argsArray = [];
         for (let i in args) argsArray.push(args[i]);
@@ -163,7 +139,7 @@ class JJJRMISocket {
             LOGGER.verbose("sent", translatorResult.toString());
 
             if (this.socket !== null) this.socket.send(translatorResult.toString());
-            else console.warn(`Socket "${this.socketName}" not connected.`);
+            else Logger.warn(`Socket "${this.socketName}" not connected.`);
         }.bind(this);
 
         return new Promise(f);

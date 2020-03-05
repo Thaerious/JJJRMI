@@ -78,6 +78,10 @@ class WSRemoteEndpoint implements RemoteEndpoint.Basic {
     @Override
     public void sendText(String message) throws IOException {
         byte[] frame = WSRemoteEndpoint.buildFrame(1, message);
+//        System.out.println(": out " + outputStream.hashCode());
+//        for (StackTraceElement ele : Thread.currentThread().getStackTrace()){
+//            System.out.println(ele);
+//        }
         outputStream.write(frame);
         outputStream.flush();        
     }

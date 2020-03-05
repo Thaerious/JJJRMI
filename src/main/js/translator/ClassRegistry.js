@@ -1,4 +1,5 @@
-"use strict"
+"use strict";
+const LOGGER = require("./Logger");
 
 class ClassRegistry {
     constructor() {
@@ -18,6 +19,7 @@ class ClassRegistry {
         if (aClass.__isHandler()) return; 
         if (typeof aClass.__getClass !== "function") return;       
         this.classmap.set(aClass.__getClass(), aClass);
+        LOGGER.log("onregister", "Class Registered: " + aClass.__getClass());
     }
 
     hasClass(classname){
@@ -27,17 +29,6 @@ class ClassRegistry {
     getClass(classname) {
         if (!this.classmap.has(classname)) return null;
         return this.classmap.get(classname);
-    }
-
-    /**
-     * Copy all registered classes from a given map.
-     * @param {type} map
-     * @returns {undefined}
-     */
-    copyFrom(map) {
-        for (let classname of map.keys()) {
-            this.classmap.set(classname, map.get(classname));
-        }
     }
 }
 

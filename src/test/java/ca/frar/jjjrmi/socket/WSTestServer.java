@@ -1,10 +1,4 @@
-/*
- * To change this license header, choose License Headers inputStream Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template inputStream the editor.
- */
 package ca.frar.jjjrmi.socket;
-
 import ca.frar.jjjrmi.socket.testclasses.TestSocket;
 import ca.frar.jjjrmi.socket.JJJSocket;
 import java.io.BufferedReader;
@@ -42,6 +36,7 @@ public class WSTestServer {
 
     public void stop(){
         try {
+            System.out.println(": Stopping Server");
             this.running = false;
             this.server.close();            
         } catch (IOException ex) {
@@ -50,7 +45,7 @@ public class WSTestServer {
     }
     
     public WSTestServer start(int port) throws IOException{
-        System.out.println("Server has started on 127.0.0.1:" + port);
+        System.out.println(": Server has started on 127.0.0.1:" + port);
         this.server = new ServerSocket(port);
         return this;
     }
@@ -63,11 +58,11 @@ public class WSTestServer {
     }
 
     private void onConnect(Socket clientSocket) throws IOException, NoSuchAlgorithmException {
-        System.out.println("A client connected.");
+        System.out.println(": connected");
         InputStream in = clientSocket.getInputStream();
         OutputStream out = clientSocket.getOutputStream();
-        HashMap<String, String> headers = handshake(in, out);
-        WSTestSession wsTestSession = new WSTestSession(in, out);
+        handshake(in, out);
+        WSTestSession wsTestSession = new WSTestSession(this.jjjSocket, in, out);
         new Thread(wsTestSession).start();
         jjjSocket.onOpen(wsTestSession, null);
     }
@@ -75,7 +70,7 @@ public class WSTestServer {
     private HashMap<String, String> handshake(InputStream in, OutputStream out) throws IOException, NoSuchAlgorithmException {
         InputStreamReader isr = new InputStreamReader(in);
         BufferedReader bsr = new BufferedReader(isr);
-        HashMap<String, String> headers = new HashMap<String, String>();
+        HashMap<String, String> headers = new HashMap<>();
 
         String line = bsr.readLine();
         while (line != null && !line.isEmpty()) {

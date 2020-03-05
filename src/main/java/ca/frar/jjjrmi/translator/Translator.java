@@ -24,8 +24,7 @@ public class Translator {
     final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");
     private static final String referencePrequel = "S";
     private final HashMap<String, Class<? extends AHandler<?>>> handlers = new HashMap<>();
-    private final ArrayList<Consumer<Object>> encodeListeners = new ArrayList<>();
-    private final ArrayList<Consumer<Object>> decodeListeners = new ArrayList<>();
+    private final ArrayList<Consumer<Object>> referenceListeners = new ArrayList<>();
     private final BiMap<String, Object> objectMap = new BiMap<>();
     private final ArrayList<String> tempReferences = new ArrayList<>();
     private int nextKey = 0;
@@ -92,6 +91,9 @@ public class Translator {
      */
     void addReference(String reference, Object object) {
         this.objectMap.put(reference, object);
+        for (Consumer<Object> lst : this.referenceListeners){
+            lst.accept(object);
+        }
     }
 
     /**
@@ -206,14 +208,14 @@ public class Translator {
         return decodeFromString;
     }
 
-    public void addEncodeListener(Consumer<Object> lst) {
-        this.encodeListeners.add(lst);
+    public void addReferenceListener(Consumer<Object> lst) {
+        this.referenceListeners.add(lst);
     }
 
-    public void notifyEncode(Object object) {
-        for (Consumer<Object> encodeListener : this.encodeListeners) encodeListener.accept(object);
-    }
-
+    public void removeReferenceListener(Consumer<Object> lst) {
+        this.referenceListeners.remove(lst);
+    }    
+    
     /**
      * Determine the number of referenced objects.
      *

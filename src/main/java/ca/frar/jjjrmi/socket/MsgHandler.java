@@ -19,6 +19,7 @@ import ca.frar.jjjrmi.translator.TranslatorResult;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.websocket.MessageHandler;
@@ -29,27 +30,47 @@ import org.json.JSONException;
  *
  * @author Ed Armstrong
  */
-class MsgHandler implements MessageHandler.Whole<String>, InvokesMethods {
+class MsgHandler implements MessageHandler.Whole<String>, InvokesMethods, Consumer<Object>{
     private MethodBank methodBank = new MethodBank();
     private final Session session;
     private final Translator translator = new Translator();
     private int uid = 0;
+    private boolean closed = false;
     
     MsgHandler(Session session) {
         this.session = session;
-        
-        translator.addEncodeListener((obj) -> {
-            if (obj instanceof HasWebsockets) ((HasWebsockets) obj).addInvoker(this);
-        });        
+        translator.addReferenceListener(this);
     }
-
+    
+    /**
+     * New referenced objects.
+     * @param obj 
+     */
+    public void accept(Object obj){
+        if (obj instanceof HasWebsockets) ((HasWebsockets) obj).addInvoker(this);
+    }
+    
+    public synchronized void close(){
+        this.translator.removeReferenceListener(this);
+        this.closed = true;
+    }
+    
     @Override
     public void forget(HasWebsockets aThis) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void invokeClientMethod(Object source, String methodName, Object... args) {
+    public synchronized void invokeClientMethod(Object source, String methodName, Object... args) {
+        
+        // lazy removal of method invokers from object
+        if (this.closed){
+            if (source instanceof HasWebsockets){
+                ((HasWebsockets) source).removeInvoker(this);
+            }
+            return;
+        }
+        
         try {
             ClientRequestMessage remoteInvocation = new ClientRequestMessage("" + uid++, translator.getReference(source), methodName, args);
             sendObject(remoteInvocation);

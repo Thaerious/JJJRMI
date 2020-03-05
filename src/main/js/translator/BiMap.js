@@ -41,13 +41,6 @@ class BiMap {
     containsValue(value) {
         return this.reverseMap.has(value);
     }
-    /* remove target freom the translator replacing it with source, maintaining the same key */
-    swap(source, target) {
-        let key = this.getKey(target);
-        this.objectMap.set(key, source);
-        this.reverseMap.delete(target);
-        this.reverseMap.set(source, key);
-    }
 }
 
 module.exports = BiMap;
