@@ -5,16 +5,10 @@
  */
 package ca.frar.jjjrmi.socket.testclasses;
 
-import ca.frar.jjjrmi.annotations.JJJ;
-
 /**
  *
  * @author Ed Armstrong
  */
-public class NoDataException extends Exception{
-    
-    public NoDataException(){
-        super("No data available");
-    }
-    
+interface Operation {
+    public void run(RemoteData data) throws NoDataException;
 }

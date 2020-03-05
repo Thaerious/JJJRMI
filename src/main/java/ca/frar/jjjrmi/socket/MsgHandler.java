@@ -25,6 +25,7 @@ import java.util.logging.Logger;
 import javax.websocket.MessageHandler;
 import javax.websocket.Session;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  *
@@ -101,7 +102,7 @@ class MsgHandler implements MessageHandler.Whole<String>, InvokesMethods, Consum
         } catch (Exception ex) {
             LOGGER.warn(ex.getClass().getSimpleName());
             LOGGER.warn(ex.getMessage());
-            LOGGER.warn(message);
+            LOGGER.warn(new JSONObject(message).toString(2));
             if (ex.getCause() != null) LOGGER.catching(ex);
         }
     }
@@ -128,7 +129,7 @@ class MsgHandler implements MessageHandler.Whole<String>, InvokesMethods, Consum
             try {
                 returnedFromInvoke = method.invoke(object, request.methodArguments);
                 sendObject(new MethodResponse(request.uid, request.objectPTR, request.methodName, returnedFromInvoke));
-            } catch (IllegalAccessException | InvocationTargetException ex) {
+            } catch (IllegalAccessException ex) {
                 String msg = String.format("Error accessing method %s in class %s. Ensure both class and method are public.", method.getName(), object.getClass().getSimpleName());
                 LOGGER.error(msg);
                 if (ex.getCause() != null) LOGGER.catching(ex.getCause());
@@ -136,6 +137,10 @@ class MsgHandler implements MessageHandler.Whole<String>, InvokesMethods, Consum
                 if (ex.getCause() != null) this.sendObject(new ServerSideExceptionMessage(request.uid, request.objectPTR, request.methodName, ex.getCause()));
                 else this.sendObject(new ServerSideExceptionMessage(request.uid, request.objectPTR, request.methodName, ex));
             }
+            catch (InvocationTargetException ex) {
+                if (ex.getCause() != null) this.sendObject(new ServerSideExceptionMessage(request.uid, request.objectPTR, request.methodName, ex.getCause()));
+                else this.sendObject(new ServerSideExceptionMessage(request.uid, request.objectPTR, request.methodName, ex));
+            }            
         } catch (java.lang.IllegalArgumentException ex) {
             LOGGER.catching(ex);
             if (request.methodArguments.length == 0) {

@@ -48,6 +48,7 @@ class EncodedObject {
     encode() {
         for (let field in this.object) {
             if (this.object[field] === undefined) continue;
+            if (field === "__jjjrmi") continue;
             let encoded = new Encoder(this.object[field], this.translatorResult).encode();
             this.json[Constants.FieldsParam][field] = encoded;
         }
@@ -87,7 +88,7 @@ class Encoder {
     }
     encode() {        
         let translator = this.translatorResult.getTranslator();
-        
+       
         if (this.object === null) {
             return new EncodedNull();
         } else if (typeof this.object === "number" || typeof this.object === "string" || typeof this.object === "boolean") {

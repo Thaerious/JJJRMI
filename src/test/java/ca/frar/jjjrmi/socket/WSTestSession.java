@@ -50,13 +50,13 @@ public class WSTestSession implements Session, Runnable {
             while (openFlag) {
                 Message message = this.readNextFrame();
 
-                System.out.println("+-----------------------");
-                System.out.println("| session : " + this.hashCode());
-                System.out.println("| opcode : " + message.opcode);
-                System.out.println("| hnd-cnt: " + this.messageHandlers.size());
-                System.out.println("| in: " + this.inputStream.hashCode());
-                System.out.println("| out: " + this.outputStream.hashCode());
-                System.out.println("+-----------------------");
+//                System.out.println("+-----------------------");
+//                System.out.println("| session : " + this.hashCode());
+//                System.out.println("| opcode : " + message.opcode);
+//                System.out.println("| hnd-cnt: " + this.messageHandlers.size());
+//                System.out.println("| in: " + this.inputStream.hashCode());
+//                System.out.println("| out: " + this.outputStream.hashCode());
+//                System.out.println("+-----------------------");
 
                 switch (message.opcode) {
                     case 1:

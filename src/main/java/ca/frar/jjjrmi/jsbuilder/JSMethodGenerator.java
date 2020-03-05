@@ -55,7 +55,7 @@ public class JSMethodGenerator {
         processParameterAnnotations();
 
         if (ctModifiable.getAnnotation(ServerSide.class) != null) {
-            String format = String.format("return this.__jjjWebsocket.methodRequest(this, \"%s\", arguments);", this.name);
+            String format = String.format("return this.__jjjrmi.jjjWebsocket.methodRequest(this, \"%s\", arguments);", this.name);
             JSCodeSnippet snippet = new JSCodeSnippet(format);
             jsMethodBuilder.getBody().add(snippet);
         } else {

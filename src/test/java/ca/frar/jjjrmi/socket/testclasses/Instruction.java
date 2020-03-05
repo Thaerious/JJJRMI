@@ -11,10 +11,7 @@ import ca.frar.jjjrmi.annotations.JJJ;
  *
  * @author Ed Armstrong
  */
-public class NoDataException extends Exception{
-    
-    public NoDataException(){
-        super("No data available");
-    }
-    
+@JJJ
+public enum Instruction {
+    CLEAR_ALL, MEM_SAVE, MEM_PUSH
 }

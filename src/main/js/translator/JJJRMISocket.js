@@ -12,7 +12,11 @@ class JJJRMISocket {
         this.translator = new Translator();
         this.callback = {};
         this.socket = null;
-        this.translator.addReferenceListener(obj => obj.__jjjWebsocket = this);
+        this.translator.addReferenceListener(obj =>{
+            obj.__jjjrmi = {
+                jjjWebsocket : this   
+            };
+        });
         this.jjjEncode = null;
 
         this.translator.registerPackage(jjjPackage);
@@ -21,7 +25,7 @@ class JJJRMISocket {
         this.translator.registerPackage(pkg);
     }
     async connect(url) {
-        LOGGER.log("connect", `${this.jjjSocketName} connecting`);
+        LOGGER.log("connect", `websocket '${this.jjjSocketName}' connecting`);
         let cb = function (resolve, reject) {
             this.socket = new WebSocket(url);
             this.onready = resolve;
@@ -47,17 +51,15 @@ class JJJRMISocket {
      * @returns {undefined}
      */
     onMessage(data) {
-        LOGGER.verbose("received", JSON.stringify(JSON.parse(data), null, 2));
-
         /* the main translation from json to js is triggered here */
         let rmiMessage = this.translator.decode(data).getRoot();
         LOGGER.log("received", rmiMessage);
+        LOGGER.log("received+", JSON.stringify(JSON.parse(data), null, 2));
 
         switch (rmiMessage.type) {
             case JJJMessageType.READY:
             {
-                LOGGER.log("onmessage", this.jjjSocketName + " READY");
-                LOGGER.log("connect", this.jjjSocketName + " READY");
+                LOGGER.log("onmessage connect", `websocket '${this.jjjSocketName}' ready`);
                 this.onready(rmiMessage.getRoot());
                 break;
             }
@@ -113,12 +115,9 @@ class JJJRMISocket {
      * @param {type} args zero or more method arguments
      * @returns {undefined}
      */
-    methodRequest(src, methodName, args) {
-        /* method requests come after an object has been sent, this is a sanity check */
+    methodRequest(src, methodName, args) {       
         if (!this.translator.hasReferredObject(src)) {
-            LOGGER.warn("see window.debug for source");
-            window.debug = src;
-            throw new Error(`Attempting to call server side method on non-received object: ${src.constructor.name}.${methodName}`);
+            throw new Error(`Attempting to call server side method on untracked object: ${src.constructor.name}.${methodName}`);
         }
         
         let uid = this.nextUID++;
@@ -136,10 +135,10 @@ class JJJRMISocket {
             
             let packet = new MethodRequest(uid, ptr, methodName, argsArray);
             let translatorResult = this.translator.encode(packet);
-            LOGGER.verbose("sent", translatorResult.toString());
+            LOGGER.log("sent", translatorResult.toString());
 
             if (this.socket !== null) this.socket.send(translatorResult.toString());
-            else Logger.warn(`Socket "${this.socketName}" not connected.`);
+            else LOGGER.warn(`Socket "${this.socketName}" not connected.`);
         }.bind(this);
 
         return new Promise(f);

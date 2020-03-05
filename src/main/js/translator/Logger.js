@@ -2,21 +2,28 @@
 
 class Logger {
     static log(category, message){
-        if (Logger.flags[category.toUpperCase()] === false) return;
+        if (!Logger.checkFlags(category)) return;
         console.log(message);
+    }
+    
+    static checkFlags(categories){
+        for (let cat of categories.split(/[, /t]+/g)){
+            if (cat.endsWith("+")){
+                let flag = cat.substr(0, cat.length - 1);
+                if (Logger.flags[flag.toUpperCase()] === "verbose") return true; 
+            } else {
+                if (Logger.flags[cat.toUpperCase()]) return true; 
+            }
+        }
+        return false;
     }
     
     static warn(message){
         Logger.log("WARN", message);
     }    
-    
-    static verbose(category, message){
-        if (Logger.flags[category.toUpperCase()] !== "verbose") return;
-        console.log(message);
-    }
-    
+        
     static debug(message){
-        if (Logger.flags.DEBUG) console.log(message);
+        Logger.log("DEBUG", message);
     }    
 }
 
