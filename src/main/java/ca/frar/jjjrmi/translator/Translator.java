@@ -22,8 +22,7 @@ import java.util.function.Consumer;
  */
 public class Translator {
     final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");
-    private static final String referencePrequel = "S";
-//    private final HashMap<String, Class<? extends AHandler<?>>> handlers = new HashMap<>();
+    private String referencePrequel = "S";
     private final ArrayList<Consumer<Object>> referenceListeners = new ArrayList<>();
     private final BiMap<String, Object> objectMap = new BiMap<>();
     private final ArrayList<String> tempReferences = new ArrayList<>();
@@ -44,6 +43,10 @@ public class Translator {
         this.tempReferences.add(reference);
     }
 
+    public void setReferencePrequel(String referencePrequel){
+        this.referencePrequel = referencePrequel;
+    }
+    
     /**
      * Remove all temporary references from this translator. They will get
      * re-encoded when next encountered.
@@ -138,6 +141,13 @@ public class Translator {
      */
     public String getReference(Object object) throws UntrackedObjectException {
         if (!this.hasReferredObject(object)) throw new UntrackedObjectException(object);
+        if (objectMap.getKey(object) == null){
+            System.out.println("*****************************");
+            System.out.println(object.getClass() + " " + object.hashCode());
+            for (String key : this.objectMap.keySet()){
+                System.out.println(key + ":"+ this.objectMap.get(key).getClass() + " " + this.objectMap.get(key).hashCode() + " " + (this.objectMap.get(key) == object));
+            }
+        }
         return objectMap.getKey(object);
     }
 

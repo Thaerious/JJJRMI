@@ -1,18 +1,10 @@
 package ca.frar.jjjrmi.translator;
-import ca.frar.jjjrmi.annotations.Handles;
-import ca.frar.jjjrmi.annotations.JJJ;
-import ca.frar.jjjrmi.annotations.NativeJS;
-import ca.frar.jjjrmi.annotations.Transient;
 import ca.frar.jjjrmi.exceptions.DecoderException;
 import ca.frar.jjjrmi.exceptions.EncoderException;
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
 import ca.frar.jjjrmi.jsbuilder.RequireRecord;
-import ca.frar.jjjrmi.socket.JJJObject;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
-import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.JSONObject;
@@ -23,7 +15,6 @@ import org.json.JSONObject;
  */
 abstract public class AHandler<T> {
     private TranslatorResult translatorResult;
-    private HashMap<String, Field> fields = new HashMap<>();
     private T instance;
     private EncodedObject encodedObject;
     private JSONObject json;
@@ -45,7 +36,6 @@ abstract public class AHandler<T> {
     
     public final T doDecode(Object t, JSONObject json) throws DecoderException{
         this.json = json;
-        this.setupFields(t.getClass());
         this.decode((T)t);
         return (T)t;
     }
@@ -78,31 +68,6 @@ abstract public class AHandler<T> {
     abstract public void encode(T t) throws JJJRMIException;
 
     /**
-     * Decode the JSON field 'jsonFieldName' and place the result into
-     * 'pojoFieldName' of the object returned from 'getInstance'.
-     * @param <T>
-     * @param jsonFieldName
-     * @param pojoFieldName
-     * @return
-     * @throws DecoderException 
-     */
-    public final <T> T decodeField(String jsonFieldName, String pojoFieldName) throws DecoderException {  
-        Field field = this.fields.get(pojoFieldName);        
-        JSONObject jsonField = this.json.getJSONObject(Constants.FieldsParam).getJSONObject(jsonFieldName);
-        Translator translator = translatorResult.getTranslator();
-        Class<?> type = field.getType();
-        Object decoded = new Decoder(jsonField, translator, type).decode();
-        
-        try {
-            field.set(this.instance, decoded);
-        } catch (IllegalArgumentException | IllegalAccessException ex) {
-            throw new DecoderException(ex);
-        }
-        
-        return (T) decoded;
-    }
-
-    /**
      * Decode the field 'jsonFieldName' and return the resulting object.
      * @param <T>
      * @param jsonFieldName the 'name' used for the corresponding 'encodeField'
@@ -129,20 +94,6 @@ abstract public class AHandler<T> {
             this.encodedObject.setFieldData(name, toJSON);
         } catch (IllegalArgumentException | IllegalAccessException ex) {
             throw new EncoderException(ex);
-        }
-    }
-    
-    private void setupFields(Class<?> aClass) {
-        Class<?> current = aClass;
-        while (current != Object.class && current != JJJObject.class) {
-            for (Field field : current.getDeclaredFields()) {
-                if (Modifier.isStatic(field.getModifiers())) continue;
-                System.out.println(field);
-                field.setAccessible(true);
-                if (field.getAnnotation(Transient.class) != null) continue;                
-                this.fields.put(field.getName(), field);
-            }
-            current = current.getSuperclass();
         }
     }
 }

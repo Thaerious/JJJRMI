@@ -417,4 +417,21 @@ public class TranslatorCorrectnessTest {
         assertNotEquals(decoded.getTransientField(), object.getTransientField());
         assertEquals(decoded.getNonTransientField(), object.getNonTransientField());
     }
+    
+    
+    public void test_handled_return() throws JJJRMIException {
+        Translator translator1 = new Translator();
+        translator1.setReferencePrequel("C");
+        HasHandler hasHandler = new HasHandler(2, 7);
+        String encodeString = translator1.encode(hasHandler).toString(2);
+        System.out.println(encodeString);
+        
+        Translator translator2 = new Translator();
+        translator2.setReferencePrequel("T");
+        Object root = translator2.decode(encodeString).getRoot();
+        Has<Object> has = new Has<Object>(root);
+        String reEncodeString = translator2.encode(has).toString(2);
+        
+        System.out.println(reEncodeString);
+    }
 }

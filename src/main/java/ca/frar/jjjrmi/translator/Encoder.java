@@ -13,8 +13,7 @@ import org.json.JSONObject;
  * @author edward
  */
 class Encoder {
-
-    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");
+    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("Encoder");
     private final Object object;
     private final TranslatorResult encodedResult;
 

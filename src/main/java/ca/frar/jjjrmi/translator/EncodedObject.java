@@ -19,12 +19,13 @@ import org.json.JSONObject;
  * @author Ed Armstrong
  */
 class EncodedObject {    
-    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JSONObject");
+    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("Encoder");
     private final Object object;
     protected final JSONObject json;
     private final TranslatorResult encodedResult;
 
     EncodedObject(Object object, TranslatorResult encodedResult, boolean retain) throws EncoderException {        
+        LOGGER.trace("new EncodedObject: " + object.getClass().getName());
         this.object = object;
         this.json = new JSONObject();
         this.encodedResult = encodedResult;        
@@ -51,11 +52,7 @@ class EncodedObject {
             aClass = aClass.getSuperclass();
         }
     }
-  
-    void setFieldData(String name, JSONObject json) throws EncoderException, IllegalArgumentException, IllegalAccessException {
-        this.json.getJSONObject(Constants.FieldsParam).put(name, json);
-    }    
-    
+
     void setField(Field field) throws JJJRMIException, IllegalArgumentException, IllegalAccessException {
         field.setAccessible(true);
         if (field.getAnnotation(Transient.class) != null) return;
@@ -63,7 +60,15 @@ class EncodedObject {
         
         JSONObject toJSON = new Encoder(field.get(this.object), this.encodedResult).encode();
         this.setFieldData(field.getName(), toJSON);
-    }
+    }    
+    
+    void setFieldData(String name, JSONObject json) throws EncoderException, IllegalArgumentException, IllegalAccessException {
+        LOGGER.trace("EncodedObject.setFieldData() : ");
+        LOGGER.trace(" - " + name);
+        LOGGER.trace(" - " + json.getClass().getCanonicalName());
+        LOGGER.trace(" - " + json.toString());
+        this.json.getJSONObject(Constants.FieldsParam).put(name, json);
+    }    
     
     String getKey(){
         return this.json.getString(Constants.KeyParam);

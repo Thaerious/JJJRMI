@@ -52,9 +52,9 @@ class JJJRMISocket {
      */
     onMessage(data) {
         /* the main translation from json to js is triggered here */
-        let rmiMessage = this.translator.decode(data).getRoot();
-        LOGGER.log("received", rmiMessage);
         LOGGER.log("received+", JSON.stringify(JSON.parse(data), null, 2));
+        let rmiMessage = this.translator.decode(data).getRoot();
+        LOGGER.log("received", rmiMessage);        
 
         switch (rmiMessage.type) {
             case JJJMessageType.READY:
@@ -135,7 +135,7 @@ class JJJRMISocket {
             
             let packet = new MethodRequest(uid, ptr, methodName, argsArray);
             let translatorResult = this.translator.encode(packet);
-            LOGGER.log("sent", translatorResult.toString());
+            LOGGER.log("sent", translatorResult.toString(2));
 
             if (this.socket !== null) this.socket.send(translatorResult.toString());
             else LOGGER.warn(`Socket "${this.socketName}" not connected.`);

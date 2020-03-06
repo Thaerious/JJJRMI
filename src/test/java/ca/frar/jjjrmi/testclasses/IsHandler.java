@@ -33,14 +33,22 @@ public class IsHandler extends AHandler<HasHandler>{
         return new HasHandler();
     }
     
-    @NativeJS
     @Override
     public void decode(HasHandler hasHandler) throws DecoderException {
-        this.decodeField("a", "x");
-        this.decodeField("b", "y");        
+        hasHandler.x = this.decodeObject(Integer.class, "a");
+        hasHandler.y = this.decodeObject(Float.class, "b");        
         hasHandler.z = hasHandler.x + hasHandler.y;
     }
 
+    @NativeJS("decode")
+    public void jsdecode(HasHandler hasHandler) throws DecoderException {
+        /*JS{
+            hasHandler.x = this.decodeObject("a");
+            hasHandler.y = this.decodeObject("b");
+            hasHandler.z = hasHandler.x + hasHandler.y;
+        }*/
+    }    
+    
     @NativeJS
     @Override
     public void encode(HasHandler object) throws JJJRMIException {

@@ -80,9 +80,9 @@ public class GenerateJSON {
 
     public TranslatorResult generate_handled() throws JJJRMIException {
         Translator translator = new Translator();
-        return translator.encode(new HasHandler(2, 7));
+        HasHandler hasHandler = new HasHandler(2, 7);
+        return translator.encode(hasHandler);
     }
-
 
     public TranslatorResult generate_nonEmptyArray() throws JJJRMIException {
         Translator translator = new Translator();

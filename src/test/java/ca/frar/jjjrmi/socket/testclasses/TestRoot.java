@@ -22,4 +22,13 @@ public class TestRoot extends JJJObject{
         return this.data;
     }    
 
+    @ServerSide
+    public ArrayList getData(){ 
+        return this.data.list;
+    }    
+    
+    @ServerSide
+    public RemoteStack getStack(){ 
+        return this.data;
+    }      
 }
