@@ -10,5 +10,5 @@ package ca.frar.jjjrmi.socket.testclasses;
  * @author Ed Armstrong
  */
 interface Operation {
-    public void run(RemoteData data) throws NoDataException;
+    public void run(RemoteStack data) throws NoDataException;
 }

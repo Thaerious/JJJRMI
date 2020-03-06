@@ -10,6 +10,7 @@ import ca.frar.jjjrmi.annotations.JJJ;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.exceptions.DecoderException;
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
+import ca.frar.jjjrmi.jsbuilder.RequireRecord;
 import ca.frar.jjjrmi.translator.AHandler;
 import ca.frar.jjjrmi.translator.TranslatorResult;
 
@@ -46,4 +47,9 @@ public class IsHandler extends AHandler<HasHandler>{
         this.encodeField("a", object.x);
         this.encodeField("b", object.y);
     }
+    
+    @Override
+    public RequireRecord getRequire(){
+        return new RequireRecord("HasHandler", "./HasHandler", "");
+    }    
 }

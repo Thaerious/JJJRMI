@@ -17,6 +17,8 @@ import ca.frar.jjjrmi.jsbuilder.code.JSElementList;
 import ca.frar.jjjrmi.jsbuilder.code.JSFieldDeclaration;
 import ca.frar.jjjrmi.jsbuilder.code.JSSuperConstructor;
 import ca.frar.jjjrmi.socket.JJJObject;
+import ca.frar.jjjrmi.translator.AHandler;
+import ca.frar.jjjrmi.translator.HandlerFactory;
 import ca.frar.jjjrmi.utility.JJJOptionsHandler;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -330,8 +332,16 @@ public class JSClassBuilder<T> {
             CtTypeReference<JJJObject> jjjObjectRef = ctClass.getFactory().Type().createReference(JJJObject.class);
             boolean isSubtype = anImport.isSubtypeOf(jjjObjectRef);
             boolean hasAnno = new JJJOptionsHandler(anImport).hasJJJ();
-
-            if (anImport.getTypeDeclaration() == null) {
+            boolean hasHandler = HandlerFactory.getInstance().hasHandler(anImport.getQualifiedName());
+            
+            if (hasHandler){
+                LOGGER.log(VERY_VERBOSE, String.format("Handler generating require for %s", anImport.getQualifiedName()));
+                Class<? extends AHandler<?>> handler = HandlerFactory.getInstance().getHandler(anImport.getQualifiedName());                 
+                RequireRecord requireRecord = AHandler.getRequireRecord(handler);
+                this.requireSet.add(requireRecord);
+                LOGGER.debug(requireRecord.name + ", " + requireRecord.value + ", " + requireRecord.postfix); 
+            }
+            else if (anImport.getTypeDeclaration() == null) {
                 LOGGER.warn(" - unknown type required: " + anImport.getQualifiedName());
             } else if (!isSubtype && !hasAnno) {
                 LOGGER.warn(" - non-transpiled type required: " + anImport.getQualifiedName());

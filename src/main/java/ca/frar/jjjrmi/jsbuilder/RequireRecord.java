@@ -2,12 +2,12 @@ package ca.frar.jjjrmi.jsbuilder;
 import ca.frar.jjjrmi.annotations.JSRequire;
 import java.util.Objects;
 
-class RequireRecord {
+public class RequireRecord {
     final String name;
     final String postfix;
     final String value;
     
-    RequireRecord(String name, String value, String postfix){
+    public RequireRecord(String name, String value, String postfix){
         this.name = name;
         this.value = value;
         this.postfix = postfix;

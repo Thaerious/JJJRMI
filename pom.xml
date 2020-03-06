@@ -3,15 +3,15 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ca.frar</groupId>
     <artifactId>jjjrmi</artifactId>
-    <version>0.6.3</version>
+    <version>0.6.4</version>
     <packaging>maven-plugin</packaging>
-    
+
     <dependencies>
-        <dependency> 
-            <groupId>org.reflections</groupId> 
-            <artifactId>reflections</artifactId> 
-            <version>0.9.12</version> 
-        </dependency>           
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>0.9.12</version>
+        </dependency>
         <dependency>
             <groupId>fr.inria.gforge.spoon</groupId>
             <artifactId>spoon-core</artifactId>
@@ -22,19 +22,19 @@
             <artifactId>log4j-core</artifactId>
             <version>2.12.1</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->     
+        <!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
             <version>4.0.1</version>
             <scope>provided</scope>
-        </dependency>      
+        </dependency>
         <dependency>
             <groupId>javax.websocket</groupId>
             <artifactId>javax.websocket-api</artifactId>
             <version>1.1</version>
             <scope>provided</scope>
-        </dependency>      
+        </dependency>
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
@@ -88,10 +88,10 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
     </properties>
-    
+
     <build>
         <plugins>
-            
+
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>versions-maven-plugin</artifactId>
@@ -101,8 +101,8 @@
                         <exclude>org.apache.commons:commons-collections4</exclude>
                     </excludes>
                 </configuration>
-            </plugin>            
-            
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -111,7 +111,7 @@
                     <useIncrementalCompilation>false</useIncrementalCompilation>
                 </configuration>
             </plugin>
-            
+
             <!-- set main in manifest file -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -124,9 +124,9 @@
                         </manifest>
                     </archive>
                 </configuration>
-            </plugin>       
-            
-            <!-- copy jjjrmi javascript files 
+            </plugin>
+
+            <!-- copy jjjrmi javascript files
                  https://stackoverflow.com/questions/586202/best-practices-for-copying-files-with-maven
                  https://maven.apache.org/plugins/maven-resources-plugin/examples/copy-resources.html
             -->
@@ -142,17 +142,17 @@
                         </goals>
                         <configuration>
                             <outputDirectory>${basedir}/target/jjjrmi/jjjrmi</outputDirectory>
-                            <resources>          
+                            <resources>
                                 <resource>
                                     <directory>src/main/js</directory>
                                     <filtering>true</filtering>
                                 </resource>
-                            </resources>              
-                        </configuration>  
+                            </resources>
+                        </configuration>
                     </execution>
                 </executions>
-            </plugin>            
-            
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -168,22 +168,22 @@
                         </manifestEntries>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <classpathPrefix>lib/</classpathPrefix>                            
+                            <classpathPrefix>lib/</classpathPrefix>
                         </manifest>
                     </archive>
                 </configuration>
-            </plugin>            
-            
+            </plugin>
+
             <!-- generate jjjrmi javascript files -->
             <plugin>
                 <groupId>ca.frar</groupId>
                 <artifactId>jjjrmi</artifactId>
-                <version>0.6.3</version>
+                <version>0.6.4</version>
                 <configuration>
                     <packageName>jjjrmi</packageName>
                     <generatePackage>false</generatePackage>
                     <generateJSON>false</generateJSON>
-                    <version>0.6.3</version>
+                    <version>0.6.4</version>
                 </configuration>
                 <executions>
                     <execution>
@@ -194,7 +194,7 @@
                     </execution>
                 </executions>
             </plugin>
-            
+
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
@@ -212,15 +212,15 @@
                             <goal>report</goal>
                         </goals>
                     </execution>
-                </executions>                
-            </plugin>      
-            
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-plugin-plugin</artifactId>
                 <version>3.6.0</version>
-            </plugin>                  
-                              
+            </plugin>
+
         </plugins>
-    </build>    
+    </build>
 </project>

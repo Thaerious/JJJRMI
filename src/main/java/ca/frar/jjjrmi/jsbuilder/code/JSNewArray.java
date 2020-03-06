@@ -8,7 +8,7 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtNewArray;
 
 public class JSNewArray extends AbstractJSCodeElement {
-    private int arraySize;
+    private String arraySize;
     private JSElementList elements;
 
     public JSNewArray(CtNewArray<?> ctNewArray) {
@@ -22,11 +22,11 @@ public class JSNewArray extends AbstractJSCodeElement {
         }
         
         if (dimensionExpressions.size() == 0){
-            this.arraySize = 0;
+            this.arraySize = "0";
         }
         else{
             CtExpression<Integer> ctExpression = dimensionExpressions.get(0);
-            this.arraySize = Integer.parseInt(ctExpression.toString());
+            this.arraySize = ctExpression.toString();
         }
         List<CtExpression<?>> elements = ctNewArray.getElements();
         if (elements != null){
@@ -35,11 +35,13 @@ public class JSNewArray extends AbstractJSCodeElement {
     }
 
     public String toString(){
-        if (this.elements.isEmpty() && this.arraySize > 0){
-            return "new Array(" + arraySize + ")";
-        } else {
-            return "[" + elements.inline() + "]";
-        }
+        return "new Array(" + arraySize + ")";
+        
+//        if (this.elements.isEmpty() && this.arraySize > 0){
+//            return "new Array(" + arraySize + ")";
+//        } else {
+//            return "[" + elements.inline() + "]";
+//        }
     }
     
     @Override

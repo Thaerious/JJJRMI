@@ -12,6 +12,7 @@ class ClassRegistry {
      * @returns {undefined}
      */
     registerPackage(pkg) {
+        LOGGER.log("onregister+", "Class Registry Loading Package");
         for (let aClass in pkg) this.registerClass(pkg[aClass]);
     }
 

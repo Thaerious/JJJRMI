@@ -11,8 +11,7 @@ public class JSSwitch extends AbstractJSCodeElement {
     public JSSwitch(CtSwitch ctSwitch) {
         LOGGER.trace(this.getClass().getSimpleName());
         selector = this.generate(ctSwitch.getSelector());
-        cases = new JSElementList(ctSwitch.getCases());
-
+        cases = this.generateList(ctSwitch.getCases());
     }
 
     @Override

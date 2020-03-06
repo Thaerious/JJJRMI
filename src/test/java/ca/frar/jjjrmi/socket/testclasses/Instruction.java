@@ -13,5 +13,5 @@ import ca.frar.jjjrmi.annotations.JJJ;
  */
 @JJJ
 public enum Instruction {
-    CLEAR_ALL, MEM_SAVE, MEM_PUSH
+    PUSH, POP, CLEAR
 }

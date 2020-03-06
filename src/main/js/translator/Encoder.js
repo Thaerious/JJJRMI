@@ -28,7 +28,6 @@ class EncodedArray {
             }
         }
     }
-
     toJSON() {
         return this.json;
     }
@@ -39,7 +38,7 @@ class EncodedObject {
         this.object = object;
         this.json = {};
         this.translatorResult = translatorResult;
-        
+
         this.json = {};
         this.json[Constants.KeyParam] = translatorResult.getTranslator().allocReference(object, retain);
         this.json[Constants.TypeParam] = object.constructor.__getClass ? object.constructor.__getClass() : null;
@@ -53,11 +52,9 @@ class EncodedObject {
             this.json[Constants.FieldsParam][field] = encoded;
         }
     }
-
     toJSON() {
         return this.json;
     }
-
     setField(field) {
         let toJSON = new Encoder(field.get(this.object), this.translatorResult).encode();
         this.setFieldData(field.getName(), toJSON);
@@ -65,15 +62,12 @@ class EncodedObject {
     setFieldData(name, json) {
         this.json[Constants.FieldsParam][name] = json;
     }
-
     getField(fieldName) {
         return this.json[Constants.FieldsParam][fieldName];
     }
-
     getType() {
         return this.json[Constants.TypeParam];
     }
-
     getKey() {
         return this.json[Constants.KeyParam];
     }
@@ -84,11 +78,11 @@ class Encoder {
     constructor(object, translatorResult) {
         this.object = object;
         this.translatorResult = translatorResult;
-        
+
     }
-    encode() {        
+    encode() {
         let translator = this.translatorResult.getTranslator();
-       
+
         if (this.object === null) {
             return new EncodedNull();
         } else if (typeof this.object === "number" || typeof this.object === "string" || typeof this.object === "boolean") {
@@ -97,14 +91,14 @@ class Encoder {
             return new EncodedReference(this.translatorResult.getTranslator().getReference(this.object));
         } else if (this.object instanceof Array) {
             return new EncodedArray(this.object, this.translatorResult);
-        } else if (this.object.constructor.__isEnum()) {
-            return new EncodedEnum(this.object);
         } else if (translator.handlerRegistry.hasClass(this.object.constructor.__getClass())) {
             let handlerClass = translator.handlerRegistry.getClass(this.object.constructor.__getClass());
-            let handler = new handlerClass(this.translatorResult);            
+            let handler = new handlerClass(this.translatorResult);
             let encodedObject = handler.doEncode(this.object);
             this.translatorResult.put(encodedObject);
             return new EncodedReference(this.translatorResult.getTranslator().getReference(this.object));
+        } else if (this.object.constructor.__isEnum()) {
+            return new EncodedEnum(this.object);
         } else {
             let encodedObject = new EncodedObject(this.object, this.translatorResult, this.object.constructor.__isRetained());
             this.translatorResult.put(encodedObject);

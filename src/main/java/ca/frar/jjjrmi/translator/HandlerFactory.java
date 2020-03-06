@@ -18,11 +18,11 @@ import org.reflections.scanners.TypeAnnotationsScanner;
  *
  * @author Ed Armstrong
  */
-class HandlerFactory {    
+public class HandlerFactory {    
     private static HandlerFactory instance = null;
     private final HashMap<String, Class<? extends AHandler<?>>> classMap = new HashMap<>();
     
-    static HandlerFactory getInstance(){
+    public static HandlerFactory getInstance(){
         if (instance == null) instance = new HandlerFactory();
         return instance;
     }
@@ -37,19 +37,27 @@ class HandlerFactory {
             LOGGER.debug(aClass);
             Handles handles = aClass.getAnnotation(Handles.class);
             if (AHandler.class.isAssignableFrom(aClass)){
-                LOGGER.log(VERY_VERBOSE, "adding handler " + aClass.getSimpleName() + " for class " + handles.value());
+                LOGGER.log(VERY_VERBOSE, "adding handler " + aClass.getName() + " for class " + handles.value());
                 classMap.put(handles.value(), (Class<? extends AHandler<?>>) aClass);
             }
         }
         LOGGER.debug("number of classes: " + classMap.size());
     }
     
-    boolean hasHandler(Class<?> aClass){
+    public boolean hasHandler(Class<?> aClass){
         if (aClass == null) throw new NullPointerException();
         return this.classMap.containsKey(aClass.getName());
     }
 
-    <T> Class<? extends AHandler<?>> getHandler(Class<T> aClass){
+    public boolean hasHandler(String className){
+        return this.classMap.containsKey(className);
+    }
+    
+    public <T> Class<? extends AHandler<?>> getHandler(Class<T> aClass){
         return this.classMap.get(aClass.getName());
     }
+    
+    public <T> Class<? extends AHandler<?>> getHandler(String className){
+        return this.classMap.get(className);
+    }    
 }

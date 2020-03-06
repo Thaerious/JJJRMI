@@ -7,7 +7,7 @@ class Logger {
     }
     
     static checkFlags(categories){
-        for (let cat of categories.split(/[, /t]+/g)){
+        for (let cat of categories.split(/[, \t]+/g)){
             if (cat.endsWith("+")){
                 let flag = cat.substr(0, cat.length - 1);
                 if (Logger.flags[flag.toUpperCase()] === "verbose") return true; 

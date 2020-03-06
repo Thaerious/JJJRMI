@@ -18,7 +18,7 @@ public class OperationAdd extends JJJObject implements Operation{
         this.value = value;
     }
     
-    public void run(RemoteData data) throws NoDataException{
+    public void run(RemoteStack data) throws NoDataException{
         int a = data.pop();
         a = a + value;
         data.push(a);

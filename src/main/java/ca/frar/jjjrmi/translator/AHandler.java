@@ -1,13 +1,20 @@
 package ca.frar.jjjrmi.translator;
+import ca.frar.jjjrmi.annotations.Handles;
 import ca.frar.jjjrmi.annotations.JJJ;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.annotations.Transient;
 import ca.frar.jjjrmi.exceptions.DecoderException;
 import ca.frar.jjjrmi.exceptions.EncoderException;
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
+import ca.frar.jjjrmi.jsbuilder.RequireRecord;
 import ca.frar.jjjrmi.socket.JJJObject;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.json.JSONObject;
 
 /**
@@ -24,7 +31,7 @@ abstract public class AHandler<T> {
     public AHandler(TranslatorResult translatorResult){
         this.translatorResult = translatorResult;        
     }
-
+    
     public final T doGetInstance(){
         this.instance = this.getInstance();
         return this.instance;
@@ -42,10 +49,23 @@ abstract public class AHandler<T> {
         this.decode((T)t);
         return (T)t;
     }
-
+    
     public boolean isRetained(){
         return true;
     }
+    
+    public final static RequireRecord getRequireRecord(Class<? extends AHandler<?>> aClass){
+        try {
+            Constructor<? extends AHandler<?>> constructor = aClass.getConstructor(TranslatorResult.class);
+            AHandler<?> handler = constructor.newInstance((Object)null);
+            return handler.getRequire();
+        } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+            Logger.getLogger(AHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+    
+    abstract public RequireRecord getRequire();
     
     abstract public T getInstance();
     
@@ -116,8 +136,10 @@ abstract public class AHandler<T> {
         Class<?> current = aClass;
         while (current != Object.class && current != JJJObject.class) {
             for (Field field : current.getDeclaredFields()) {
-                if (field.getAnnotation(Transient.class) != null) continue;
+                if (Modifier.isStatic(field.getModifiers())) continue;
+                System.out.println(field);
                 field.setAccessible(true);
+                if (field.getAnnotation(Transient.class) != null) continue;                
                 this.fields.put(field.getName(), field);
             }
             current = current.getSuperclass();

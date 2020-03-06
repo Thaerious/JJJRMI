@@ -19,6 +19,11 @@ class ObjectDecoder {
             }
         }
     }
+    
+    /**
+     * 
+     * @returns {undefined}
+     */
     makeReady() {
         if (this.json[Constants.TypeParam] === null){
             this.result = {};
@@ -26,18 +31,21 @@ class ObjectDecoder {
         }
         
         let className = this.json[Constants.TypeParam];
-        this.aClass = this.translator.classRegistry.getClass(className);    
-        if (this.aClass === null) throw new Error("ca.frar.jjjrmi.exceptions.UnknownClassException: " + this.json[Constants.TypeParam]);
-        
+        let retained = true;
+
         if (this.translator.handlerRegistry.hasClass(className)) {
             let handlerClass = this.translator.handlerRegistry.getClass(className);
             this.handler = new handlerClass(this.translatorResult);            
             this.result = this.handler.doGetInstance();
+            retained = this.handler.isRetained();
         } else {
+            this.aClass = this.translator.classRegistry.getClass(className);    
+            if (this.aClass === null) throw new Error("ca.frar.jjjrmi.exceptions.UnknownClassException: " + this.json[Constants.TypeParam]);            
             this.result = new this.aClass();
+            retained = this.result.constructor.__isRetained();
         }
         
-        if (this.result.constructor.__isRetained()){
+        if (retained){
             this.translator.addReference(this.json[Constants.KeyParam], this.result);
         } else {            
             this.translator.addTempReference(this.json[Constants.KeyParam], this.result);

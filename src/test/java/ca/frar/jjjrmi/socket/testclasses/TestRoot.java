@@ -7,21 +7,19 @@ package ca.frar.jjjrmi.socket.testclasses;
 import ca.frar.jjjrmi.annotations.ServerSide;
 import ca.frar.jjjrmi.annotations.Transient;
 import ca.frar.jjjrmi.socket.JJJObject;
+import java.util.ArrayList;
 
 /**
  *
  * @author Ed Armstrong
  */
 public class TestRoot extends JJJObject{
-    @Transient private RemoteData data = new RemoteData();
+    @Transient private RemoteStack data;
     
     @ServerSide
-    public RemoteData getData(){
-        return data;
-    }
+    public RemoteStack setData(ArrayList list){
+        this.data = new RemoteStack(list);
+        return this.data;
+    }    
 
-    @ServerSide
-    public void reset(){
-        data = new RemoteData();
-    }        
 }

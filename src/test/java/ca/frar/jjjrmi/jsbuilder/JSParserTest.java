@@ -17,7 +17,6 @@ import org.junit.jupiter.api.Test;
  * @author edward
  */
 public class JSParserTest {
-
     final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");
     final static String OUT_DIR = "deleteme";
     final static String IN_DIR = "src/test/java/ca/frar/jjjrmi/testclasses/";
@@ -182,4 +181,16 @@ public class JSParserTest {
         contents = contents.replaceAll("[ \t\r\n]+", " ");
         assertTrue(contents.contains("__isRetained() { return true; }"));
     }
+    
+    /**
+     * The encoded class has an array, the size of which is set by a variable.
+     */
+    @Test
+    public void test_variable_size_array() throws JJJRMIException, MojoExecutionException, MojoFailureException, JSBuilderException, IOException {
+        String className = "VariableSizeArray";
+        CLI.main("-s", "-d", IN_DIR, "-i", className, "-o", OUT_DIR);
+        String contents = new String(Files.readAllBytes(Paths.get(OUT_DIR + "/" + className + ".js")));
+        contents = contents.replaceAll("[ \t\r\n]+", " ");
+        assertTrue(contents.contains("new Array(size);"));
+    }    
 }

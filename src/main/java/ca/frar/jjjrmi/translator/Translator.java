@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 public class Translator {
     final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");
     private static final String referencePrequel = "S";
-    private final HashMap<String, Class<? extends AHandler<?>>> handlers = new HashMap<>();
+//    private final HashMap<String, Class<? extends AHandler<?>>> handlers = new HashMap<>();
     private final ArrayList<Consumer<Object>> referenceListeners = new ArrayList<>();
     private final BiMap<String, Object> objectMap = new BiMap<>();
     private final ArrayList<String> tempReferences = new ArrayList<>();
