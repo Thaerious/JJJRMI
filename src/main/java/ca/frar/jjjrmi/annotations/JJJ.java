@@ -26,12 +26,12 @@ public @interface JJJ {
      */
     public String jsExtends() default "";
 
-    /**
-     * When set to true the client and server will retain a copy of objects of
+        /**
+     * When true the client and server will retain a copy of instances of
      * this class. On subsequent sends the copy will be used. When set to false
-     * the whole object is read and sent every time.
-     *
-     * @return
+     * the whole instance is encoded and sent every time.  Default value is true.
+     * 
+     * @return true, if object is to be tracked.
      */
     boolean retain() default true;
 
@@ -52,5 +52,5 @@ public @interface JJJ {
      * Add the __isTransient, __getCLass, and __isEnum methods.
      * @return 
      */
-    boolean insertJJJMethods() default true;    
+    boolean insertJJJMethods() default true;
 }

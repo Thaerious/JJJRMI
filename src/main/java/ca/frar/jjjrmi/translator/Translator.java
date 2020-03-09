@@ -141,13 +141,6 @@ public class Translator {
      */
     public String getReference(Object object) throws UntrackedObjectException {
         if (!this.hasReferredObject(object)) throw new UntrackedObjectException(object);
-        if (objectMap.getKey(object) == null){
-            System.out.println("*****************************");
-            System.out.println(object.getClass() + " " + object.hashCode());
-            for (String key : this.objectMap.keySet()){
-                System.out.println(key + ":"+ this.objectMap.get(key).getClass() + " " + this.objectMap.get(key).hashCode() + " " + (this.objectMap.get(key) == object));
-            }
-        }
         return objectMap.getKey(object);
     }
 

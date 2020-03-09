@@ -1,4 +1,5 @@
 package ca.frar.jjjrmi.translator;
+
 import ca.frar.jjjrmi.annotations.JSParam;
 import ca.frar.jjjrmi.exceptions.DecoderException;
 import ca.frar.jjjrmi.exceptions.EncoderException;
@@ -25,7 +26,7 @@ public class TranslatorResult {
         this.translator = translator;
     }
 
-    TranslatorResult encodeFromObject(Object object) throws JJJRMIException{
+    TranslatorResult encodeFromObject(Object object) throws JJJRMIException {
         if (object == null) throw new RootException();
         this.json = new JSONObject();
         this.json.put(Constants.NewObjects, new JSONObject());
@@ -91,13 +92,14 @@ public class TranslatorResult {
         return translator;
     }
 
-    void setRoot(String rootKey) {
-        this.json.put(Constants.RootObject, rootKey);
-    }
-
-    void finalizeRoot() throws UnknownReferenceException{
+    void finalizeRoot() throws UnknownReferenceException {
         String key = this.json.getString(Constants.RootObject);
         this.root = this.translator.getReferredObject(key);
+    }
+
+    void setRoot(String rootKey) {
+        if (rootKey == null) throw new NullPointerException();
+        this.json.put(Constants.RootObject, rootKey);
     }
 
     public Object getRoot() throws UnknownReferenceException {
@@ -112,22 +114,23 @@ public class TranslatorResult {
 
     /**
      * Returns the number of new objects in this result.
+     *
      * @return the number of new objects.
      */
-    public int newObjectCount(){
+    public int newObjectCount() {
         return this.json.getJSONObject(Constants.NewObjects).keySet().size();
     }
 
-    public JSONObject toJSON(){
+    public JSONObject toJSON() {
         return this.json;
     }
 
-    public String toString(){
+    public String toString() {
         return this.json.toString();
     }
 
-    @JSParam(name="indentFactor", init="0")
-    public String toString(int indentFactor){
+    @JSParam(name = "indentFactor", init = "0")
+    public String toString(int indentFactor) {
         return this.json.toString(indentFactor);
     }
 }

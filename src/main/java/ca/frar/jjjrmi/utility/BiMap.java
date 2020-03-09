@@ -18,10 +18,14 @@ import java.util.Set;
  */
 public class BiMap<K extends Object, V extends Object> extends HashMap<K, V> {
     private static final long serialVersionUID = 1L;
-    private Map<V, K> backwards = new HashMap<>();
+    
+    /**
+     * Backwards map is a map of System.identityHash to the key.
+     */
+    private Map<Integer, K> backwards = new HashMap<>();
 
     public K getKey(V v) {
-        return backwards.get(v);
+        return backwards.get(System.identityHashCode(v));
     }
 
     /**
@@ -33,28 +37,29 @@ public class BiMap<K extends Object, V extends Object> extends HashMap<K, V> {
     @Override
     public V put(K k, V v) {
         V rvalue = v;
+        int id = System.identityHashCode(v);
 
         if (this.containsKey(k)) {
             rvalue = this.get(k);
             backwards.remove(this.get(k));
             this.remove(k);
         }
-        if (backwards.containsKey(v)) {
-            this.remove(backwards.get(v));
-            backwards.remove(v);
+        if (backwards.containsKey(id)) {
+            this.remove(backwards.get(id));
+            backwards.remove(id);
         }
 
         super.put(k, v);
-        backwards.put(v, k);
+        backwards.put(id, k);
 
         return rvalue;
     }
 
     @Override
     public V remove(Object k) {
-        V rvalue = super.remove(k);
-        backwards.remove(rvalue);
-        return rvalue;
+        V v = super.remove(k);
+        backwards.remove(System.identityHashCode(v));
+        return v;
     }
 
     public void putAll(BiMap<? extends K, ? extends V> that) {

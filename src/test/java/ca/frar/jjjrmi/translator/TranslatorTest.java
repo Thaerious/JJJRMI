@@ -5,6 +5,7 @@ import ca.frar.jjjrmi.exceptions.MissingConstructorException;
 import ca.frar.jjjrmi.exceptions.UnknownReferenceException;
 import ca.frar.jjjrmi.exceptions.UntrackedObjectException;
 import ca.frar.jjjrmi.testclasses.ArrayWrapper;
+import ca.frar.jjjrmi.testclasses.CustomHash;
 import ca.frar.jjjrmi.testclasses.DoNotRetainAnno;
 import ca.frar.jjjrmi.testclasses.DoNotRetainExtends;
 import ca.frar.jjjrmi.testclasses.Has;
@@ -18,13 +19,15 @@ import ca.frar.jjjrmi.testclasses.TransientField;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author edward
  */
-public class TranslatorCorrectnessTest {
+public class TranslatorTest {
 
     final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");
 
@@ -347,7 +350,6 @@ public class TranslatorCorrectnessTest {
     }
 
     class TestConsumer implements Consumer<Object> {
-
         public Object accepted = null;
 
         public void accept(Object t) {
@@ -355,8 +357,12 @@ public class TranslatorCorrectnessTest {
         }
     };
 
+    /*
+     * Any encoding that creates a reference (w/o @Transient) will trigger the 
+     * references listeners.
+     */
     @Test
-    public void test_encode_listener() throws JJJRMIException {
+    public void test_reference_listener() throws JJJRMIException {
         Translator translator = new Translator();
         TestConsumer lst = new TestConsumer();
         translator.addReferenceListener(lst);
@@ -434,4 +440,41 @@ public class TranslatorCorrectnessTest {
         
         System.out.println(reEncodeString);
     }
+    
+    /*
+     * The class uses a custom hash code. Sending a different object with the 
+     * same value will result in a reference being sent.  The decoding of which
+     * will be the first object sent.
+     */
+    @SuppressWarnings("unchecked")
+    public void test_custom_hash_code() throws JJJRMIException {
+        Translator translator = new Translator();
+        CustomHash<Integer> customHash1 = new CustomHash<>();
+        CustomHash<Integer> customHash2 = new CustomHash<>();
+        customHash1.set(5);
+        customHash2.set(5);
+        translator.encode(customHash1).toString();
+        String encoded = translator.encode(customHash1).toString();
+        
+        CustomHash<Integer> decoded = (CustomHash<Integer>) translator.decode(encoded).getRoot();
+        assertEquals(System.identityHashCode(customHash1), System.identityHashCode(decoded));
+    }
+    
+    /*
+     * The class uses a custom hash code. Sending the same object with a 
+     * different value will not result in a new encoding.
+     */
+    @SuppressWarnings("unchecked")
+    public void test_custom_hash_code_new_value() throws JJJRMIException {
+        Translator translator = new Translator();
+        CustomHash<Integer> customHash = new CustomHash<>();
+        customHash.set(5);        
+        String encoded1 = translator.encode(customHash).toString();
+        customHash.set(6);
+        String encoded2 = translator.encode(customHash).toString();
+        
+        CustomHash<Integer> decoded1 = (CustomHash<Integer>) translator.decode(encoded1).getRoot();
+        CustomHash<Integer> decoded2 = (CustomHash<Integer>) translator.decode(encoded2).getRoot();
+        assertEquals(System.identityHashCode(decoded1), System.identityHashCode(decoded2));
+    }    
 }

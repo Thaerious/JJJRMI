@@ -40,10 +40,6 @@ abstract public class AHandler<T> {
         return (T)t;
     }
     
-    public boolean isRetained(){
-        return true;
-    }
-    
     public final static RequireRecord getRequireRecord(Class<? extends AHandler<?>> aClass){
         try {
             Constructor<? extends AHandler<?>> constructor = aClass.getConstructor(TranslatorResult.class);
@@ -96,4 +92,16 @@ abstract public class AHandler<T> {
             throw new EncoderException(ex);
         }
     }
+    
+    /**
+     * When true the client and server will retain a copy of instances of
+     * this class. On subsequent sends the copy will be used. When set to false
+     * the whole instance is encoded and sent every time.  This is parallel to 
+     * the @JJJ(retain) annotation setting.  Default value is true.
+     * 
+     * @return true, if object is to be tracked.
+     */
+    public boolean isRetained(){
+        return true;
+    }    
 }
