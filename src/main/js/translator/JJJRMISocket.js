@@ -18,7 +18,6 @@ class JJJRMISocket {
             };
         });
         this.jjjEncode = null;
-
         this.translator.registerPackage(jjjPackage);
     }
     registerPackage(pkg) {
@@ -45,6 +44,15 @@ class JJJRMISocket {
     }
         
     /**
+     * Retrieve the root object. The connect method must be called first, if
+     * it has not then the returned object is undefined.
+     * @returns {unresolved}
+     */
+    get root(){
+        return this.rootObject;
+    }
+        
+    /**
      * All received messages are parsed by this method.  All messages must of the java type 'RMIResponse' which will
      * always contain the field 'type:RMIResponseType'.
      * @param {type} evt
@@ -60,7 +68,8 @@ class JJJRMISocket {
             case JJJMessageType.READY:
             {
                 LOGGER.log("onmessage connect", `websocket '${this.jjjSocketName}' ready`);
-                this.onready(rmiMessage.getRoot());
+                this.rootObject = rmiMessage.getRoot();
+                this.onready(rmiMessage.getRoot()); /* this is the return value for the connect promise */
                 break;
             }
             /* client originated request */

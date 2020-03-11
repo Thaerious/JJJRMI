@@ -5,23 +5,8 @@ class BiMap {
         this.objectMap = new Map();
         this.reverseMap = new Map();
     }
-    size(){
-        return this.objectMap.size;
-    }
-    clear() {
-        this.objectMap.clear();
-        this.reverseMap.clear();
-    }
-    keys() {
-        return this.objectMap.keys();
-    }
     removeByKey(key) {
         let obj = this.objectMap.get(key);
-        this.objectMap.delete(key);
-        this.reverseMap.delete(obj);
-    }
-    removeByValue(obj) {
-        let key = this.reverseMap.get(obj);
         this.objectMap.delete(key);
         this.reverseMap.delete(obj);
     }

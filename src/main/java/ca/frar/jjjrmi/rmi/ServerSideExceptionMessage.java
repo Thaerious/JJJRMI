@@ -1,6 +1,7 @@
 package ca.frar.jjjrmi.rmi;
 import ca.frar.jjjrmi.annotations.JJJ;
 import ca.frar.jjjrmi.annotations.NativeJS;
+import ca.frar.jjjrmi.annotations.Transient;
 import static ca.frar.jjjrmi.rmi.JJJMessageType.EXCEPTION;
 
 /**
@@ -8,12 +9,14 @@ import static ca.frar.jjjrmi.rmi.JJJMessageType.EXCEPTION;
  * @author Ed Armstrong
  */
 @JJJ(retain=false)
-public final class ServerSideExceptionMessage extends JJJMessage{
+public final class ServerSideExceptionMessage extends JJJMessage{  
+    public final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(ServerSideExceptionMessage.class);
     private String exception;
     private String message;
     private String uid;
     private String methodName;
     private String objectPTR;
+    @Transient Throwable ex;
 
     @NativeJS
     private ServerSideExceptionMessage(){
@@ -27,6 +30,7 @@ public final class ServerSideExceptionMessage extends JJJMessage{
         this.methodName = "";
         this.exception = ex.getClass().getSimpleName();
         this.message = ex.getMessage();
+        this.ex = ex;
     }
 
     public ServerSideExceptionMessage(String uid, String objectPTR, String methodName, Throwable ex){
@@ -36,6 +40,7 @@ public final class ServerSideExceptionMessage extends JJJMessage{
         this.methodName = methodName;
         this.exception = ex.getClass().getSimpleName();
         this.message = ex.getMessage();
+        this.ex = ex;
     }
 
     public ServerSideExceptionMessage(String uid, String objectPTR, String methodName, String exception, String message){
@@ -46,4 +51,12 @@ public final class ServerSideExceptionMessage extends JJJMessage{
         this.exception = exception;
         this.message = message;
     }
+
+    public Throwable getThrowable() {
+        return this.ex;
+    }
+    
+    public String getMessage() {
+        return this.message;
+    }    
 }

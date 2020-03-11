@@ -12,8 +12,6 @@ public interface HasWebsockets {
 
     void removeInvoker(InvokesMethods socket);
 
-    void forget();
-
     @DoNotInvoke
     void invokeClientMethod(String method, Object... args);
 }

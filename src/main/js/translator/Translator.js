@@ -89,12 +89,6 @@ class Translator {
     hasReferredObject(object) {
         return this.objectMap.containsValue(object);
     }    
-    removeByValue(obj) {
-        if (!this.objectMap.containsValue(obj)) return false;
-
-        this.objectMap.remove(this.objectMap.getKey(obj));
-        return true;
-    }
     size() {
         return this.objectMap.size();
     }

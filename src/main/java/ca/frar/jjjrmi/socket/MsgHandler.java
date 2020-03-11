@@ -5,12 +5,13 @@
  */
 package ca.frar.jjjrmi.socket;
 
-import static ca.frar.jjjrmi.Global.LOGGER;
+import static ca.frar.jjjrmi.Global.VERBOSE;
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
 import ca.frar.jjjrmi.exceptions.ParameterCountException;
 import ca.frar.jjjrmi.rmi.ClientMessage;
 import ca.frar.jjjrmi.rmi.ClientRequestMessage;
 import ca.frar.jjjrmi.rmi.JJJMessage;
+import static ca.frar.jjjrmi.rmi.JJJMessageType.EXCEPTION;
 import ca.frar.jjjrmi.rmi.MethodRequest;
 import ca.frar.jjjrmi.rmi.MethodResponse;
 import ca.frar.jjjrmi.rmi.ServerSideExceptionMessage;
@@ -31,7 +32,8 @@ import org.json.JSONObject;
  *
  * @author Ed Armstrong
  */
-class MsgHandler implements MessageHandler.Whole<String>, InvokesMethods, Consumer<Object>{
+class MsgHandler implements MessageHandler.Whole<String>, InvokesMethods, Consumer<Object>{    
+    final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger(MsgHandler.class);
     private MethodBank methodBank = new MethodBank();
     private final Session session;
     private final Translator translator = new Translator();
@@ -54,11 +56,6 @@ class MsgHandler implements MessageHandler.Whole<String>, InvokesMethods, Consum
     public synchronized void close(){
         this.translator.removeReferenceListener(this);
         this.closed = true;
-    }
-    
-    @Override
-    public void forget(HasWebsockets aThis) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
@@ -108,6 +105,7 @@ class MsgHandler implements MessageHandler.Whole<String>, InvokesMethods, Consum
     }
 
     private void onMethodRequest(MethodRequest request) throws SecurityException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, NoSuchFieldException, IOException, InvalidJJJSessionException, JJJRMIException {
+        LOGGER.log(VERBOSE, request.toString());
         Object object = translator.getReferredObject(request.objectPTR);
         if (object == null) throw new NullPointerException();
 
@@ -162,6 +160,19 @@ class MsgHandler implements MessageHandler.Whole<String>, InvokesMethods, Consum
      * @param obj
      */
     public final void sendObject(JJJMessage msg) throws InvalidJJJSessionException, JJJRMIException, IOException {
+        if (msg.getType() == EXCEPTION){
+            ServerSideExceptionMessage exmsg = (ServerSideExceptionMessage) msg;
+            Throwable throwable = exmsg.getThrowable();
+            if (throwable == null){
+                ServerSideExceptionMessage.LOGGER.info(exmsg.getMessage());
+            } else {
+                ServerSideExceptionMessage.LOGGER.info(throwable.getMessage());
+                for (StackTraceElement ste : throwable.getStackTrace()){
+                    ServerSideExceptionMessage.LOGGER.info(ste);
+                }
+            }
+        }
+        
         synchronized (this) {
             TranslatorResult encoded = translator.encode(msg);
             this.session.getBasicRemote().sendText(encoded.toString());

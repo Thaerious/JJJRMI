@@ -34,7 +34,7 @@ class EncodedArray {
 }
 
 class EncodedObject {
-    constructor(object, translatorResult, retain = true) {
+    constructor(object, translatorResult, retain) {
         this.object = object;
         this.json = {};
         this.translatorResult = translatorResult;
@@ -55,18 +55,8 @@ class EncodedObject {
     toJSON() {
         return this.json;
     }
-    setField(field) {
-        let toJSON = new Encoder(field.get(this.object), this.translatorResult).encode();
-        this.setFieldData(field.getName(), toJSON);
-    }
     setFieldData(name, json) {
         this.json[Constants.FieldsParam][name] = json;
-    }
-    getField(fieldName) {
-        return this.json[Constants.FieldsParam][fieldName];
-    }
-    getType() {
-        return this.json[Constants.TypeParam];
     }
     getKey() {
         return this.json[Constants.KeyParam];

@@ -17,17 +17,32 @@ public class RemoteStack extends JJJObject{
         this.list = list;
     }
     
+    /**
+     * Call this method remotely to cause all clients to clear the stack.
+     * @return
+     * @throws NoDataException 
+     */    
     @ServerSide
     public void clear() {
         this.list.clear();
         this.invokeClientMethod("update", Instruction.CLEAR, 0);
     }
 
-    @ServerSide
+    /**
+     * Look at the top value of the stack on the client.
+     * @return
+     * @throws NoDataException 
+     */    
+    @NativeJS
     public int peek() {
         return list.get(list.size() - 1);
     }
 
+    /**
+     * Call this method remotely to cause all clients to pop a value.
+     * @return
+     * @throws NoDataException 
+     */
     @ServerSide
     public int pop() throws NoDataException {
         if (this.list.isEmpty()) throw new NoDataException();
@@ -36,17 +51,33 @@ public class RemoteStack extends JJJObject{
         return removed;
     }
 
+    /**
+     * Call this method remotely to cause all clients to push a value.
+     * used to best passing a number to the server.
+     * @return
+     * @throws NoDataException 
+     */    
     @ServerSide
     public void push(int value) {
-        list.add(value);
+        this.list.add(value);
         this.invokeClientMethod("update", Instruction.PUSH, value);
     }
 
+    /**
+     * Get the stack size from the server.
+     * @return 
+     */
     @ServerSide
     public int size() {
         return list.size();
     }
 
+    /**
+     * Call this method remotely to save a value.
+     * Used to test enums coming from the client.
+     * @param code
+     * @throws NoDataException 
+     */
     @ServerSide
     public void mem(MemOpCode code) throws NoDataException{
         if (code == null) throw new NullPointerException();
@@ -64,12 +95,24 @@ public class RemoteStack extends JJJObject{
         }
     }
     
+    /**
+     * Perform operation of the server, can cause callbacks to the clients.
+     * Use to test passing an object to the server, including null.
+     * @param op
+     * @throws NoDataException 
+     */
     @ServerSide
     public void op(Operation op) throws NoDataException{
         if (op == null) throw new NullPointerException();
         op.run(this);
     }
 
+    /**
+     * Java calls this method (called up date in JS) to perform PUSH, POP, and
+     * CLEAR.  Used to test enums coming from the server.
+     * @param inst
+     * @param value 
+     */
     @NativeJS("update")
     private void jsUpdate(Instruction inst, int value){
         switch(inst){

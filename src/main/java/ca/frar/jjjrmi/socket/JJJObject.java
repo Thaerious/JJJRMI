@@ -28,10 +28,6 @@ public class JJJObject implements HasWebsockets {
         this.websockets.remove(socket);
     }
 
-    synchronized public void forget() {
-        this.websockets.forEach(s -> s.forget(this));
-    }
-
     @DoNotInvoke
     synchronized public void invokeClientMethod(String method, Object... args) {
         for (ca.frar.jjjrmi.socket.InvokesMethods invokes : this.getRemoteInvokers()) {

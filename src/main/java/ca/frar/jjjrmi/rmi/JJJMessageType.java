@@ -8,6 +8,5 @@ public enum JJJMessageType {
     READY,
     LOAD,
     EXCEPTION,
-    FORGET,
     REJECTED_CONNECTION
 }

@@ -45,37 +45,38 @@ class Assert {
 
 class TestFramework {
     constructor() {
+        this.verbose = false;
         this.count = 0;
         this.failed = [];
     }
-    start(list){
+    
+    /**
+     * Run the tests listed in 'list'.  If list is undefined run all tests.
+     * @param {type} list
+     * @returns {undefined}
+     */
+    async start(list){
         if (list.length === 0){
-            this.allTests();
+            await this.allTests();
         } else {
             while (list.length !== 0){
-                this.doTest(list.shift());
+                await this.doTest(list.shift());
             }
         }
     }
-    run(method) {
-        if (method) {
-            this.doTest(method);
-        } else {
-            this.allTests();
-        }
-    }
-    allTests() {
+    async allTests() {
         let methods = getAllMethodNames(this);
         for (let method of methods) {
             if (!method.startsWith("test_")) continue;
             this.count++;
-            this.doTest(method);
+            await this.doTest(method);
         }
-        console.log(`${this.constructor.name} run: ${this.count} failed: ${this.failed.length}`);
+        console.log(`${this.constructor.name} - run: ${this.count}, failed: ${this.failed.length}`);
     }
-    doTest(method) {
+    async doTest(method) {
         try {
-            this[method]();
+            if (this.verbose) console.log("running: " + method);
+            await this[method]();
         } catch (err) {
             if (err instanceof AssertError) {
                 this.failed.push(method);

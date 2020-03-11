@@ -7,7 +7,6 @@ package.MethodResponse = require("./MethodResponse");
 package.MethodRequest = require("./MethodRequest");
 package.JJJMessageType = require("./JJJMessageType");
 package.JJJMessage = require("./JJJMessage");
-package.ForgetMessage = require("./ForgetMessage");
 package.ClientRequestMessage = require("./ClientRequestMessage");
 package.ClientMessageType = require("./ClientMessageType");
 package.ClientMessage = require("./ClientMessage");

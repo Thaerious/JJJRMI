@@ -15,7 +15,10 @@
     <Loggers>
         <Root level="INFO" >
             <AppenderRef ref="Console"/>
-        </Root>   
+        </Root>  
+<!--        <Logger name="ca.frar.jjjrmi.socket.MsgHandler" level="VERBOSE" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>-->
 <!--        <Logger name="Encoder" level="trace" additivity="false">
             <AppenderRef ref="Console"/>
         </Logger>      

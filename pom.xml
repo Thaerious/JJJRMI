@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ca.frar</groupId>
     <artifactId>jjjrmi</artifactId>
-    <version>0.6.4</version>
+    <version>0.7.0</version>
     <packaging>maven-plugin</packaging>
 
     <dependencies>
@@ -178,21 +178,13 @@
             <plugin>
                 <groupId>ca.frar</groupId>
                 <artifactId>jjjrmi</artifactId>
-                <version>0.6.4</version>
+                <version>0.7.0</version>
                 <configuration>
                     <packageName>jjjrmi</packageName>
                     <generatePackage>false</generatePackage>
                     <generateJSON>false</generateJSON>
                     <version>0.6.4</version>
                 </configuration>
-                <executions>
-                    <execution>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>generate-js</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
 
             <plugin>
