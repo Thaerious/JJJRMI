@@ -27,7 +27,6 @@ import spoon.reflect.CtModel;
 
 @Mojo(name = "generate-js", requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME)
 public class MOJO extends AbstractMojo {
-
     private final Log LOGGER = getLog();
     @Parameter private String source = "src/main/java";
     @Parameter private String destination = "target/jjjrmi";

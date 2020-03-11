@@ -1,0 +1,19 @@
+{
+  "name": "rmi",
+  "version": "0.7.0",
+  "description": "NPM file for compiling & testing jjjrmi",
+  "main": "",
+  "scripts": {
+    "test-setup": "node src/test/js/GenerateJSON.js target/test-data/from-js.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Thaerious/JJJRMI.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Thaerious/JJJRMI/issues"
+  },
+  "homepage": "https://github.com/Thaerious/JJJRMI#readme"
+}

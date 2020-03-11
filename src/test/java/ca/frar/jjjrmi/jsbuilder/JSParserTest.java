@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,6 +23,18 @@ public class JSParserTest {
     final static String OUT_DIR = "deleteme";
     final static String IN_DIR = "src/test/java/ca/frar/jjjrmi/testclasses/";
 
+    public static void main(String ... args){
+        try {
+            new JSParserTest().test_simple();
+        } catch (JJJRMIException | MojoExecutionException | MojoFailureException | JSBuilderException | IOException ex) {
+            Throwable current = ex;
+            while(current != null){
+                LOGGER.error(current);
+                current = current.getCause();
+            }
+        }
+    }
+    
     public JSParserTest() {
         File dir = new File(OUT_DIR);
 

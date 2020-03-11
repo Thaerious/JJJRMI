@@ -1,8 +1,6 @@
 /* global process, Reflect */
 "use strict";
 const fs = require("fs");
-const filename = process.argv[2];
-const method = process.argv[3];
 const Translator = require("../../main/js/translator/Translator");
 const packageFile = require("./testclasses/packageFile");
 
@@ -112,9 +110,19 @@ class GenerateJSON {
     }      
 }
 
+const filename = process.argv[2];
+const method = process.argv[3];
+
+if (filename.indexOf("/" !== -1)){
+    let index = filename.lastIndexOf("/");
+    let dir = filename.substr(0, index);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+}
+
 let generateJSON = new GenerateJSON();
 
 if (method) generateJSON.build(method);
 else generateJSON.run();
 
+console.log("writing JS data file to " + filename);
 fs.writeFileSync(filename, JSON.stringify(generateJSON.json, null, 2));

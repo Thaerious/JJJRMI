@@ -108,3 +108,8 @@ Start the Test Server
 
 Run the JS Client  
 `> node src/test/js/DevJJJRMISocket.js`
+
+Prepare files for npm
+---------------------
+Generate JS files an place them in the JS source directory.
+`> mvn jjjrmi:generate-js`  
