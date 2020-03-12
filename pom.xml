@@ -189,6 +189,23 @@
                         </configuration>
                     </execution>
                      
+                    <execution>  
+                        <id>Generate-JS-Runtime-Files</id>
+                        <phase>compile</phase>  
+                        <goals>  
+                            <goal>java</goal>  
+                        </goals>  
+                        <configuration>  
+                            <mainClass>ca.frar.jjjrmi.CLI</mainClass>  
+                            <arguments>  
+                                <argument>-d=src/main/java/ca/frar/jjjrmi/rmi</argument>  
+                                <argument>-o=src/main/js/generated</argument>  
+                                <argument>-p</argument>  
+                            </arguments> 
+                            <classpathScope>test</classpathScope>
+                        </configuration>   
+                    </execution>                      
+                     
                 </executions>  
             </plugin>  
 
