@@ -130,6 +130,7 @@
                                 <argument>-p</argument>  
                             </arguments> 
                             <classpathScope>test</classpathScope>
+                            <skip>${skipTests}</skip>
                         </configuration>  
                     </execution>                     
                     
@@ -147,6 +148,7 @@
                                 <argument>-p</argument>  
                             </arguments> 
                             <classpathScope>test</classpathScope>
+                            <skip>${skipTests}</skip>
                         </configuration>  
                     </execution> 
                     
@@ -159,6 +161,7 @@
                         <configuration>
                             <executable>npm</executable>
                             <commandlineArgs>run test-setup</commandlineArgs>
+                            <skip>${skipTests}</skip>
                         </configuration>
                     </execution>
                     
@@ -174,6 +177,7 @@
                                 <argument>./target/test-data/from-java.json</argument>  
                             </arguments> 
                             <classpathScope>test</classpathScope>
+                            <skip>${skipTests}</skip>
                         </configuration>  
                     </execution> 
                      
@@ -186,6 +190,7 @@
                         <configuration>
                             <executable>npm</executable>
                             <commandlineArgs>run test</commandlineArgs>
+                            <skip>${skipTests}</skip>
                         </configuration>
                     </execution>
                      
@@ -202,7 +207,7 @@
                                 <argument>-o=src/main/js/generated</argument>  
                                 <argument>-p</argument>  
                             </arguments> 
-                            <classpathScope>test</classpathScope>
+                            <classpathScope>compile</classpathScope>
                         </configuration>   
                     </execution>                      
                      
@@ -277,40 +282,6 @@
                             <followSymlinks>false</followSymlinks>
                         </fileset>                                            
                     </filesets>
-                </configuration>
-            </plugin>
-
-            <!--            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.4</version>
-                <configuration>
-                    <archive>
-                        <manifestEntries>
-                            <Main-Class>ca.frar.jjjrmi.CLI</Main-Class>
-                            <Premain-Class>ca.frar.jjjrmi.agent.JJJRMIAgent</Premain-Class>
-                            <Can-Redefine-Classes>true</Can-Redefine-Classes>
-                            <Can-Retransform-Classes>true</Can-Retransform-Classes>
-                            <Can-Set-Native-Method-Prefix>true</Can-Set-Native-Method-Prefix>
-                        </manifestEntries>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                            <classpathPrefix>lib/</classpathPrefix>
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>-->
-
-            <!-- generate jjjrmi javascript files -->
-            <plugin>
-                <groupId>ca.frar</groupId>
-                <artifactId>jjjrmi</artifactId>
-                <version>0.7.0</version>
-                <configuration>
-                    <packageName>jjjrmi</packageName>
-                    <generatePackage>false</generatePackage>
-                    <generateJSON>false</generateJSON>
-                    <version>0.6.4</version>
                 </configuration>
             </plugin>
 

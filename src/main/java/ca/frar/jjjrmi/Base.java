@@ -34,8 +34,7 @@ import spoon.reflect.CtModel;
  * @author Ed Armstrong
  */
 public class Base {
-
-    private String sourceDir;
+    private String sourceDir = "";
     private String packageFileName = "packageFile";
     private String destination = "";
     private String packageName = "package";
@@ -129,6 +128,16 @@ public class Base {
         this.generatePackage = generatePackage;
     }
 
+    public void printInfo() {
+        LOGGER.info("source = "  + this.sourceDir);
+        LOGGER.info("destination = " + this.destination);
+        LOGGER.info("packageName = " + this.packageName);
+        LOGGER.info("version = " + this.version);
+        LOGGER.info("generateJSON = " + this.generateJSON);
+        LOGGER.info("generatePackage = " + this.generatePackage);
+        LOGGER.info("packageFileName = " + this.packageFileName);     
+    }
+    
     public void run() throws MojoExecutionException, MojoFailureException, FileNotFoundException, IOException {
         Launcher launcher = new Launcher();
         getFiles().forEach(f -> launcher.addInputResource(f.toString()));
@@ -164,7 +173,7 @@ public class Base {
                 .collect(Collectors.toList());
     }
 
-    public static void writeClass(JSClassBuilder<?> jsClassBuilder, String rootPath) throws FileNotFoundException {
+    private static void writeClass(JSClassBuilder<?> jsClassBuilder, String rootPath) throws FileNotFoundException {
         String outPath = String.format("%s/%s.js", rootPath, jsClassBuilder.getSimpleName());
         File outFile = new File(outPath);
         FileOutputStream fos = new FileOutputStream(outFile);
@@ -251,7 +260,7 @@ public class Base {
      * @throws FileNotFoundException
      * @throws IOException
      */
-    public void copyPackageJSON() throws FileNotFoundException, IOException {
+    private void copyPackageJSON() throws FileNotFoundException, IOException {
         InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("package.json");
 
         if (inputStream == null) {

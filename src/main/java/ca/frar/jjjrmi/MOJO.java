@@ -1,5 +1,6 @@
 package ca.frar.jjjrmi;
 
+import static ca.frar.jjjrmi.Global.LOGGER;
 import ca.frar.jjjrmi.jsbuilder.JSBuilderException;
 import ca.frar.jjjrmi.jsbuilder.JSClassBuilder;
 import ca.frar.jjjrmi.jsbuilder.JSParser;
@@ -35,135 +36,34 @@ public class MOJO extends AbstractMojo {
     @Parameter private boolean generateJSON = true;
     @Parameter private boolean generatePackage = true;
     @Parameter private String packageFileName = "packageFile.js";
-    @Parameter private String[] sourceClassPath = new String[0];
+    @Parameter private String[] includeFiles = new String[0];
+    @Parameter private String[] excludeFiles = new String[0];
     @Parameter(defaultValue = "${project}", required = true, readonly = true) MavenProject project;
-
-    private JSParser jsParser;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        this.info();
-        this.init();
-        this.run();
-
         try {
-            this.output();
-        } catch (IOException | JSBuilderException ex) {
-            Logger.getLogger("JJJRMI").log(Level.SEVERE, null, ex);
+            Base base = new Base();
+            LOGGER.info("JJJRMI CLI");
+            fillArguments(base);
+            base.printInfo();
+            base.run();
+            base.output();
+        } catch (IOException ex) {
+            throw new MojoExecutionException(ex.getMessage(), ex);
         }
     }
 
-    public void info() {
-        LOGGER.info("source = "  + source);
-        LOGGER.info("destination = " + destination);
-        LOGGER.info("packageName = " + packageName);
-        LOGGER.info("version = " + version);
-        LOGGER.info("generateJSON = " + generateJSON);
-        LOGGER.info("generatePackage = " + generatePackage);
-        LOGGER.info("packageFileName = " + packageFileName);     
+    public void fillArguments(Base base){
+        base.setSourceDir(this.source);
+        base.setDestination(this.destination);
+        base.setGenerateJSON(this.generateJSON);
+        base.setGeneratePackage(this.generatePackage);
+        base.setPackageFileName(this.packageFileName);
+        base.setVersion(this.version);
         
-        if (sourceClassPath.length == 0){
-            LOGGER.info("sourceClassPath N/A");
-        }
-        for (int i = 0; i < sourceClassPath.length; i++){
-            LOGGER.info("sourceClassPath[" + i + "] = " + sourceClassPath[i]);
-        }
-    }
-
-    public void run() {       
-        Launcher launcher = new Launcher();
-        launcher.addInputResource(this.source);
-        launcher.getEnvironment().setSourceClasspath(sourceClassPath);
-        launcher.buildModel();
-        CtModel model = launcher.getModel();
-        model.processWith(jsParser);
-    }
-
-    public void init() throws MojoExecutionException, MojoFailureException {
-        jsParser = new JSParser();
-        jsParser.setPackageFileName(packageFileName);
-    }
-
-    /**
-     * Output js classes, one per file.
-     *
-     * @throws FileNotFoundException
-     * @throws JSBuilderException
-     */
-    public void output() throws FileNotFoundException, JSBuilderException, IOException {
-        LOGGER.info("Javascript Code Generator: Generating output");
-        String rootPath = String.format("%s/%s", destination, packageName);
-        LOGGER.info("path: " + rootPath);
-        new File(rootPath).mkdirs();
-
-        for (JSClassBuilder<?> jsClassBuilder : jsParser.jsClassBuilders()) {
-            LOGGER.info("file: " + jsClassBuilder.getSimpleName() + ".js");
-            Base.writeClass(jsClassBuilder, rootPath);
-        }
-
-        if (this.generatePackage == true) {
-            this.buildPackageJS();
-        }
-
-        if (this.generateJSON == true) {
-            this.copyPackageJSON();
-        }
-    }
-
-    /**
-     * Generate the JavaScript file that contains module class declarations
-     * (packageFile.js).
-     *
-     * @throws FileNotFoundException
-     */
-    private void buildPackageJS() throws FileNotFoundException {
-        String pkgOutPath = String.format("%s/%s/%s", this.destination, this.packageName, this.packageFileName);
-        File packageOutFile = new File(pkgOutPath);
-        PrintWriter packagePW = new PrintWriter(new FileOutputStream(packageOutFile));
-
-        packagePW.print("\"use strict;\";\n");
-        packagePW.print(String.format("let %s = {};\n", this.packageName));
-
-        for (JSClassBuilder<?> jsClassBuilder : jsParser.jsClassBuilders()) {
-            packagePW.print(String.format("%s.%s = require(\"./%s\");\n", this.packageName, jsClassBuilder.getSimpleName(), jsClassBuilder.getSimpleName()));
-        }
-
-        packagePW.print(String.format("\nif (typeof module !== \"undefined\") module.exports = %s;", this.packageName));
-        packagePW.close();
-    }
-
-    /**
-     * Copy the package.json file from the jjjrmi .jar to the output path.
-     *
-     * @throws FileNotFoundException
-     * @throws IOException
-     */
-    private void copyPackageJSON() throws FileNotFoundException, IOException {
-        InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("package.json");
-
-        if (inputStream == null) {
-            throw new FileNotFoundException("template package.json not found");
-        }
-
-        InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-        TemplateVariableReader templateVariableReader = new TemplateVariableReader(inputStreamReader);
-
-        /* set variables to be copied into package.json template */
-        templateVariableReader.set("packageName", this.packageName);
-        templateVariableReader.set("version", this.version);
-        templateVariableReader.set("packageFileName", this.packageFileName);
-
-        String packageJsonPath = String.format("%s/%s/package.json", this.destination, this.packageName);
-        File file = new File(packageJsonPath);
-
-        FileWriter fileWriter = new FileWriter(file);
-
-        char[] cbuf = new char[32];
-        int r = 0;
-        while ((r = templateVariableReader.read(cbuf, 0, cbuf.length)) != -1) {
-            fileWriter.write(cbuf, 0, r);
-        }
-
-        fileWriter.close();
+        for (String s : includeFiles) base.addInclude(s);
+        for (String s : excludeFiles) base.addExclude(s);
     }
 }
+
