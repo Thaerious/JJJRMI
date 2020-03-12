@@ -4,7 +4,8 @@
   "description": "NPM file for compiling & testing jjjrmi",
   "main": "",
   "scripts": {
-    "test-setup": "node src/test/js/GenerateJSON.js target/test-data/from-js.json"
+    "test-setup": "node src/test/js/GenerateJSON.js target/test-data/from-js.json",
+    "test": "node src/test/js/RunTests.js"
   },
   "repository": {
     "type": "git",

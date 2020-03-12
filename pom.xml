@@ -90,6 +90,13 @@
     </properties>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        
         <plugins>
 
             <plugin>
@@ -109,22 +116,54 @@
                 <version>1.6.0</version>  
                 <executions>  
                     
-                    <!-- generate from-js.json file -->
+                    <execution>  
+                        <id>Generate-Test-Classes</id>
+                        <phase>test-compile</phase>  
+                        <goals>  
+                            <goal>java</goal>  
+                        </goals>  
+                        <configuration>  
+                            <mainClass>ca.frar.jjjrmi.CLI</mainClass>  
+                            <arguments>  
+                                <argument>-d=src/test/java/ca/frar/jjjrmi/testclasses/</argument>  
+                                <argument>-o=src/test/js/testclasses</argument>  
+                                <argument>-p</argument>  
+                            </arguments> 
+                            <classpathScope>test</classpathScope>
+                        </configuration>  
+                    </execution>                     
+                    
+                    <execution>  
+                        <id>Generate-Socket-Test-Classes</id>
+                        <phase>test-compile</phase>  
+                        <goals>  
+                            <goal>java</goal>  
+                        </goals>  
+                        <configuration>  
+                            <mainClass>ca.frar.jjjrmi.CLI</mainClass>  
+                            <arguments>  
+                                <argument>-d=src/test/java/ca/frar/jjjrmi/socket/testclasses/</argument>  
+                                <argument>-o=src/test/js/socket-testclasses</argument>  
+                                <argument>-p</argument>  
+                            </arguments> 
+                            <classpathScope>test</classpathScope>
+                        </configuration>  
+                    </execution> 
+                    
                     <execution>
-                        <id>Generate JS data file</id>
+                        <id>Generate-JS-data-file</id>
                         <phase>test-compile</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <executable>npm.cmd</executable>
+                            <executable>npm</executable>
                             <commandlineArgs>run test-setup</commandlineArgs>
                         </configuration>
                     </execution>
                     
-                    <!-- generate from-java.json file -->
                     <execution>  
-                        <id>Generate Java data file</id>
+                        <id>Generate-Java-data-file</id>
                         <phase>test-compile</phase>  
                         <goals>  
                             <goal>java</goal>  
@@ -137,6 +176,18 @@
                             <classpathScope>test</classpathScope>
                         </configuration>  
                     </execution> 
+                     
+                    <execution>
+                        <id>Run-JS-tests</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>npm</executable>
+                            <commandlineArgs>run test</commandlineArgs>
+                        </configuration>
+                    </execution>
                      
                 </executions>  
             </plugin>  
@@ -191,7 +242,7 @@
                 </executions>
             </plugin>
 
-<!--            <plugin>
+            <!--            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.4</version>
