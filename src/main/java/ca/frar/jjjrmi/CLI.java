@@ -19,8 +19,6 @@ import org.apache.maven.plugin.MojoFailureException;
  */
 public class CLI {
     public static void main(String... args) throws MojoExecutionException, MojoFailureException, FileNotFoundException, JSBuilderException, IOException {       
-        
-        
         CLI cli = new CLI();
         Base base = new Base();       
         cli.parseArgs(base, args);

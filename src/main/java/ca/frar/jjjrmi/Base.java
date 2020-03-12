@@ -36,7 +36,7 @@ import spoon.reflect.CtModel;
 public class Base {
 
     private String sourceDir;
-    private String packageFileName;
+    private String packageFileName = "packageFile";
     private String destination = "";
     private String packageName = "package";
     private String version = "0.0.0";
