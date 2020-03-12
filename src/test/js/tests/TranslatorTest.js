@@ -1,10 +1,10 @@
 /* global process */
 "use strict";
 "use strict";
-const TestFramework = require("./Framework").TestFramework;
-const Assert = require("./Framework").Assert;
-const Translator = require("../../main/js/translator/Translator");
-const packageFile = require("./testclasses/packageFile");
+const TestFramework = require("../Framework").TestFramework;
+const Assert = require("../Framework").Assert;
+const Translator = require("../../../main/js/translator/Translator");
+const packageFile = require("../testclasses/packageFile");
 
 class TranslatorTest extends TestFramework{
     constructor(){
@@ -77,5 +77,4 @@ class TranslatorTest extends TestFramework{
     }    
 };
 
-const test = new TranslatorTest();
-test.start(process.argv.slice(2));
+module.exports = TranslatorTest;

@@ -55,7 +55,7 @@ class TestFramework {
      * @param {type} list
      * @returns {undefined}
      */
-    async start(list){
+    async start(list = []){
         if (list.length === 0){
             await this.allTests();
         } else {

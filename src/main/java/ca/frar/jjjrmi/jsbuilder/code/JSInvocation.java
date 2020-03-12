@@ -10,6 +10,9 @@ import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
+import spoon.reflect.factory.Factory;
+import spoon.reflect.factory.TypeFactory;
+import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 
 public class JSInvocation extends AbstractJSCodeElement {
@@ -38,18 +41,11 @@ public class JSInvocation extends AbstractJSCodeElement {
     
     @Override
     public JSCodeElement get(){
-        CtTypeReference<?> typeRef = ctInvocation.getExecutable().getType();
-        CtTypeReference<Object> jjjTypeRef = typeRef.getFactory().Type().get(JJJObject.class).getReference();
-        boolean subtypeOf = typeRef.isSubtypeOf(jjjTypeRef);
-        
-        LOGGER.debug(subtypeOf);
-        
         if (name.equals("<init>")){
             return new JSSuperConstructor(ctInvocation);
         } else {
             return this;
         }
-        
     }
     
     /**

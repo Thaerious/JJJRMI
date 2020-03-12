@@ -10,13 +10,12 @@
 
 /* global process, Reflect */
 "use strict";
-const TestFramework = require("./Framework").TestFramework;
-const Assert = require("./Framework").Assert;
-const fs = require("fs");
-const Translator = require("../../main/js/translator/Translator");
-const PackageFile = require("./testclasses/packageFile");
+const TestFramework = require("../Framework").TestFramework;
+const Assert = require("../Framework").Assert;
+const Translator = require("../../../main/js/translator/Translator");
+const PackageFile = require("../testclasses/packageFile");
 
-class TestJavaToJS extends TestFramework{
+class DecoderTest extends TestFramework{
     constructor(json) {
         super();
         this.json = json;
@@ -210,14 +209,4 @@ class TestJavaToJS extends TestFramework{
     }    
 }
 
-if (process.argv.length < 3){
-    console.warn("Missing filename");
-    process.exit();
-}
-
-fs.readFile(process.argv[2], function (err, data) {
-    if (err)console.log(err);
-    let json = JSON.parse(data.toString());
-    let tests = new TestJavaToJS(json);
-    tests.start(process.argv.slice(3));
-});
+module.exports = DecoderTest;

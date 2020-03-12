@@ -19,6 +19,8 @@ import org.apache.maven.plugin.MojoFailureException;
  */
 public class CLI {
     public static void main(String... args) throws MojoExecutionException, MojoFailureException, FileNotFoundException, JSBuilderException, IOException {       
+        
+        
         CLI cli = new CLI();
         Base base = new Base();       
         cli.parseArgs(base, args);
@@ -29,12 +31,32 @@ public class CLI {
     
     public void parseArgs(Base base, String... args) {
         @SuppressWarnings("unchecked")
-        List<String> argList = new LinkedList<>();
-        for (String s : args) argList.add(s);
+        List<String> argList = prepArgs(args);
 
         while (!argList.isEmpty()) {
             parse(base, argList);
         }
+    }
+    
+    /**
+     * Replace any '=' with spaces.
+     * @param args
+     * @return 
+     */
+    public List<String> prepArgs(String ... args){
+        List<String> argList = new LinkedList<>();
+        for (String s : args){
+            if (s.indexOf('=') == -1){
+                argList.add(s);
+            } else {
+                String s1 = s.substring(0, s.indexOf('='));
+                String s2 = s.substring(s.indexOf('=') + 1);
+                argList.add(s1);
+                argList.add(s2);
+            }
+            
+        }
+        return argList;
     }
 
     public void parse(Base base, List<String> argList) {
