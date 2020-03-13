@@ -83,7 +83,11 @@ public class Base {
      * @param packageFileName the packageFileName to set
      */
     public void setPackageFileName(String packageFileName) {
-        this.packageFileName = packageFileName;
+        if (packageFileName.endsWith(".js")){
+            this.packageFileName = packageFileName;        
+        } else {
+            this.packageFileName = packageFileName + ".js";        
+        }
     }
 
     /**
@@ -159,18 +163,18 @@ public class Base {
         return files.filter((f) -> {
             return f.toString().endsWith(".java");
         })
-                .filter((f) -> {
-                    if (includes.isEmpty()) return true;
-                    int index = f.toString().lastIndexOf("/");
-                    String filename = f.toString().substring(index + 1);
-                    return this.includes.contains(filename);
-                })
-                .filter((f) -> {
-                    int index = f.toString().lastIndexOf("/");
-                    String filename = f.toString().substring(index + 1);
-                    return !this.excludes.contains(filename);
-                })
-                .collect(Collectors.toList());
+            .filter((f) -> {
+                if (includes.isEmpty()) return true;
+                int index = f.toString().lastIndexOf("/");
+                String filename = f.toString().substring(index + 1);
+                return this.includes.contains(filename);
+            })
+            .filter((f) -> {
+                int index = f.toString().lastIndexOf("/");
+                String filename = f.toString().substring(index + 1);
+                return !this.excludes.contains(filename);
+            })
+            .collect(Collectors.toList());
     }
 
     private static void writeClass(JSClassBuilder<?> jsClassBuilder, String rootPath) throws FileNotFoundException {
@@ -198,18 +202,13 @@ public class Base {
     public void output() throws FileNotFoundException, JSBuilderException, IOException {
         LOGGER.log(VERY_VERBOSE, "+------------------------------------------------------------------------------+");
         LOGGER.info("Javascript Code Generator: Generating output");
-        String rootPath;
-
-        /* if destination is not set use 'target/jjjrmi/packagename' */
-        if (destination.isEmpty()) rootPath = String.format("target/jjjrmi/%s", packageName);
-        else rootPath = String.format("%s", destination);
 
         LOGGER.log(VERY_VERBOSE, "Root Path: " + destination);
-        new File(rootPath).mkdirs();
+        new File(destination).mkdirs();
 
         for (JSClassBuilder<?> jsClassBuilder : jsParser.jsClassBuilders()) {
             LOGGER.info("file: " + jsClassBuilder.getSimpleName() + ".js");
-            Base.writeClass(jsClassBuilder, rootPath);
+            Base.writeClass(jsClassBuilder, destination);
 
             if (this.printXML) {
                 System.out.println(jsClassBuilder.toXML(0));
@@ -238,7 +237,7 @@ public class Base {
      * @throws FileNotFoundException
      */
     private void buildPackageJS() throws FileNotFoundException {
-        String pkgOutPath = String.format("%s/%s.js", this.destination, this.packageFileName);
+        String pkgOutPath = String.format("%s/%s", this.destination, this.packageFileName);
         File packageOutFile = new File(pkgOutPath);
         PrintWriter packagePW = new PrintWriter(new FileOutputStream(packageOutFile));
 
@@ -275,7 +274,7 @@ public class Base {
         templateVariableReader.set("version", this.version);
         templateVariableReader.set("packageFileName", this.packageFileName);
 
-        String packageJsonPath = String.format("%s/%s/package.json", this.destination, this.packageName);
+        String packageJsonPath = String.format("%s/package.json", this.destination);
         File file = new File(packageJsonPath);
 
         FileWriter fileWriter = new FileWriter(file);
