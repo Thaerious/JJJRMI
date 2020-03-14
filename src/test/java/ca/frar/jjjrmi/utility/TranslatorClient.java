@@ -7,7 +7,7 @@ package ca.frar.jjjrmi.utility;
 
 import ca.frar.jjjrmi.utility.StreamEcho;
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
-import ca.frar.jjjrmi.testclasses.None;
+import ca.frar.jjjrmi.translator.testclasses.None;
 import ca.frar.jjjrmi.translator.Translator;
 import ca.frar.jjjrmi.translator.TranslatorResult;
 import java.io.BufferedReader;

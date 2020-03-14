@@ -6,10 +6,10 @@
 package ca.frar.jjjrmi.translator;
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
 import ca.frar.jjjrmi.exceptions.RootException;
-import ca.frar.jjjrmi.testclasses.Has;
-import ca.frar.jjjrmi.testclasses.HasHandler;
-import ca.frar.jjjrmi.testclasses.Primitives;
-import ca.frar.jjjrmi.testclasses.Simple;
+import ca.frar.jjjrmi.translator.testclasses.Has;
+import ca.frar.jjjrmi.translator.testclasses.HasHandler;
+import ca.frar.jjjrmi.translator.testclasses.Primitives;
+import ca.frar.jjjrmi.translator.testclasses.Simple;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 

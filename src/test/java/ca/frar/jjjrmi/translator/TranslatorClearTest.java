@@ -8,9 +8,9 @@ package ca.frar.jjjrmi.translator;
 import ca.frar.jjjrmi.exceptions.DecoderException;
 import ca.frar.jjjrmi.exceptions.EncoderException;
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
-import ca.frar.jjjrmi.testclasses.ArrayWrapper;
+import ca.frar.jjjrmi.translator.testclasses.ArrayWrapper;
 import org.junit.jupiter.api.Test;
-import ca.frar.jjjrmi.testclasses.Simple;
+import ca.frar.jjjrmi.translator.testclasses.Simple;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**

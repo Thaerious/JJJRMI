@@ -125,7 +125,7 @@
                         <configuration>  
                             <mainClass>ca.frar.jjjrmi.CLI</mainClass>  
                             <arguments>  
-                                <argument>-d=src/test/java/ca/frar/jjjrmi/testclasses/</argument>  
+                                <argument>-d=src/test/java/ca/frar/jjjrmi/translator/testclasses/</argument>  
                                 <argument>-o=src/test/js/testclasses</argument>  
                                 <argument>-p</argument>  
                             </arguments> 
@@ -289,6 +289,9 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.4</version>
+                <configuration>
+                    <includes>**/*.*</includes>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>

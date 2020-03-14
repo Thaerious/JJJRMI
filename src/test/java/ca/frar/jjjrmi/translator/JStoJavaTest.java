@@ -1,7 +1,15 @@
 package ca.frar.jjjrmi.translator;
 
+import ca.frar.jjjrmi.translator.testclasses.CircularRef;
+import ca.frar.jjjrmi.translator.testclasses.Simple;
+import ca.frar.jjjrmi.translator.testclasses.DoNotRetainExtends;
+import ca.frar.jjjrmi.translator.testclasses.Has;
+import ca.frar.jjjrmi.translator.testclasses.HasHandler;
+import ca.frar.jjjrmi.translator.testclasses.PrimitivesExtended;
+import ca.frar.jjjrmi.translator.testclasses.None;
+import ca.frar.jjjrmi.translator.testclasses.Primitives;
+import ca.frar.jjjrmi.translator.testclasses.Shapes;
 import ca.frar.jjjrmi.exceptions.DecoderException;
-import ca.frar.jjjrmi.testclasses.*;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;

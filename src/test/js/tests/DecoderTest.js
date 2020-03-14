@@ -29,7 +29,7 @@ class DecoderTest extends TestFramework{
         translator.registerPackage(PackageFile);
         let text = JSON.stringify(this.json.none);
         let object = translator.decode(text).getRoot();
-        Assert.equals("ca.frar.jjjrmi.testclasses.None", object.constructor.__getClass());
+        Assert.equals("ca.frar.jjjrmi.translator.testclasses.None", object.constructor.__getClass());
     }
 
     /**
@@ -41,7 +41,7 @@ class DecoderTest extends TestFramework{
         let text = JSON.stringify(this.json.simple);
         let object = translator.decode(text).getRoot();
 
-        Assert.equals("ca.frar.jjjrmi.testclasses.Simple", object.constructor.__getClass());
+        Assert.equals("ca.frar.jjjrmi.translator.testclasses.Simple", object.constructor.__getClass());
         Assert.equals(5, object.x);
         Assert.equals(7, object.y);
         Assert.equals(PackageFile.Shapes.CIRCLE, object.shape);
@@ -54,7 +54,7 @@ class DecoderTest extends TestFramework{
         translator.registerPackage(PackageFile);
         let text = JSON.stringify(this.json.primitives);
         let object = translator.decode(text).getRoot();
-        Assert.equals("ca.frar.jjjrmi.testclasses.Primitives", object.constructor.__getClass());
+        Assert.equals("ca.frar.jjjrmi.translator.testclasses.Primitives", object.constructor.__getClass());
         Assert.equals("alpha9", object.string);
     }
     /**
@@ -65,7 +65,7 @@ class DecoderTest extends TestFramework{
         translator.registerPackage(PackageFile);
         let text = JSON.stringify(this.json.primitivesExtended);
         let object = translator.decode(text).getRoot();
-        Assert.equals("ca.frar.jjjrmi.testclasses.PrimitivesExtended", object.constructor.__getClass());
+        Assert.equals("ca.frar.jjjrmi.translator.testclasses.PrimitivesExtended", object.constructor.__getClass());
         Assert.equals("alpha16", object.string);
     }
     /**
@@ -76,7 +76,7 @@ class DecoderTest extends TestFramework{
         translator.registerPackage(PackageFile);
         let text = JSON.stringify(this.json.hasNull);
         let object = translator.decode(text).getRoot();
-        Assert.equals("ca.frar.jjjrmi.testclasses.Has", object.constructor.__getClass());
+        Assert.equals("ca.frar.jjjrmi.translator.testclasses.Has", object.constructor.__getClass());
         Assert.equals(null, object.t);
     }
 
@@ -154,7 +154,7 @@ class DecoderTest extends TestFramework{
         let object = translator.decode(text).getRoot();
         let target = object.target;
 
-        Assert.equals("ca.frar.jjjrmi.testclasses.CircularRef", object.constructor.__getClass());
+        Assert.equals("ca.frar.jjjrmi.translator.testclasses.CircularRef", object.constructor.__getClass());
         Assert.equals(object, target.target);
     }
 
@@ -169,7 +169,7 @@ class DecoderTest extends TestFramework{
         let text = JSON.stringify(this.json.handled);
         let object = translator.decode(text).getRoot();
 
-        Assert.equals("ca.frar.jjjrmi.testclasses.HasHandler", object.constructor.__getClass());
+        Assert.equals("ca.frar.jjjrmi.translator.testclasses.HasHandler", object.constructor.__getClass());
         Assert.equals(9, object.z);
     }
     /**
@@ -185,8 +185,8 @@ class DecoderTest extends TestFramework{
         let object1 = translator.decode(text).getRoot();
         let object2 = translator.decode(text).getRoot();
 
-        Assert.equals("ca.frar.jjjrmi.testclasses.DoNotRetainExtends", object1.constructor.__getClass());
-        Assert.equals("ca.frar.jjjrmi.testclasses.DoNotRetainExtends", object2.constructor.__getClass());
+        Assert.equals("ca.frar.jjjrmi.translator.testclasses.DoNotRetainExtends", object1.constructor.__getClass());
+        Assert.equals("ca.frar.jjjrmi.translator.testclasses.DoNotRetainExtends", object2.constructor.__getClass());
         Assert.notEquals(object1, object2);
     }
     
@@ -203,8 +203,8 @@ class DecoderTest extends TestFramework{
         let object1 = translator.decode(text).getRoot();
         let object2 = translator.decode(text).getRoot();
 
-        Assert.equals("ca.frar.jjjrmi.testclasses.DoNotRetainAnno", object1.constructor.__getClass());
-        Assert.equals("ca.frar.jjjrmi.testclasses.DoNotRetainAnno", object2.constructor.__getClass());
+        Assert.equals("ca.frar.jjjrmi.translator.testclasses.DoNotRetainAnno", object1.constructor.__getClass());
+        Assert.equals("ca.frar.jjjrmi.translator.testclasses.DoNotRetainAnno", object2.constructor.__getClass());
         Assert.notEquals(object1, object2);
     }    
 }

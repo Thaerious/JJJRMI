@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 public class JSParserTest {
     final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");
     final static String OUT_DIR = "deleteme";
-    final static String IN_DIR = "src/test/java/ca/frar/jjjrmi/testclasses/";
+    final static String IN_DIR = "src/test/java/ca/frar/jjjrmi/translator/testclasses/";
 
     public static void main(String ... args){
         try {
