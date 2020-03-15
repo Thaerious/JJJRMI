@@ -19,6 +19,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -34,7 +35,7 @@ import spoon.reflect.CtModel;
  * @author Ed Armstrong
  */
 public class Base {
-    private String sourceDir = "";
+    private ArrayList<String> inputDirectories = new ArrayList<>();
     private String packageFileName = "packageFile";
     private String destination = "";
     private String packageName = "package";
@@ -71,11 +72,11 @@ public class Base {
     /**
      * @param sourceDir the sourceDir to set
      */
-    public void setSourceDir(String sourceDir) {
+    public void addSourceDir(String sourceDir) {
         if (!sourceDir.endsWith("/")) {
-            this.sourceDir = sourceDir + "/";
+            this.inputDirectories.add(sourceDir + "/");
         } else {
-            this.sourceDir = sourceDir;
+            this.inputDirectories.add(sourceDir);
         }
     }
 
@@ -133,7 +134,9 @@ public class Base {
     }
 
     public void printInfo() {
-        LOGGER.info("source = "  + this.sourceDir);
+        for (String s : this.inputDirectories){
+            LOGGER.info("source = "  + s);
+        }        
         LOGGER.info("destination = " + this.destination);
         LOGGER.info("packageName = " + this.packageName);
         LOGGER.info("version = " + this.version);
@@ -152,15 +155,23 @@ public class Base {
         model.processWith(jsParser);
     }
 
-    private List<Path> getFiles() throws IOException {
-        if (!new File(this.sourceDir).exists()) {
-            LOGGER.error("Source directory does not exist: " + this.sourceDir);
+    private List<Path> getFiles() throws IOException{
+        List<Path> filePaths = new ArrayList<Path>();
+        for (String s : this.inputDirectories){
+            this.getFiles(s, filePaths);
+        }
+        return filePaths;
+    }
+    
+    private void getFiles(String sourceDir, List<Path> filePaths) throws IOException {
+        if (!new File(sourceDir).exists()) {
+            LOGGER.error("Source directory does not exist: " + sourceDir);
             System.exit(1);
         }
 
-        Stream<Path> files = Files.walk(Paths.get(this.sourceDir));
+        Stream<Path> files = Files.walk(Paths.get(sourceDir));
 
-        return files.filter((f) -> {
+        files.filter((f) -> {
             return f.toString().endsWith(".java");
         })
             .filter((f) -> {
@@ -174,7 +185,7 @@ public class Base {
                 String filename = f.toString().substring(index + 1);
                 return !this.excludes.contains(filename);
             })
-            .collect(Collectors.toList());
+            .forEach((p) -> filePaths.add(p));
     }
 
     private static void writeClass(JSClassBuilder<?> jsClassBuilder, String rootPath) throws FileNotFoundException {

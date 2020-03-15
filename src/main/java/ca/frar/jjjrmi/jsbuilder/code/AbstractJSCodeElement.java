@@ -26,15 +26,15 @@ public class AbstractJSCodeElement implements JSCodeElement {
         return this;
     }
 
-    public boolean isEmpty() {
-        return size() == 0;
+    public boolean noChildren() {
+        return countChildren() == 0;
     }
 
     public String scoped() {
         return toString();
     }
 
-    public int size(){
+    public int countChildren(){
         return childElements.size();
     }
     
@@ -63,7 +63,7 @@ public class AbstractJSCodeElement implements JSCodeElement {
         return generated;
     }
 
-    JSElementList generateList(List<CtExpression<?>> ctCodeElements) {
+    JSElementList generateList(List<? extends CtCodeElement> ctCodeElements) {
         JSElementList jsElementList = new JSElementList();
         
         for (CtCodeElement ctCodeElement : ctCodeElements){

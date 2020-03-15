@@ -1,13 +1,12 @@
 package ca.frar.jjjrmi.jsbuilder;
-
 import ca.frar.jjjrmi.CLI;
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
+import ca.frar.jjjrmi.jsbuilder.testclasses.*;
+import ca.frar.jjjrmi.translator.testclasses.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,7 +20,8 @@ import org.junit.jupiter.api.Test;
 public class JSParserTest {
     final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");
     final static String OUT_DIR = "deleteme";
-    final static String IN_DIR = "src/test/java/ca/frar/jjjrmi/translator/testclasses/";
+    final static String IN_DIR = "src/test/java/ca/frar/jjjrmi/translator/testclasses/ "
+                               + "src/test/java/ca/frar/jjjrmi/jsbuilder/testclasses/";
 
     public static void main(String ... args){
         try {
@@ -52,7 +52,7 @@ public class JSParserTest {
      */
     @Test
     public void test_simple() throws JJJRMIException, MojoExecutionException, MojoFailureException, JSBuilderException, IOException {
-        String className = "Simple";
+        String className = Simple.class.getSimpleName();
         CLI.main("-s", "-d", IN_DIR, "-i", className, "-o", OUT_DIR);
         assertTrue(new File(OUT_DIR + "/" + className + ".js").exists());
     }
@@ -63,7 +63,7 @@ public class JSParserTest {
      */
     @Test
     public void test_simple_has_require() throws JJJRMIException, MojoExecutionException, MojoFailureException, JSBuilderException, IOException {
-        String className = "Simple";
+        String className = Simple.class.getSimpleName();
         CLI.main("-s", "-d", IN_DIR, "-i", className, "-o", OUT_DIR);
         String contents = new String(Files.readAllBytes(Paths.get(OUT_DIR + "/" + className + ".js")));
         String assertString = "const Shapes = require(\"./Shapes\");";
@@ -78,14 +78,14 @@ public class JSParserTest {
      */
     @Test
     public void test_son_of_a_simple() throws JJJRMIException, MojoExecutionException, MojoFailureException, JSBuilderException, IOException {
-        String className = "ExtendsSimple";
+        String className = ExtendsSimple.class.getSimpleName();
         CLI.main("-s", "-d", IN_DIR, "-i", className, "-o", OUT_DIR);
         assertTrue(new File(OUT_DIR + "/" + className + ".js").exists());
     }
 
     @Test
     public void test_extends_jjjobject_not_has_require() throws JJJRMIException, MojoExecutionException, MojoFailureException, JSBuilderException, IOException {
-        String className = "None";
+        String className = None.class.getSimpleName();
         CLI.main("-s", "-d", IN_DIR, "-i", className, "-o", OUT_DIR);
         String contents = new String(Files.readAllBytes(Paths.get(OUT_DIR + "/" + className + ".js")));
         String assertString = "require";
@@ -94,7 +94,7 @@ public class JSParserTest {
 
     @Test
     public void test_extends_jjjobject_not_has_super() throws JJJRMIException, MojoExecutionException, MojoFailureException, JSBuilderException, IOException {
-        String className = "None";
+        String className = None.class.getSimpleName();
         CLI.main("-s", "-d", IN_DIR, "-i", className, "-o", OUT_DIR);
         String contents = new String(Files.readAllBytes(Paths.get(OUT_DIR + "/" + className + ".js")));
         String assertString = "super();";
@@ -103,7 +103,7 @@ public class JSParserTest {
 
     @Test
     public void test_deep_extends_jjjobject_has_require() throws JJJRMIException, MojoExecutionException, MojoFailureException, JSBuilderException, IOException {
-        String className = "ExtendsNone";
+        String className = ExtendsNone.class.getSimpleName();
         CLI.main("-s", "-d", IN_DIR, "-i", className, "-o", OUT_DIR);
         String contents = new String(Files.readAllBytes(Paths.get(OUT_DIR + "/" + className + ".js")));
         String assertString = "const None = require(\"./None\");";
@@ -112,7 +112,7 @@ public class JSParserTest {
 
     @Test
     public void test_deep_extends_jjjobject_has_super() throws JJJRMIException, MojoExecutionException, MojoFailureException, JSBuilderException, IOException {
-        String className = "ExtendsNone";
+        String className = ExtendsNone.class.getSimpleName();
         CLI.main("-s", "-d", IN_DIR, "-i", className, "-o", OUT_DIR);
         String contents = new String(Files.readAllBytes(Paths.get(OUT_DIR + "/" + className + ".js")));
         String assertString = "super();";
@@ -121,7 +121,7 @@ public class JSParserTest {
 
     @Test
     public void test_extends_jjj_anno_not_has_require() throws JJJRMIException, MojoExecutionException, MojoFailureException, JSBuilderException, IOException {
-        String className = "NoneAnnotated";
+        String className = NoneAnnotated.class.getSimpleName();
         CLI.main("-s", "-d", IN_DIR, "-i", className, "-o", OUT_DIR);
         String contents = new String(Files.readAllBytes(Paths.get(OUT_DIR + "/" + className + ".js")));
         String assertString = "require";
@@ -130,7 +130,7 @@ public class JSParserTest {
 
     @Test
     public void test_deep_extends_jjj_anno_has_require() throws JJJRMIException, MojoExecutionException, MojoFailureException, JSBuilderException, IOException {
-        String className = "ExtendsNoneAnnotated";
+        String className = ExtendsNoneAnnotated.class.getSimpleName();
         CLI.main("-s", "-d", IN_DIR, "-i", className, "-o", OUT_DIR);
         String contents = new String(Files.readAllBytes(Paths.get(OUT_DIR + "/" + className + ".js")));
         String assertString = "const NoneAnnotated = require(\"./NoneAnnotated\");";
@@ -140,7 +140,7 @@ public class JSParserTest {
 
     @Test
     public void test_extends_jjj_anno_not_has_super() throws JJJRMIException, MojoExecutionException, MojoFailureException, JSBuilderException, IOException {
-        String className = "NoneAnnotated";
+        String className = NoneAnnotated.class.getSimpleName();
         CLI.main("-s", "-d", IN_DIR, "-i", className, "-o", OUT_DIR);
         String contents = new String(Files.readAllBytes(Paths.get(OUT_DIR + "/" + className + ".js")));
         String assertString = "super();";
@@ -149,7 +149,7 @@ public class JSParserTest {
 
     @Test
     public void test_deep_extends_jjj_anno_has_super() throws JJJRMIException, MojoExecutionException, MojoFailureException, JSBuilderException, IOException {
-        String className = "ExtendsNoneAnnotated";
+        String className = ExtendsNoneAnnotated.class.getSimpleName();
         CLI.main("-s", "-d", IN_DIR, "-i", className, "-o", OUT_DIR);
         String contents = new String(Files.readAllBytes(Paths.get(OUT_DIR + "/" + className + ".js")));
         String assertString = "super();";
@@ -163,7 +163,7 @@ public class JSParserTest {
      */
     @Test
     public void test_is_handler() throws JJJRMIException, MojoExecutionException, MojoFailureException, JSBuilderException, IOException {
-        String className = "IsHandler";
+        String className = IsHandler.class.getSimpleName();
         CLI.main("-s", "-d", IN_DIR, "-i", className, "-o", OUT_DIR);
         String contents = new String(Files.readAllBytes(Paths.get(OUT_DIR + "/" + className + ".js")));
         assertTrue(contents.contains("extends AHandler"));
@@ -176,7 +176,7 @@ public class JSParserTest {
      */
     @Test
     public void test_do_not_retain() throws JJJRMIException, MojoExecutionException, MojoFailureException, JSBuilderException, IOException {
-        String className = "NoRetain";
+        String className = NoRetain.class.getSimpleName();
         CLI.main("-s", "-d", IN_DIR, "-i", className, "-o", OUT_DIR);
         String contents = new String(Files.readAllBytes(Paths.get(OUT_DIR + "/" + className + ".js")));
         contents = contents.replaceAll("[ \t\r\n]+", " ");
@@ -189,7 +189,7 @@ public class JSParserTest {
      */
     @Test
     public void test_retain() throws JJJRMIException, MojoExecutionException, MojoFailureException, JSBuilderException, IOException {
-        String className = "None";
+        String className = None.class.getSimpleName();
         CLI.main("-s", "-d", IN_DIR, "-i", className, "-o", OUT_DIR);
         String contents = new String(Files.readAllBytes(Paths.get(OUT_DIR + "/" + className + ".js")));
         contents = contents.replaceAll("[ \t\r\n]+", " ");
@@ -201,10 +201,21 @@ public class JSParserTest {
      */
     @Test
     public void test_variable_size_array() throws JJJRMIException, MojoExecutionException, MojoFailureException, JSBuilderException, IOException {
-        String className = "VariableSizeArray";
+        String className = VariableSizeArray.class.getSimpleName();
         CLI.main("-s", "-d", IN_DIR, "-i", className, "-o", OUT_DIR);
         String contents = new String(Files.readAllBytes(Paths.get(OUT_DIR + "/" + className + ".js")));
         contents = contents.replaceAll("[ \t\r\n]+", " ");
         assertTrue(contents.contains("new Array(size);"));
     }    
+    
+    /**
+     * JS Switch statements match their Java counterpart.
+     */
+    @Test
+    public void test_switch() throws JJJRMIException, MojoExecutionException, MojoFailureException, JSBuilderException, IOException {
+        String className = Switched.class.getSimpleName();
+        CLI.main("-s", "-d", IN_DIR, "-i", className, "-o", OUT_DIR);
+        String contents = new String(Files.readAllBytes(Paths.get(OUT_DIR + "/" + className + ".js")));
+        assertTrue(contents.contains("case \"-0.5 -1.0 0.0\": return Cardinality.S;"));
+    }       
 }

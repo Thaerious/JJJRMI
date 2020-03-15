@@ -4,7 +4,7 @@ import java.util.Set;
 import spoon.reflect.reference.CtTypeReference;
 
 public interface JSCodeElement {
-    boolean isEmpty();
+    boolean noChildren();
     String scoped();
     Set<CtTypeReference> getRequires();
     String toXML(int indent);

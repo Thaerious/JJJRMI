@@ -48,7 +48,7 @@ public class JSNewArray extends AbstractJSCodeElement {
     public String toXML(int indent) {
         HashMap<String, String> hashMap = new HashMap<>();
         hashMap.put("array_size", "" + this.arraySize);
-        hashMap.put("element_count", "" + this.elements.size());
+        hashMap.put("element_count", "" + this.elements.countChildren());
         return toXML(indent, hashMap);
     }
 }

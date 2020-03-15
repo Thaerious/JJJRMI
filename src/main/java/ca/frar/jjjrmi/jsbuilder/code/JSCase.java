@@ -11,13 +11,14 @@ public class JSCase extends AbstractJSCodeElement {
     public JSCase(CtCase<?> ctCase) {
         LOGGER.trace(this.getClass().getSimpleName());
         expression = this.generate(ctCase.getCaseExpression());
-        body = new JSElementList(ctCase.getStatements());
+        System.out.println(expression);
+        body = this.generateList(ctCase.getStatements());
     }
 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        if (expression.isEmpty()) {
+        if (expression.getClass() == JSEmptyElement.class) {
             builder.append("default: ");
         } else {
             builder.append("case ");

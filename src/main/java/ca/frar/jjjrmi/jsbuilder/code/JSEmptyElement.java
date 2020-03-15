@@ -13,7 +13,7 @@ public class JSEmptyElement extends AbstractJSCodeElement {
         return "";
     }
 
-    public boolean isEmpty(){
+    public boolean noChildren(){
         return true;
     }
 

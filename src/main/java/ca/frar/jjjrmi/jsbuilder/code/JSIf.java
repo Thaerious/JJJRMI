@@ -23,11 +23,11 @@ public class JSIf extends AbstractJSCodeElement {
         builder.append(condition);
         builder.append(")");
 
-        if (!thenStatement.isEmpty()) {
+        if (!thenStatement.noChildren()) {
             builder.append(thenStatement.toString());
         }
 
-        if (!elseStatement.isEmpty()) {
+        if (!elseStatement.noChildren()) {
             builder.append("else ");
             builder.append(elseStatement);
         }

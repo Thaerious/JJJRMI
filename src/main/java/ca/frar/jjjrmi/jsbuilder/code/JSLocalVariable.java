@@ -16,7 +16,7 @@ public class JSLocalVariable extends AbstractJSCodeElement{
 
     @Override
     public String toString(){
-        if (rhs.isEmpty()) return "let " + lhs.toString();
+        if (rhs.noChildren()) return "let " + lhs.toString();
         else return "let " + lhs.toString() + " = " + rhs.toString();
     }
 }

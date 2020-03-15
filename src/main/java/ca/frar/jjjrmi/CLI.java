@@ -44,15 +44,23 @@ public class CLI {
     public List<String> prepArgs(String ... args){
         List<String> argList = new LinkedList<>();
         for (String s : args){
+            String value;
+            
             if (s.indexOf('=') == -1){
-                argList.add(s);
+                value = s;
             } else {
                 String s1 = s.substring(0, s.indexOf('='));
-                String s2 = s.substring(s.indexOf('=') + 1);
-                argList.add(s1);
-                argList.add(s2);
+                value = s.substring(s.indexOf('=') + 1);
+                argList.add(s1);                
             }
             
+            if (value.startsWith("\"") && value.endsWith("\"")){
+                argList.add(value);
+                continue;
+            }
+            
+            String[] splitString = value.split("[ \t\n]+");
+            for (String splitPart : splitString) argList.add(splitPart);
         }
         return argList;
     }
@@ -87,7 +95,9 @@ public class CLI {
                 break;
             case "-d":
             case "--dir":
-                base.setSourceDir(argList.remove(0));
+                while (!argList.isEmpty() && argList.get(0).charAt(0) != '-') {
+                    base.addSourceDir(argList.remove(0));
+                }
                 break;
             case "-o":
             case "--output":

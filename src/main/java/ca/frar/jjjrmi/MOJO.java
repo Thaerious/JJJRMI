@@ -39,7 +39,7 @@ public class MOJO extends AbstractMojo {
     }
 
     public void fillArguments(Base base){
-        base.setSourceDir(this.source);
+        base.addSourceDir(this.source);
         base.setDestination(this.destination + "/" + this.packageName);
         base.setGenerateJSON(this.generateJSON);
         base.setGeneratePackage(this.generatePackage);

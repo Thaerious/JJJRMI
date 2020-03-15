@@ -21,7 +21,7 @@ public class JSTry extends AbstractJSCodeElement {
         builder.append("try");
         builder.append(body.scoped());
         builder.append(catchers);
-        if (!finalizer.isEmpty()){
+        if (!finalizer.noChildren()){
             builder.append("finally");
             builder.append(finalizer.scoped());
         }
