@@ -358,7 +358,6 @@ public class JSClassBuilder<T> {
         for (CtAnnotation<?> ctAnnotation : annotations) {
             Annotation actualAnnotation = ctAnnotation.getActualAnnotation();
             if (actualAnnotation instanceof JSRequire) {
-                System.out.println(actualAnnotation);
                 this.requireSet.add(new RequireRecord((JSRequire) actualAnnotation));
             }
         }

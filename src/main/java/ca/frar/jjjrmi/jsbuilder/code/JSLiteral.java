@@ -18,12 +18,14 @@ public class JSLiteral extends AbstractJSCodeElement {
         if (ctLiteral.getValue() == null){
             value = "null";
         }
-        else if (ctLiteral.toString().endsWith("L")){
-            String s = ctLiteral.toString();
-            this.value = ctLiteral.toString().substring(0, s.length() - 1);
+        else if (ctLiteral.getValue().getClass() == Character.class){
+            this.value = "'" + ctLiteral.getValue() + "'";
         }
-        else        {
-            this.value = ctLiteral.toString();
+        else if (ctLiteral.getValue().getClass() == String.class){
+            this.value = "\"" + ctLiteral.getValue() + "\"";
+        }
+        else {
+            this.value = "" + ctLiteral.getValue();
         }
     }
 

@@ -1,5 +1,7 @@
 package ca.frar.jjjrmi.jsbuilder.code;
 import spoon.reflect.code.*;
+import spoon.reflect.declaration.CtElement;
+import spoon.reflect.reference.CtFieldReference;
 import spoon.support.reflect.code.CtReturnImpl;
 
 public class CodeFactory {
@@ -33,7 +35,7 @@ public class CodeFactory {
         }
     }
 
-    public static JSCodeElement generate(CtCodeElement ctCodeElement){
+    public static JSCodeElement generate(CtElement ctCodeElement){
         if (ctCodeElement == null) return new JSEmptyElement();
 
         switch (ctCodeElement.getClass().getCanonicalName()){
@@ -63,6 +65,7 @@ public class CodeFactory {
             case "spoon.support.reflect.code.CtExecutableReferenceExpressionImpl": break;
             case "spoon.support.reflect.code.CtExpressionImpl": break;
             case "spoon.support.reflect.code.CtFieldAccessImpl": break;
+//            case "spoon.support.reflect.reference.CtFieldReferenceImpl": return new JSFieldReference((CtFieldReference) ctCodeElement);
             case "spoon.support.reflect.code.CtFieldReadImpl": return new JSFieldRead((CtFieldRead) ctCodeElement);
             case "spoon.support.reflect.code.CtFieldWriteImpl": return new JSFieldWrite((CtFieldWrite) ctCodeElement);
             case "spoon.support.reflect.code.CtForImpl": return new JSFor((CtFor) ctCodeElement);

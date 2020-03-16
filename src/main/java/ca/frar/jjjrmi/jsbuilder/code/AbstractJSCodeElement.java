@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 import spoon.reflect.code.CtCodeElement;
-import spoon.reflect.code.CtExpression;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.reference.CtTypeReference;
 
 /**
@@ -57,7 +57,7 @@ public class AbstractJSCodeElement implements JSCodeElement {
      * @param ctCodeElement
      * @return
      */
-    JSCodeElement generate(CtCodeElement ctCodeElement) {
+    JSCodeElement generate(CtElement ctCodeElement) {
         JSCodeElement generated = CodeFactory.generate(ctCodeElement).get();
         this.childElements.add(generated);
         return generated;

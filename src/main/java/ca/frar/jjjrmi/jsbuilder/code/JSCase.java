@@ -11,7 +11,6 @@ public class JSCase extends AbstractJSCodeElement {
     public JSCase(CtCase<?> ctCase) {
         LOGGER.trace(this.getClass().getSimpleName());
         expression = this.generate(ctCase.getCaseExpression());
-        System.out.println(expression);
         body = this.generateList(ctCase.getStatements());
     }
 

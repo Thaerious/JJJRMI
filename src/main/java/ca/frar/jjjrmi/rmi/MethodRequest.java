@@ -50,7 +50,6 @@ public class MethodRequest extends ClientMessage{
                 for (int j = 0; j < argument.length; j++){
                     Array.set(newInstance, j, argument[j]);
                 }
-                System.out.println(newInstance.getClass());
                 methodArguments[i] = newInstance;
                 continue;
             }
