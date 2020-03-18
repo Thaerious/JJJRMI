@@ -1,8 +1,8 @@
 {
-  "name": "rmi",
+  "name": "jjjrmi",
   "version": "0.7.0",
   "description": "NPM file for compiling & testing jjjrmi",
-  "main": "",
+  "main": "src/main/js/packageFile.js",
   "scripts": {
     "test-setup": "node src/test/js/GenerateJSON.js target/test-data/from-js.json",
     "test": "node src/test/js/RunTests.js"
@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/Thaerious/JJJRMI/issues"
   },
-  "homepage": "https://github.com/Thaerious/JJJRMI#readme"
+  "homepage": "https://github.com/Thaerious/JJJRMI#readme",
+  "dependencies": {
+    "ws": "^7.2.3"
+  }
 }

@@ -131,5 +131,4 @@ public class AbstractJSCodeElement implements JSCodeElement {
     public String toXML(int indent) {
         return toXML(indent, new HashMap<>());
     }
-
 }

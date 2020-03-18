@@ -14,7 +14,7 @@ import org.apache.maven.project.MavenProject;
 public class MOJO extends AbstractMojo {
     private final Log LOGGER = getLog();
     @Parameter private String source = "src/main/java";
-    @Parameter private String destination = "target/jjjrmi";
+    @Parameter private String destination = null;
     @Parameter private String packageName = "package";
     @Parameter private String version = "0.0.0";
     @Parameter private boolean generateJSON = true;
@@ -39,8 +39,10 @@ public class MOJO extends AbstractMojo {
     }
 
     public void fillArguments(Base base){
+        if (this.destination == null) this.destination = "target/jjjrmi/" + this.packageName;
+        
         base.addSourceDir(this.source);
-        base.setDestination(this.destination + "/" + this.packageName);
+        base.setDestination(this.destination);
         base.setGenerateJSON(this.generateJSON);
         base.setGeneratePackage(this.generatePackage);
         base.setPackageFileName(this.packageFileName);

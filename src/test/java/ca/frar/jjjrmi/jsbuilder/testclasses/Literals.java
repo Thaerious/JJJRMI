@@ -13,6 +13,7 @@ import ca.frar.jjjrmi.socket.JJJObject;
  * @author Ed Armstrong
  */
 public class Literals extends JJJObject{
+    private static final long serialVersionUID = 1L;
     private final float x;
     private final Object y;
     private final long z;
@@ -30,5 +31,6 @@ public class Literals extends JJJObject{
         this.z = 5L;
         this.a = 5;
         Literals.b = 6;
+        Switched.value = "x";
     }
 }

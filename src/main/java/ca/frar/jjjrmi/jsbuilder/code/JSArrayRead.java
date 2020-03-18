@@ -21,5 +21,4 @@ public class JSArrayRead extends AbstractJSCodeElement {
         builder.append("]");
         return builder.toString();
     }
-
 }

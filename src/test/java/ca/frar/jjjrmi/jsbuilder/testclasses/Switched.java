@@ -5,7 +5,8 @@ import java.io.Serializable;
 
 public class Switched extends JJJObject implements Serializable {
     private static final long serialVersionUID = 1L;
-   
+    public static String value = "a";
+        
     @NativeJS
     public Cardinality cardinality(String target) {
         long a = 1L;

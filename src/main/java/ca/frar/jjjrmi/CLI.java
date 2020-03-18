@@ -38,10 +38,16 @@ public class CLI {
     
     /**
      * Replace any '=' with spaces.
+     * 
      * @param args
      * @return 
      */
     public List<String> prepArgs(String ... args){
+        /* put args together then reseperate them with spaces */
+        StringBuilder builder = new StringBuilder();
+        for (String s : args) builder.append(s).append(" ");
+        String[] split = builder.toString().split("[= \t]+");
+        
         List<String> argList = new LinkedList<>();
         for (String s : args){
             String value;

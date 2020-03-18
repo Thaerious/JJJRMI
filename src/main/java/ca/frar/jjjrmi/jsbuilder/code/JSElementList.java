@@ -2,6 +2,7 @@ package ca.frar.jjjrmi.jsbuilder.code;
 
 import static ca.frar.jjjrmi.jsbuilder.code.JSConstructorCall.LOGGER;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -135,4 +136,10 @@ public class JSElementList extends AbstractJSCodeElement {
     public void remove(int i) {
         this.childElements.remove(i);
     }
+    
+    public String toXML(int indent) {
+        HashMap<String, String> attributes = new HashMap<>();
+        attributes.put("require", "" + this.getRequires().toString());
+        return toXML(indent, attributes);
+    }    
 }

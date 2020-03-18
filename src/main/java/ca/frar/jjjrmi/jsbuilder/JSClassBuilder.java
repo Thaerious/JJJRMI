@@ -47,7 +47,7 @@ public class JSClassBuilder<T> {
     protected final CtClass<T> ctClass;
     protected final JJJOptionsHandler jjjOptions;
     protected Set<JSMethodBuilder> methods = new HashSet<>();
-    protected List<CtField<?>> staticFields = new ArrayList<>();
+    protected List<JSFieldDeclaration> staticFields = new ArrayList<>();
     protected List<JSCodeElement> sequel = new ArrayList<>();
     protected JSClassBuilder<?> container = null;
     protected HashSet<RequireRecord> requireSet = new HashSet<>(); // js require statements
@@ -398,11 +398,9 @@ public class JSClassBuilder<T> {
     }
 
     private void appendStaticFields(StringBuilder builder) {
-        for (CtField<?> ctField : this.staticFields) {
-            builder.append(this.getSimpleName()).append(".").append(ctField.getSimpleName());
-            CtExpression<?> assignment = ctField.getAssignment();
-            builder.append(" = ").append(assignment);
-            builder.append(";\n");
+        for (JSFieldDeclaration ctField : this.staticFields) {
+            builder.append(ctField.toString());
+            builder.append("\n");
         }
     }
 
@@ -495,6 +493,10 @@ public class JSClassBuilder<T> {
             builder.append(method.toXML(indent + 1));
         }
 
+        for (JSFieldDeclaration ctField : this.staticFields) {
+            builder.append(ctField.toXML(indent + 1));
+        }        
+        
         for (int i = 0; i < indent; i++) builder.append("\t");
         builder.append("</").append(this.getClass().getSimpleName()).append(">\n");
 
@@ -520,7 +522,7 @@ public class JSClassBuilder<T> {
             }
 
             if (ctFieldRef.getDeclaration() == null) continue;
-            this.staticFields.add(ctField);
+            this.staticFields.add(new JSFieldDeclaration(ctField));
         }
     }
 

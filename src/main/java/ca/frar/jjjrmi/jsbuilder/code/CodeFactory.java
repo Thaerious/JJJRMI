@@ -65,7 +65,6 @@ public class CodeFactory {
             case "spoon.support.reflect.code.CtExecutableReferenceExpressionImpl": break;
             case "spoon.support.reflect.code.CtExpressionImpl": break;
             case "spoon.support.reflect.code.CtFieldAccessImpl": break;
-//            case "spoon.support.reflect.reference.CtFieldReferenceImpl": return new JSFieldReference((CtFieldReference) ctCodeElement);
             case "spoon.support.reflect.code.CtFieldReadImpl": return new JSFieldRead((CtFieldRead) ctCodeElement);
             case "spoon.support.reflect.code.CtFieldWriteImpl": return new JSFieldWrite((CtFieldWrite) ctCodeElement);
             case "spoon.support.reflect.code.CtForImpl": return new JSFor((CtFor) ctCodeElement);
