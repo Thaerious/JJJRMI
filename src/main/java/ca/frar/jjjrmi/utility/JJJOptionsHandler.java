@@ -6,7 +6,7 @@ import ca.frar.jjjrmi.annotations.JJJ;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 import ca.frar.jjjrmi.annotations.IsSocket;
-import ca.frar.jjjrmi.socket.JJJObject;
+import ca.frar.jjjrmi.rmi.socket.JJJObject;
 import ca.frar.jjjrmi.translator.AHandler;
 import spoon.reflect.reference.CtTypeReference;
 

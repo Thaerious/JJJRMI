@@ -3,7 +3,7 @@ import ca.frar.jjjrmi.annotations.Transient;
 import ca.frar.jjjrmi.exceptions.DecoderException;
 import ca.frar.jjjrmi.exceptions.MissingConstructorException;
 import ca.frar.jjjrmi.exceptions.UnknownClassException;
-import ca.frar.jjjrmi.socket.JJJObject;
+import ca.frar.jjjrmi.rmi.socket.JJJObject;
 import ca.frar.jjjrmi.utility.JJJOptionsHandler;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;

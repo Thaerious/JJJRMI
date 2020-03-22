@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ca.frar.jjjrmi.socket;
+package ca.frar.jjjrmi.rmi.socket;
 
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
 import ca.frar.jjjrmi.rmi.ReadyMessage;

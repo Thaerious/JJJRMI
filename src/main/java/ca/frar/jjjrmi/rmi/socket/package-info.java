@@ -3,4 +3,4 @@
  * annotation on any methods that are to be accessible to the client.  All remote methods must be public.  If the class
  * is to be instantiated automatically it needs to include a zero-parameter constructor, this can have any accessibility.
  */
-package ca.frar.jjjrmi.socket;
+package ca.frar.jjjrmi.rmi.socket;

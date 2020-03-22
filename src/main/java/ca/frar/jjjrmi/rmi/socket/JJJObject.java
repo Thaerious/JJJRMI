@@ -1,4 +1,4 @@
-package ca.frar.jjjrmi.socket;
+package ca.frar.jjjrmi.rmi.socket;
 
 import ca.frar.jjjrmi.annotations.DoNotInvoke;
 import ca.frar.jjjrmi.annotations.JJJ;
@@ -30,7 +30,7 @@ public class JJJObject implements HasWebsockets {
 
     @DoNotInvoke
     synchronized public void invokeClientMethod(String method, Object... args) {
-        for (ca.frar.jjjrmi.socket.InvokesMethods invokes : this.getRemoteInvokers()) {
+        for (ca.frar.jjjrmi.rmi.socket.InvokesMethods invokes : this.getRemoteInvokers()) {
             invokes.invokeClientMethod(this, method, args);
         }
     }

@@ -5,7 +5,7 @@
  */
 package ca.frar.jjjrmi.socket.testclasses;
 
-import ca.frar.jjjrmi.socket.JJJSocket;
+import ca.frar.jjjrmi.rmi.socket.JJJSocket;
 
 /**
  *

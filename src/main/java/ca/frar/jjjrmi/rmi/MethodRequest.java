@@ -1,8 +1,6 @@
 package ca.frar.jjjrmi.rmi;
 import ca.frar.jjjrmi.annotations.JJJ;
 import ca.frar.jjjrmi.annotations.NativeJS;
-import ca.frar.jjjrmi.annotations.ProcessLevel;
-import ca.frar.jjjrmi.annotations.SkipJS;
 import static ca.frar.jjjrmi.rmi.ClientMessageType.METHOD_REQUEST;
 import java.lang.reflect.Array;
 import java.lang.reflect.Parameter;
@@ -19,7 +17,6 @@ public class MethodRequest extends ClientMessage{
     public String methodName;
     public Object[] methodArguments;
 
-    @SkipJS
     private MethodRequest(){
         super(METHOD_REQUEST);
     }
@@ -38,7 +35,6 @@ public class MethodRequest extends ClientMessage{
     parameter types.  The method parameter types are not known when the message is first decoded.
     @param parameters
     */
-    @SkipJS
     public void update(Parameter[] parameters) {
         for (int i = 0; i < parameters.length; i++){
             Parameter parameter = parameters[i];
@@ -91,7 +87,6 @@ public class MethodRequest extends ClientMessage{
         }
     }
 
-    @SkipJS
     @Override
     public String toString(){
         StringBuilder builder = new StringBuilder();

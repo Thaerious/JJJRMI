@@ -2,7 +2,7 @@ package ca.frar.jjjrmi.translator;
 import ca.frar.jjjrmi.annotations.Transient;
 import ca.frar.jjjrmi.exceptions.EncoderException;
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
-import ca.frar.jjjrmi.socket.JJJObject;
+import ca.frar.jjjrmi.rmi.socket.JJJObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import org.json.JSONObject;

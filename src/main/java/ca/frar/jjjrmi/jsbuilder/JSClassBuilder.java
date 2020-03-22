@@ -16,7 +16,7 @@ import ca.frar.jjjrmi.jsbuilder.code.JSCodeSnippet;
 import ca.frar.jjjrmi.jsbuilder.code.JSElementList;
 import ca.frar.jjjrmi.jsbuilder.code.JSFieldDeclaration;
 import ca.frar.jjjrmi.jsbuilder.code.JSSuperConstructor;
-import ca.frar.jjjrmi.socket.JJJObject;
+import ca.frar.jjjrmi.rmi.socket.JJJObject;
 import ca.frar.jjjrmi.translator.AHandler;
 import ca.frar.jjjrmi.translator.HandlerFactory;
 import ca.frar.jjjrmi.utility.JJJOptionsHandler;

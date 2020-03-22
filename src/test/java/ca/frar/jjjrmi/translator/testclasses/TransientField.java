@@ -7,7 +7,7 @@ package ca.frar.jjjrmi.translator.testclasses;
 
 import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.annotations.Transient;
-import ca.frar.jjjrmi.socket.JJJObject;
+import ca.frar.jjjrmi.rmi.socket.JJJObject;
 
 /**
  * Transient annotations prevent the field from being encoded.  When this object

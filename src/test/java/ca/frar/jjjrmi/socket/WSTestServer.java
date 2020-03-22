@@ -1,6 +1,6 @@
 package ca.frar.jjjrmi.socket;
 import ca.frar.jjjrmi.socket.testclasses.TestSocket;
-import ca.frar.jjjrmi.socket.JJJSocket;
+import ca.frar.jjjrmi.rmi.socket.JJJSocket;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;

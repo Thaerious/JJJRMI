@@ -1,4 +1,4 @@
-package ca.frar.jjjrmi.socket;
+package ca.frar.jjjrmi.rmi.socket;
 import ca.frar.jjjrmi.annotations.DoNotInvoke;
 import ca.frar.jjjrmi.annotations.JJJ;
 import java.util.Collection;

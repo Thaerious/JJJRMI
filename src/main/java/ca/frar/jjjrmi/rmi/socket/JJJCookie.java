@@ -1,5 +1,5 @@
-package ca.frar.jjjrmi.socket;
-import static ca.frar.jjjrmi.socket.JJJCookie.SameSitePolicy.None;
+package ca.frar.jjjrmi.rmi.socket;
+import static ca.frar.jjjrmi.rmi.socket.JJJCookie.SameSitePolicy.None;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;

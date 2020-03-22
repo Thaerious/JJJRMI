@@ -1,4 +1,4 @@
-package ca.frar.jjjrmi.socket;
+package ca.frar.jjjrmi.rmi.socket;
 import ca.frar.jjjrmi.annotations.ServerSide;
 import java.lang.reflect.Method;
 import java.util.HashMap;

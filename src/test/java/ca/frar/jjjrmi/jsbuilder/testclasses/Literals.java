@@ -6,7 +6,7 @@
 package ca.frar.jjjrmi.jsbuilder.testclasses;
 
 import ca.frar.jjjrmi.annotations.NativeJS;
-import ca.frar.jjjrmi.socket.JJJObject;
+import ca.frar.jjjrmi.rmi.socket.JJJObject;
 
 /**
  *

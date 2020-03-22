@@ -1,7 +1,7 @@
 package ca.frar.jjjrmi.jsbuilder.code;
 import ca.frar.jjjrmi.annotations.DoNotInvoke;
 import static ca.frar.jjjrmi.jsbuilder.code.JSConstructorCall.LOGGER;
-import ca.frar.jjjrmi.socket.JJJObject;
+import ca.frar.jjjrmi.rmi.socket.JJJObject;
 import ca.frar.jjjrmi.utility.JJJOptionsHandler;
 import java.util.HashMap;
 import java.util.List;

@@ -5,8 +5,6 @@
  */
 package ca.frar.jjjrmi.translator.testclasses;
 
-import ca.frar.jjjrmi.annotations.Handles;
-import ca.frar.jjjrmi.annotations.IsAHandler;
 import ca.frar.jjjrmi.annotations.JJJ;
 
 /**

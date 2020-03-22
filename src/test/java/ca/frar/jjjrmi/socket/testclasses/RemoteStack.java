@@ -2,7 +2,7 @@ package ca.frar.jjjrmi.socket.testclasses;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.annotations.ServerSide;
 import ca.frar.jjjrmi.annotations.Transient;
-import ca.frar.jjjrmi.socket.JJJObject;
+import ca.frar.jjjrmi.rmi.socket.JJJObject;
 import java.util.ArrayList;
 
 public class RemoteStack extends JJJObject{

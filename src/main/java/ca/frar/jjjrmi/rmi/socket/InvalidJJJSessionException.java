@@ -1,4 +1,4 @@
-package ca.frar.jjjrmi.socket;
+package ca.frar.jjjrmi.rmi.socket;
 
 public class InvalidJJJSessionException extends Exception{
 

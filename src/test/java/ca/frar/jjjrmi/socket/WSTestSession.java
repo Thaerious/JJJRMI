@@ -1,4 +1,5 @@
 package ca.frar.jjjrmi.socket;
+import ca.frar.jjjrmi.rmi.socket.JJJSocket;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
