@@ -27,7 +27,6 @@ import org.reflections.scanners.TypeAnnotationsScanner;
  * @author Ed Armstrong
  */
 public class HandlerFactory {
-
     private static HandlerFactory instance = null;
     private final HashMap<String, Class<? extends AHandler<?>>> classMap = new HashMap<>();
 

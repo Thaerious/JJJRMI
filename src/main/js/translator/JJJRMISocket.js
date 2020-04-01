@@ -61,8 +61,8 @@ class JJJRMISocket {
                 reject(err);
             };
 
-            this.socket.onmessage = (data) => {
-                this.onMessage(data);
+            this.socket.onmessage = (event) => {
+                this.onMessage(event);
             }
             this.nextUID = 0;
             this.callback = {};
@@ -90,10 +90,14 @@ class JJJRMISocket {
      * @param {type} evt
      * @returns {undefined}
      */
-    onMessage(data) {
+    onMessage(event) {
         /* the main translation from json to js is triggered here */
-        LOGGER.log("received+", JSON.stringify(JSON.parse(data), null, 2));
-        let rmiMessage = this.translator.decode(data).getRoot();
+        LOGGER.log("received+", JSON.stringify(JSON.parse(event.data), null, 2));
+
+        let json = JSON.parse(event.data);
+        console.log(json["new-objects"]["S18"]);
+
+        let rmiMessage = this.translator.decode(event.data).getRoot();
         LOGGER.log("received", rmiMessage);
 
         switch (rmiMessage.type) {

@@ -19,6 +19,8 @@ class AHandler {
         return decoded;
     }
     decodeObject(jsonFieldName){
+        console.log(this.json);
+        console.log(`${Constants.FieldsParam} ${jsonFieldName}`);
         let jsonField = this.json[Constants.FieldsParam][jsonFieldName];
         let translator = this.translatorResult.getTranslator();
         let decoded = new Decoder(jsonField, translator).decode();
