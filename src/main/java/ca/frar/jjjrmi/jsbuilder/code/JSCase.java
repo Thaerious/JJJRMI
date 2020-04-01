@@ -1,5 +1,8 @@
 package ca.frar.jjjrmi.jsbuilder.code;
 
+import ca.frar.jjjrmi.jsbuilder.JSCodeElement;
+import ca.frar.jjjrmi.jsbuilder.AbstractJSCodeElement;
+import ca.frar.jjjrmi.jsbuilder.JSElementList;
 import static ca.frar.jjjrmi.Global.LOGGER;
 import spoon.reflect.code.CtCase;
 

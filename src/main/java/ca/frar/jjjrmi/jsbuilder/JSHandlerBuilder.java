@@ -5,6 +5,7 @@
  */
 package ca.frar.jjjrmi.jsbuilder;
 
+import ca.frar.jjjrmi.Global;
 import static ca.frar.jjjrmi.Global.LOGGER;
 import static ca.frar.jjjrmi.Global.VERY_VERBOSE;
 import ca.frar.jjjrmi.annotations.Handles;
@@ -23,13 +24,13 @@ public class JSHandlerBuilder<T> extends JSClassBuilder<T>{
     }
     
     JSClassBuilder<T> build() {
-        LOGGER.log(VERY_VERBOSE, "Building AHandler");
+        LOGGER.log(VERY_VERBOSE, Global.line("Building AHandler"));
         
         Handles handles = ctClass.getAnnotation(Handles.class);
         if (handles == null) throw new NullPointerException("@Handles missing in: " + this.ctClass.getQualifiedName());
         
         getHeader().setExtend("AHandler");
-        addRequire("AHandler", "jjjrmi/translator/AHandler", "");
+        addRequire("AHandler", "jjjrmi", "AHandler");
         
         super.build();        
         

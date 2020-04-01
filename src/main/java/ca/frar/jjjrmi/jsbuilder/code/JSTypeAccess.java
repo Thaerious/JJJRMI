@@ -1,4 +1,5 @@
 package ca.frar.jjjrmi.jsbuilder.code;
+import ca.frar.jjjrmi.jsbuilder.AbstractJSCodeElement;
 import static ca.frar.jjjrmi.Global.LOGGER;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import java.util.HashMap;
@@ -29,8 +30,8 @@ public class JSTypeAccess extends AbstractJSCodeElement {
     @Override
     public String toXML(int indent) {
         HashMap<String, String> attributes = new HashMap<>();
-        attributes.put("name", "" + ctTypeAccess.getAccessedType().getSimpleName());        
-        return toXML(indent, attributes);
+        this.setAttr("name", "" + ctTypeAccess.getAccessedType().getSimpleName());        
+        return super.toXML(indent);
     }    
     
     @Override

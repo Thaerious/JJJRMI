@@ -1,4 +1,6 @@
 package ca.frar.jjjrmi.jsbuilder.code;
+import ca.frar.jjjrmi.jsbuilder.AbstractJSCodeElement;
+import ca.frar.jjjrmi.jsbuilder.JSElementList;
 import static ca.frar.jjjrmi.Global.LOGGER;
 import spoon.reflect.code.CtInvocation;
 
@@ -11,7 +13,7 @@ public class JSSuperConstructor extends AbstractJSCodeElement {
     }
 
     public JSSuperConstructor() {
-        arguments = new JSElementList();
+        arguments = this.generateList();
     }    
     
     @Override

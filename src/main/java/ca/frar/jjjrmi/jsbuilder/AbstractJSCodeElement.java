@@ -3,7 +3,8 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ca.frar.jjjrmi.jsbuilder.code;
+package ca.frar.jjjrmi.jsbuilder;
+import ca.frar.jjjrmi.jsbuilder.code.CodeFactory;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,7 +21,8 @@ import spoon.reflect.reference.CtTypeReference;
  */
 public class AbstractJSCodeElement implements JSCodeElement {
     ArrayList<JSCodeElement> childElements = new ArrayList<>();
-
+    HashMap<String, Object> attributes = new HashMap<>();
+    
     @Override
     public JSCodeElement get() {
         return this;
@@ -29,6 +31,10 @@ public class AbstractJSCodeElement implements JSCodeElement {
     public boolean noChildren() {
         return countChildren() == 0;
     }
+    
+    public boolean hasChildren() {
+        return countChildren() != 0;
+    }    
 
     public String scoped() {
         return toString();
@@ -57,13 +63,17 @@ public class AbstractJSCodeElement implements JSCodeElement {
      * @param ctCodeElement
      * @return
      */
-    JSCodeElement generate(CtElement ctCodeElement) {
+    public JSCodeElement generate(CtElement ctCodeElement) {
         JSCodeElement generated = CodeFactory.generate(ctCodeElement).get();
         this.childElements.add(generated);
         return generated;
     }
 
-    JSElementList generateList(List<? extends CtCodeElement> ctCodeElements) {
+    public JSElementList generateList() {
+        return new JSElementList();
+    }
+    
+    public JSElementList generateList(List<? extends CtCodeElement> ctCodeElements) {        
         JSElementList jsElementList = new JSElementList();
         
         for (CtCodeElement ctCodeElement : ctCodeElements){
@@ -90,7 +100,7 @@ public class AbstractJSCodeElement implements JSCodeElement {
         return requires;
     }
 
-    public String toXML(int indent, HashMap<String, String> attributes) {
+    public String toXML(int indent) {
         StringBuilder builder = new StringBuilder();
 
         String nested = this.toXMLNested(indent + 1);
@@ -128,7 +138,18 @@ public class AbstractJSCodeElement implements JSCodeElement {
         return builder.toString();
     }
 
-    public String toXML(int indent) {
-        return toXML(indent, new HashMap<>());
+    @Override
+    public void setAttr(String key, Object value) {
+        this.attributes.put(key, value);
+    }
+
+    @Override
+    public <T> T getAttr(String key) {
+        return (T)this.attributes.get(key);
+    }
+
+    @Override
+    public boolean hasAttr(String key) {
+        return this.attributes.containsKey(key);
     }
 }

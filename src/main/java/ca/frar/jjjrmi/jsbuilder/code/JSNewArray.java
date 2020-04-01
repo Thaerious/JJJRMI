@@ -1,5 +1,7 @@
 package ca.frar.jjjrmi.jsbuilder.code;
 
+import ca.frar.jjjrmi.jsbuilder.AbstractJSCodeElement;
+import ca.frar.jjjrmi.jsbuilder.JSElementList;
 import static ca.frar.jjjrmi.Global.LOGGER;
 import ca.frar.jjjrmi.jsbuilder.JSBuilderException;
 import java.util.HashMap;
@@ -20,35 +22,37 @@ public class JSNewArray extends AbstractJSCodeElement {
             msg += dimensionExpressions.size() + " dimensions found.";
             throw new JSBuilderException(msg);
         }
-        
-        if (dimensionExpressions.size() == 0){
-            this.arraySize = "0";
-        }
-        else{
-            CtExpression<Integer> ctExpression = dimensionExpressions.get(0);
-            this.arraySize = ctExpression.toString();
-        }
+
         List<CtExpression<?>> elements = ctNewArray.getElements();
         if (elements != null){
             this.elements = this.generateList(elements);
+        } else {
+            this.elements = this.generateList();
+        }
+        
+        if (!dimensionExpressions.isEmpty()){
+            CtExpression<Integer> ctExpression = dimensionExpressions.get(0);
+            this.arraySize = ctExpression.toString();
+        }
+        else if (this.elements.countChildren() == 0){
+            this.arraySize = "0";
+        } else {
+            this.arraySize = "" + elements.size();
         }
     }
 
-    public String toString(){
-        return "new Array(" + arraySize + ")";
-        
-//        if (this.elements.isEmpty() && this.arraySize > 0){
-//            return "new Array(" + arraySize + ")";
-//        } else {
-//            return "[" + elements.inline() + "]";
-//        }
+    public String toString(){        
+        if (this.elements.countChildren() == 0){
+            return "new Array(" + arraySize + ")";
+        } else {
+            return "[" + elements.inline() + "]";
+        }
     }
     
     @Override
     public String toXML(int indent) {
-        HashMap<String, String> hashMap = new HashMap<>();
-        hashMap.put("array_size", "" + this.arraySize);
-        hashMap.put("element_count", "" + this.elements.countChildren());
-        return toXML(indent, hashMap);
+        this.setAttr("array_size", "" + this.arraySize);
+        this.setAttr("element_count", "" + this.elements.countChildren());
+        return super.toXML(indent);
     }
 }

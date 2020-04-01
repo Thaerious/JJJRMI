@@ -1,4 +1,6 @@
 package ca.frar.jjjrmi.jsbuilder.code;
+import ca.frar.jjjrmi.jsbuilder.JSCodeElement;
+import ca.frar.jjjrmi.jsbuilder.AbstractJSCodeElement;
 import static ca.frar.jjjrmi.jsbuilder.code.JSConstructorCall.LOGGER;
 import java.util.HashMap;
 import spoon.reflect.declaration.CtField;
@@ -43,10 +45,10 @@ public class JSFieldDeclaration extends AbstractJSCodeElement{
     
     public String toXML(int indent) {
         HashMap<String, String> attributes = new HashMap<>();
-        attributes.put("field", reference.toString());
-        attributes.put("static", "" + this.isStatic);
-        attributes.put("invoker", "" + this.invoker);
-        attributes.put("declaring-type", "" + this.declaringType.getQualifiedName());
-        return toXML(indent, attributes);
+        this.setAttr("field", reference.toString());
+        this.setAttr("static", "" + this.isStatic);
+        this.setAttr("invoker", "" + this.invoker);
+        this.setAttr("declaring-type", "" + this.declaringType.getQualifiedName());
+        return super.toXML(indent);
     } 
 }

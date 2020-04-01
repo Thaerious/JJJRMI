@@ -1,18 +1,14 @@
 package ca.frar.jjjrmi.jsbuilder.code;
+import ca.frar.jjjrmi.jsbuilder.JSCodeElement;
+import ca.frar.jjjrmi.jsbuilder.AbstractJSCodeElement;
+import ca.frar.jjjrmi.jsbuilder.JSElementList;
 import ca.frar.jjjrmi.annotations.DoNotInvoke;
-import static ca.frar.jjjrmi.jsbuilder.code.JSConstructorCall.LOGGER;
-import ca.frar.jjjrmi.rmi.socket.JJJObject;
-import ca.frar.jjjrmi.utility.JJJOptionsHandler;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Set;
 import spoon.reflect.code.CtExpression;
 import spoon.reflect.code.CtInvocation;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtType;
-import spoon.reflect.factory.Factory;
-import spoon.reflect.factory.TypeFactory;
-import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtTypeReference;
 
 public class JSInvocation extends AbstractJSCodeElement {
@@ -34,9 +30,15 @@ public class JSInvocation extends AbstractJSCodeElement {
 
     public String toXML(int indent) {
         HashMap<String, String> attributes = new HashMap<>();
-        attributes.put("name", ctInvocation.getExecutable().getSimpleName());
-        attributes.put("type", ctInvocation.getExecutable().getType().toString());
-        return toXML(indent, attributes);
+        this.setAttr("name", ctInvocation.getExecutable().getSimpleName());
+        
+        if (ctInvocation.getExecutable().getType() == null){
+            this.setAttr("type", "null");
+        } else {
+            this.setAttr("type", ctInvocation.getExecutable().getType().getSimpleName());
+        }
+                
+        return super.toXML(indent);
     }
     
     @Override

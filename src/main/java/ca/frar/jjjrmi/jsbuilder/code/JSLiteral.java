@@ -1,5 +1,6 @@
 package ca.frar.jjjrmi.jsbuilder.code;
 
+import ca.frar.jjjrmi.jsbuilder.AbstractJSCodeElement;
 import static ca.frar.jjjrmi.jsbuilder.code.JSConstructorCall.LOGGER;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -36,8 +37,8 @@ public class JSLiteral extends AbstractJSCodeElement {
 
     public String toXML(int indent) {
         HashMap<String, String> attributes = new HashMap<>();
-        attributes.put("value", value);
-        attributes.put("type", ctLiteral.getType().toString());
-        return toXML(indent, attributes);
+        this.setAttr("value", value);
+        this.setAttr("type", ctLiteral.getType().toString());
+        return super.toXML(indent);
     }
 }

@@ -23,7 +23,7 @@
             <version>2.12.1</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
-        <dependency>
+        <!--        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
             <version>4.0.1</version>
@@ -33,6 +33,12 @@
             <groupId>javax.websocket</groupId>
             <artifactId>javax.websocket-api</artifactId>
             <version>1.1</version>
+            <scope>provided</scope>
+        </dependency>-->
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-web-api</artifactId>
+            <version>8.0.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -312,6 +318,25 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-plugin-plugin</artifactId>
                 <version>3.6.0</version>
+            </plugin>
+
+            <plugin>
+                <groupId>ca.frar</groupId>
+                <artifactId>jjjrmi</artifactId>
+                <version>0.7.0</version>
+                <configuration>
+                    <packageName>frontierModel</packageName>
+                    <version>0.0.0</version>
+                    <reportLevel>VERBOSE</reportLevel>
+                    <destination>deleteme</destination>
+                    <source>src/test/java</source>                    
+                    <includes>
+                        <include>Switched</include>
+                    </includes>
+                    <handlers>
+                        <handler>../ext/target/jjjrmi-ext-0.7.0.jar</handler>
+                    </handlers>
+                </configuration>
             </plugin>
 
         </plugins>

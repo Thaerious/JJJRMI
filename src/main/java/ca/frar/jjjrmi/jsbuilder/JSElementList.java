@@ -1,22 +1,15 @@
-package ca.frar.jjjrmi.jsbuilder.code;
+package ca.frar.jjjrmi.jsbuilder;
 
-import static ca.frar.jjjrmi.jsbuilder.code.JSConstructorCall.LOGGER;
-import java.util.ArrayList;
-import java.util.HashMap;
+import ca.frar.jjjrmi.jsbuilder.AbstractJSCodeElement;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.code.CtComment;
 
 public class JSElementList extends AbstractJSCodeElement {
 
-    public JSElementList() {
-        LOGGER.trace(this.getClass().getSimpleName());
-    }
-
+    JSElementList(){}
+    
     public JSElementList(List<? extends CtCodeElement> ctList) {
-        LOGGER.trace(this.getClass().getSimpleName());
         for (CtCodeElement element : ctList) {
             if (!element.getComments().isEmpty()) {
                 for (CtComment comment : element.getComments()) {
@@ -136,10 +129,4 @@ public class JSElementList extends AbstractJSCodeElement {
     public void remove(int i) {
         this.childElements.remove(i);
     }
-    
-    public String toXML(int indent) {
-        HashMap<String, String> attributes = new HashMap<>();
-        attributes.put("require", "" + this.getRequires().toString());
-        return toXML(indent, attributes);
-    }    
 }

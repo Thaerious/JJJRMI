@@ -1,12 +1,26 @@
 package ca.frar.jjjrmi.jsbuilder.testclasses;
 import ca.frar.jjjrmi.annotations.NativeJS;
+import ca.frar.jjjrmi.annotations.Transient;
 import ca.frar.jjjrmi.rmi.socket.JJJObject;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Switched extends JJJObject implements Serializable {
     private static final long serialVersionUID = 1L;
     public static String value = "a";
-        
+    private final ArrayList<String> list;
+    
+    @NativeJS
+    public Switched(){
+        this.list = new ArrayList<String>();
+    }
+    
+    @NativeJS
+    public String[] domSubscribers(){
+        return new String[0];
+    }
+    
     @NativeJS
     public Cardinality cardinality(String target) {
         long a = 1L;

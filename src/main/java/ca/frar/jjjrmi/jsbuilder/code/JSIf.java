@@ -1,7 +1,8 @@
 package ca.frar.jjjrmi.jsbuilder.code;
+import ca.frar.jjjrmi.jsbuilder.JSCodeElement;
+import ca.frar.jjjrmi.jsbuilder.AbstractJSCodeElement;
 import static ca.frar.jjjrmi.jsbuilder.code.JSConstructorCall.LOGGER;
 import spoon.reflect.code.CtIf;
-import spoon.reflect.code.CtStatement;
 
 public class JSIf extends AbstractJSCodeElement {
 
@@ -14,6 +15,8 @@ public class JSIf extends AbstractJSCodeElement {
         condition = this.generate(ctIf.getCondition());        
         thenStatement = this.generate(ctIf.getThenStatement());
         elseStatement = this.generate(ctIf.getElseStatement());
+        thenStatement.setAttr("semantic", "then");
+        elseStatement.setAttr("semantic", "else");
     }
 
     @Override
@@ -23,11 +26,9 @@ public class JSIf extends AbstractJSCodeElement {
         builder.append(condition);
         builder.append(")");
 
-        if (!thenStatement.noChildren()) {
-            builder.append(thenStatement.toString());
-        }
+        builder.append(thenStatement.toString());
 
-        if (!elseStatement.noChildren()) {
+        if (elseStatement.hasChildren()) {
             builder.append("else ");
             builder.append(elseStatement);
         }

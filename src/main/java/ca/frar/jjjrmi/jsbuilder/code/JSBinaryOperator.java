@@ -1,13 +1,13 @@
 package ca.frar.jjjrmi.jsbuilder.code;
 
+import ca.frar.jjjrmi.jsbuilder.JSCodeElement;
+import ca.frar.jjjrmi.jsbuilder.AbstractJSCodeElement;
 import static ca.frar.jjjrmi.Global.LOGGER;
 import java.util.HashMap;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtBinaryOperator;
-import spoon.reflect.code.CtExpression;
 
 public class JSBinaryOperator extends AbstractJSCodeElement {
-
     private final BinaryOperatorKind kind;
     private final JSCodeElement lhs;
     private final JSCodeElement rhs;
@@ -26,8 +26,8 @@ public class JSBinaryOperator extends AbstractJSCodeElement {
     
     public String toXML(int indent) {
         HashMap<String, String> attributes = new HashMap<>();
-        attributes.put("op", kind.toString());
-        return toXML(indent, attributes);
+        this.setAttr("op", kind.toString());
+        return super.toXML(indent);
     }  
 
 }

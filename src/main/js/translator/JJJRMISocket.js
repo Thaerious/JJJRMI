@@ -1,6 +1,6 @@
 "use strict";
 const LOGGER = require("./Logger");
-const WebSocket = require('ws');
+const ws = require('ws');
 const Translator = require("./Translator");
 const jjjPackage = require("../generated/packageFile");
 const JJJMessageType = jjjPackage.JJJMessageType;
@@ -12,9 +12,9 @@ class JJJRMISocket {
         this.translator = new Translator();
         this.callback = {};
         this.socket = null;
-        this.translator.addReferenceListener(obj =>{
+        this.translator.addReferenceListener(obj => {
             obj.__jjjrmi = {
-                jjjWebsocket : this   
+                jjjWebsocket: this
             };
         });
         this.jjjEncode = null;
@@ -23,10 +23,19 @@ class JJJRMISocket {
     registerPackage(pkg) {
         this.translator.registerPackage(pkg);
     }
+
     async connect(url) {
+        if (typeof window === undefined) {
+            await this.connectNode(url);
+        } else {
+            await this.connectBrowser(url);
+        }
+    }
+
+    async connectNode(url) {
         LOGGER.log("connect", `websocket '${this.jjjSocketName}' connecting`);
         let cb = function (resolve, reject) {
-            this.socket = new WebSocket(url);
+            this.socket = new ws(url);
             this.onready = resolve;
             this.onreject = reject;
 
@@ -38,20 +47,43 @@ class JJJRMISocket {
 
         return new Promise(cb);
     }
-    
-    close(){
+
+    async connectBrowser(url) {
+        LOGGER.log("connect", `websocket '${this.jjjSocketName}' connecting`);
+        let cb = function (resolve, reject) {
+            this.socket = new WebSocket(url);
+            this.onready = resolve;
+            this.onreject = reject;
+
+            this.socket.onerror = (err) => {
+                console.error("websocket error");
+                console.error(err);
+                reject(err);
+            };
+
+            this.socket.onmessage = (data) => {
+                this.onMessage(data);
+            }
+            this.nextUID = 0;
+            this.callback = {};
+        }.bind(this);
+
+        return new Promise(cb);
+    }
+
+    close() {
         this.socket.close();
     }
-        
+
     /**
      * Retrieve the root object. The connect method must be called first, if
      * it has not then the returned object is undefined.
      * @returns {unresolved}
      */
-    get root(){
+    get root() {
         return this.rootObject;
     }
-        
+
     /**
      * All received messages are parsed by this method.  All messages must of the java type 'RMIResponse' which will
      * always contain the field 'type:RMIResponseType'.
@@ -62,7 +94,7 @@ class JJJRMISocket {
         /* the main translation from json to js is triggered here */
         LOGGER.log("received+", JSON.stringify(JSON.parse(data), null, 2));
         let rmiMessage = this.translator.decode(data).getRoot();
-        LOGGER.log("received", rmiMessage);        
+        LOGGER.log("received", rmiMessage);
 
         switch (rmiMessage.type) {
             case JJJMessageType.READY:
@@ -115,7 +147,7 @@ class JJJRMISocket {
             return target[methodName].apply(target, args);
         }
     }
-    
+
     /**
      * Send a remote method invocation to the server.
      * See case JJJMessageType.LOCAL for the handling of the response.
@@ -124,11 +156,11 @@ class JJJRMISocket {
      * @param {type} args zero or more method arguments
      * @returns {undefined}
      */
-    methodRequest(src, methodName, args) {       
+    methodRequest(src, methodName, args) {
         if (!this.translator.hasReferredObject(src)) {
             throw new Error(`Attempting to call server side method on untracked object: ${src.constructor.name}.${methodName}`);
         }
-        
+
         let uid = this.nextUID++;
         let ptr = this.translator.getReference(src);
 
@@ -141,7 +173,7 @@ class JJJRMISocket {
                 resolve: resolve,
                 reject: reject
             };
-            
+
             let packet = new MethodRequest(uid, ptr, methodName, argsArray);
             let translatorResult = this.translator.encode(packet);
             LOGGER.log("sent", translatorResult.toString(2));
@@ -151,7 +183,7 @@ class JJJRMISocket {
         }.bind(this);
 
         return new Promise(f);
-    }    
+    }
 }
 
 module.exports = JJJRMISocket;

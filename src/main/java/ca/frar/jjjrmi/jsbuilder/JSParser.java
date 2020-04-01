@@ -1,13 +1,13 @@
 package ca.frar.jjjrmi.jsbuilder;
 
+import ca.frar.jjjrmi.Global;
 import static ca.frar.jjjrmi.Global.VERBOSE;
 import static ca.frar.jjjrmi.Global.VERY_VERBOSE;
-import ca.frar.jjjrmi.exceptions.JJJRMIException;
 import ca.frar.jjjrmi.rmi.socket.JJJObject;
 import ca.frar.jjjrmi.utility.JJJOptionsHandler;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.HashMap;
+import static org.apache.logging.log4j.Level.DEBUG;
 import spoon.processing.AbstractProcessor;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtEnum;
@@ -20,12 +20,13 @@ import spoon.reflect.reference.CtTypeReference;
  */
 @SuppressWarnings("unchecked")
 public class JSParser extends AbstractProcessor<CtClass<?>> {
-
     final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("JJJRMI");
     private final JSClassContainer jsClassBuilders = new JSClassContainer();
     private ArrayList<CtClass<?>> sourceClasses = new ArrayList<>();
     private String packageFileName = "packageFile";
-
+    ArrayList<String> skippedClasses = new ArrayList<>();
+    HashMap<String, String> skipReason = new HashMap<>();
+    
     public JSParser() {
         super();
     }
@@ -38,22 +39,28 @@ public class JSParser extends AbstractProcessor<CtClass<?>> {
         return (ArrayList<CtClass<?>>) sourceClasses.clone();
     }
 
+    public ArrayList<String> getSkippedClasses(){
+        return (ArrayList<String>) this.skippedClasses.clone();
+    }
+    
+    public String getSkippedReason(String className){
+        return this.skipReason.get(className);
+    }    
+    
     @Override
     public void process(CtClass<?> ctClass) {
         if (test(ctClass)) {
-            LOGGER.log(VERBOSE, "----- [" + ctClass.getQualifiedName() + "] -----");
+            LOGGER.log(VERBOSE, Global.header(ctClass.getQualifiedName()));
             JSClassBuilder<?> jsClassBuilder = makeBuilder(ctClass).build();
             jsClassBuilders.addClass(jsClassBuilder);
-            LOGGER.log(VERBOSE, "-----");
+            LOGGER.log(VERBOSE, Global.tail());
         } else {
-            LOGGER.log(VERBOSE, "Skipping " + ctClass.getQualifiedName());
+            skippedClasses.add(ctClass.getQualifiedName());            
         }
     }
 
     private JSClassBuilder<?> makeBuilder(CtClass<?> ctClass) {
         LOGGER.debug(new JJJOptionsHandler(ctClass).isHandler());
-
-        
         
         if (ctClass.isEnum()) {
             return new JSEnumBuilder<>((CtEnum<?>) ctClass);
@@ -74,42 +81,39 @@ public class JSParser extends AbstractProcessor<CtClass<?>> {
         CtTypeReference<JJJObject> jjjObjectRef = ctClass.getFactory().Type().createReference(JJJObject.class);
         boolean isSubtype = reference.isSubtypeOf(jjjObjectRef);
 
-        LOGGER.log(VERY_VERBOSE, "+------------------------------------------------------------------------------+");
-        LOGGER.log(VERY_VERBOSE, "(?) Considering class: " + ctClass.getQualifiedName());
-
         /* enum class */
         if (ctClass.isEnum() && jjjOptions.hasJJJ()) {
-            LOGGER.log(VERY_VERBOSE, "(+) Building javascript enumeration class: " + ctClass.getQualifiedName());
+            LOGGER.log(DEBUG, "(+) Building javascript enumeration class: " + ctClass.getQualifiedName());
             return true;
         }
 
         /* socket class */
         if (jjjOptions.isSocket()) {
-            LOGGER.log(VERY_VERBOSE, "(+) Building jjjrmi socket: " + ctClass.getQualifiedName());
+            LOGGER.log(DEBUG, "(+) Building jjjrmi socket: " + ctClass.getQualifiedName());
             return true;
         }
 
         /* POJO class */
         if (!jjjOptions.generateJS()) {
-            LOGGER.log(VERY_VERBOSE, "(-) " + ctClass.getQualifiedName() + " has option generateJS=false");
+            skipReason.put(ctClass.getQualifiedName(), "has option generateJS=false");
             return false;
         }
 
         if (ctClass.isEnum() && ctClass.getDeclaringType() != null) {
-            LOGGER.log(VERY_VERBOSE, "(-) " + ctClass.getQualifiedName() + " inner type");
+            skipReason.put(ctClass.getQualifiedName(), " inner type");
             return false;
         }
 
         if (jjjOptions.hasJJJ()) {
-            LOGGER.log(VERY_VERBOSE, "(+) " + ctClass.getQualifiedName() + "@JJJ");
+            LOGGER.log(DEBUG, "(+) " + ctClass.getQualifiedName() + "@JJJ");
             return true;
         }
 
         if (!isSubtype) {
-            LOGGER.log(VERY_VERBOSE, "(-) " + ctClass.getQualifiedName() + " is not subtype of JJJObject");
+            skipReason.put(ctClass.getQualifiedName(), " is not subtype of JJJObject");
             return false;
         } else {
-            LOGGER.log(VERY_VERBOSE, "(+) " + ctClass.getQualifiedName() + " is subtype of JJJObject");
+            LOGGER.log(DEBUG, "(+) " + ctClass.getQualifiedName() + " is subtype of JJJObject");
             return true;
         }
     }

@@ -1,5 +1,6 @@
 package ca.frar.jjjrmi.jsbuilder.code;
 
+import ca.frar.jjjrmi.jsbuilder.AbstractJSCodeElement;
 import static ca.frar.jjjrmi.Global.LOGGER;
 
 public class JSCodeSnippet extends AbstractJSCodeElement {

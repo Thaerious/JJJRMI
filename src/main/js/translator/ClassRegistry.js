@@ -17,6 +17,7 @@ class ClassRegistry {
     }
 
     registerClass(aClass) {
+        if (!aClass.__isHandler) return;
         if (aClass.__isHandler()) return; 
         if (typeof aClass.__getClass !== "function") return;       
         this.classmap.set(aClass.__getClass(), aClass);

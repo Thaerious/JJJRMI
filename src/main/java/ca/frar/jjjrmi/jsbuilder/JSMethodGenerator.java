@@ -1,9 +1,9 @@
 package ca.frar.jjjrmi.jsbuilder;
+import ca.frar.jjjrmi.jsbuilder.code.JSParameter;
 import ca.frar.jjjrmi.annotations.JSParam;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.annotations.ServerSide;
 import ca.frar.jjjrmi.jsbuilder.code.JSCodeSnippet;
-import ca.frar.jjjrmi.jsbuilder.code.JSElementList;
 import java.lang.annotation.Annotation;
 import java.util.List;
 import spoon.reflect.code.CtBlock;
@@ -24,7 +24,7 @@ public class JSMethodGenerator {
     private final JSMethodBuilder jsMethodBuilder;
     private final NativeJS nativeJSAnno;
     private final CtModifiable ctModifiable;
-    private final CtExecutable ctExectuable;
+    private final CtExecutable<?> ctExectuable;
     private final String name;
 
     public JSMethodGenerator(String name, CtModifiable ctModifiable, CtExecutable ctExectuable) {
@@ -78,9 +78,8 @@ public class JSMethodGenerator {
     }
     
     private void processParameters() {
-        List<CtParameter<?>> parameters = ctExectuable.getParameters();
-        for (CtParameter<?> parameter : parameters) {
-            jsMethodBuilder.addParameter(parameter.getSimpleName());
+        for (CtParameter<?> ctParameter : ctExectuable.getParameters()) {
+            jsMethodBuilder.addParameter(new JSParameter(ctParameter));
         }
     }
 

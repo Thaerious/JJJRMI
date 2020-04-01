@@ -1,4 +1,5 @@
 package ca.frar.jjjrmi.jsbuilder.code;
+import ca.frar.jjjrmi.jsbuilder.JSCodeElement;
 import spoon.reflect.code.*;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.reference.CtFieldReference;

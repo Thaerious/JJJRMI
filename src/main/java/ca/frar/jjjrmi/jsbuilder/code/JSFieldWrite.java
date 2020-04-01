@@ -1,4 +1,6 @@
 package ca.frar.jjjrmi.jsbuilder.code;
+import ca.frar.jjjrmi.jsbuilder.JSCodeElement;
+import ca.frar.jjjrmi.jsbuilder.AbstractJSCodeElement;
 import static ca.frar.jjjrmi.jsbuilder.code.JSConstructorCall.LOGGER;
 import java.lang.reflect.Member;
 import java.util.HashMap;
@@ -42,9 +44,9 @@ public class JSFieldWrite extends AbstractJSCodeElement {
     
     public String toXML(int indent) {
         HashMap<String, String> attributes = new HashMap<>();
-        attributes.put("static", "" + this.isStatic);
-        attributes.put("type", "" + this.type);        
-        attributes.put("name", "" + this.name);
-        return toXML(indent, attributes);
+        this.setAttr("static", "" + this.isStatic);
+        this.setAttr("type", "" + this.type);        
+        this.setAttr("name", "" + this.name);
+        return super.toXML(indent);
     }    
 }

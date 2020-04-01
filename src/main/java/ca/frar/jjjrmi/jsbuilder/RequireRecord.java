@@ -7,6 +7,12 @@ public class RequireRecord {
     final String postfix;
     final String value;
     
+    /**
+     * const NAME = require("VALUE").POSTFIX
+     * @param name The name of the class
+     * @param value The name of the package
+     * @param postfix The name of the class in the package
+     */
     public RequireRecord(String name, String value, String postfix){
         this.name = name;
         this.value = value;

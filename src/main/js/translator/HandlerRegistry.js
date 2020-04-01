@@ -8,6 +8,7 @@ class HandlerRegistry extends ClassRegistry {
     }
 
     registerClass(aClass) {
+        if (!aClass.__isHandler) return;
         if (!aClass.__isHandler()) return;
         this.classmap.set(aClass.__getHandles(), aClass);
         LOGGER.log("onregister", "Handler Registered: " + aClass.__getHandles());

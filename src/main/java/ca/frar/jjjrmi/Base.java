@@ -1,10 +1,12 @@
 package ca.frar.jjjrmi;
 
 import static ca.frar.jjjrmi.Global.LOGGER;
+import static ca.frar.jjjrmi.Global.VERBOSE;
 import static ca.frar.jjjrmi.Global.VERY_VERBOSE;
 import ca.frar.jjjrmi.jsbuilder.JSBuilderException;
 import ca.frar.jjjrmi.jsbuilder.JSClassBuilder;
 import ca.frar.jjjrmi.jsbuilder.JSParser;
+import ca.frar.jjjrmi.translator.HandlerFactory;
 import ca.frar.stream.TemplateVariableReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -14,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -23,8 +26,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import static org.apache.logging.log4j.Level.INFO;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import spoon.Launcher;
@@ -36,7 +39,7 @@ import spoon.reflect.CtModel;
  */
 public class Base {
     private ArrayList<String> inputDirectories = new ArrayList<>();
-    private String packageFileName = "packageFile";
+    private String packageFileName = "packageFile.js";
     private String destination = "";
     private String packageName = "package";
     private String version = "0.0.0";
@@ -45,9 +48,17 @@ public class Base {
     private boolean generatePackage = false; // generate the package file
     private HashSet<String> includes = new HashSet<>();
     private HashSet<String> excludes = new HashSet<>();
-
     private JSParser jsParser;
 
+    public void addHandler(String path) throws MalformedURLException, ClassNotFoundException, IOException{        
+        if (path.endsWith(".jar")){
+            HandlerFactory.getInstance().addJar(new File(path));
+        } 
+        else {
+            HandlerFactory.getInstance().addClasspath(new File(path));
+        }
+    }
+    
     /**
      * If any classes are included, only included classes will be processed. If
      * no classes are included all classes will be processed.
@@ -135,17 +146,17 @@ public class Base {
 
     public void printInfo() {
         for (String s : this.inputDirectories){
-            LOGGER.info("source = "  + s);
+            LOGGER.info(Global.line("source = "  + s));
         }        
-        LOGGER.info("destination = " + this.destination);
-        LOGGER.info("packageName = " + this.packageName);
-        LOGGER.info("version = " + this.version);
-        LOGGER.info("generateJSON = " + this.generateJSON);
-        LOGGER.info("generatePackage = " + this.generatePackage);
-        LOGGER.info("packageFileName = " + this.packageFileName);     
+        LOGGER.info(Global.line("destination = " + this.destination));
+        LOGGER.info(Global.line("packageName = " + this.packageName));
+        LOGGER.info(Global.line("version = " + this.version));
+        LOGGER.info(Global.line("generateJSON = " + this.generateJSON));
+        LOGGER.info(Global.line("generatePackage = " + this.generatePackage));
+        LOGGER.info(Global.line("packageFileName = " + this.packageFileName));     
     }
     
-    public void run() throws MojoExecutionException, MojoFailureException, FileNotFoundException, IOException {
+    public void run() throws FileNotFoundException, IOException {
         Launcher launcher = new Launcher();
         getFiles().forEach(f -> launcher.addInputResource(f.toString()));
         jsParser = new JSParser();
@@ -210,15 +221,21 @@ public class Base {
      * @throws FileNotFoundException
      * @throws JSBuilderException
      */
-    public void output() throws FileNotFoundException, JSBuilderException, IOException {
-        LOGGER.log(VERY_VERBOSE, "+------------------------------------------------------------------------------+");
-        LOGGER.info("Javascript Code Generator: Generating output");
+    public void output() throws FileNotFoundException, JSBuilderException, IOException {        
+        Global.header(VERBOSE, "Skipping");
+        for(String s : jsParser.getSkippedClasses()){
+            Global.line(VERBOSE, s);
+            Global.line(VERY_VERBOSE, " - " + jsParser.getSkippedReason(s));
+        }
+        Global.tail(VERBOSE);        
+        
+        Global.header(INFO, "Generating output");
 
-        LOGGER.log(VERY_VERBOSE, "Root Path: " + destination);
+        Global.line(VERBOSE, "Root Path: " + destination);
         new File(destination).mkdirs();
 
         for (JSClassBuilder<?> jsClassBuilder : jsParser.jsClassBuilders()) {
-            LOGGER.info("file: " + jsClassBuilder.getSimpleName() + ".js");
+            Global.line(INFO, jsClassBuilder.getSimpleName() + ".js");
             Base.writeClass(jsClassBuilder, destination);
 
             if (this.printXML) {
@@ -227,18 +244,20 @@ public class Base {
         }
 
         if (this.generatePackage == true) {
-            LOGGER.info("Creating packageFile.js file.");
+            Global.line(INFO, "Creating packageFile.js file.");
             this.buildPackageJS();
         } else {
-            LOGGER.log(VERY_VERBOSE, "Skipping package js file.");
+            Global.line(VERY_VERBOSE, "Skipping package js file.");
         }
 
         if (this.generateJSON == true) {
-            LOGGER.info("Creating package.json file.");
+            Global.line(INFO, "Creating package.json file.");
             this.copyPackageJSON();
         } else {
-            LOGGER.log(VERY_VERBOSE, "Skipping package json file.");
+            Global.line(VERY_VERBOSE, "Skipping package json file.");
         }
+        
+        Global.tail(INFO);
     }
 
     /**

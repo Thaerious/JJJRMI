@@ -1,10 +1,10 @@
 package ca.frar.jjjrmi.jsbuilder;
 
-import static ca.frar.jjjrmi.Global.LOGGER;
+import ca.frar.jjjrmi.jsbuilder.code.JSParameter;
+import ca.frar.jjjrmi.Global;
 import static ca.frar.jjjrmi.Global.VERY_VERBOSE;
 import ca.frar.jjjrmi.exceptions.UnknownParameterException;
 import ca.frar.jjjrmi.exceptions.TypeDeclarationNotFoundWarning;
-import ca.frar.jjjrmi.jsbuilder.code.JSElementList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -27,7 +27,7 @@ public class JSMethodBuilder {
     private boolean isGetter;
 
     public JSMethodBuilder(String name) {
-        LOGGER.log(VERY_VERBOSE, "building method: " + name);
+        Global.line(VERY_VERBOSE, "building method: " + name);
         this.name = name;
     }
 
@@ -70,9 +70,9 @@ public class JSMethodBuilder {
      * @param name
      * @return
      */
-    public JSMethodBuilder addParameter(JSParameter annotation) {
-        LOGGER.log(VERY_VERBOSE, "setting initialized parameter: " + annotation.name + " = " + annotation.initializer);
-        parameters.put(annotation.name, annotation);
+    public JSMethodBuilder addParameter(JSParameter jsParameter) {
+        Global.line(VERY_VERBOSE, "setting initialized parameter: " + jsParameter.getName() + " = " + jsParameter.getInitializer());
+        parameters.put(jsParameter.getName(), jsParameter);
         return this;
     }
 
@@ -85,7 +85,7 @@ public class JSMethodBuilder {
      * @return
      */
     public JSMethodBuilder addParameter(String name) {
-        LOGGER.log(VERY_VERBOSE, "setting blank parameter: " + name);
+        Global.line(VERY_VERBOSE, "setting blank parameter: " + name);
         JSParameter jsParameter = new JSParameter(name, "");
         parameters.put(name, jsParameter);
         return this;
@@ -164,11 +164,13 @@ public class JSMethodBuilder {
         StringBuilder builder = new StringBuilder();
 
         for (int i = 0; i < indent; i++) builder.append("\t");
-
+                
         builder.append("<").append(this.getClass().getSimpleName());
         builder.append(" name=\"").append(this.getName()).append("\"");
         builder.append(">\n");
 
+        builder.append(parametersToXML(indent + 1));        
+        
         builder.append(this.body.toXML(indent + 1));
 
         for (int i = 0; i < indent; i++) builder.append("\t");
@@ -182,7 +184,7 @@ public class JSMethodBuilder {
 
         for (int i = 0; i < indent; i++) builder.append("\t");
 
-        builder.append("<parameters>");
+        builder.append("<parameters>\n");
 
         for (String name : this.parameters.keySet()) {
             JSParameter jsParameter = this.parameters.get(name);
@@ -190,7 +192,7 @@ public class JSMethodBuilder {
         }
 
         for (int i = 0; i < indent; i++) builder.append("\t");
-        builder.append("</parameters>");
+        builder.append("</parameters>\n");
 
         return builder.toString();
     }

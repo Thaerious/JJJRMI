@@ -1,5 +1,7 @@
 package ca.frar.jjjrmi.jsbuilder.code;
 
+import ca.frar.jjjrmi.jsbuilder.JSCodeElement;
+import ca.frar.jjjrmi.jsbuilder.AbstractJSCodeElement;
 import static ca.frar.jjjrmi.Global.LOGGER;
 import spoon.reflect.code.BinaryOperatorKind;
 import spoon.reflect.code.CtExpression;

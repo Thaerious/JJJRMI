@@ -19,6 +19,8 @@ public class Global {
     final public static Level VERBOSE = Level.forName("VERBOSE", 450);
     final public static Level VERY_VERBOSE = Level.forName("VERY_VERBOSE", 450);
     public static String FILE_STAMP;
+    private static final int BOX_WIDTH = 70;
+    private static int lineno = 0;
     
     static{
         try {
@@ -30,4 +32,32 @@ public class Global {
             Logger.getLogger(Global.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
     }
+    
+    public static void header(Level level, String string){
+        LOGGER.log(level, header(string));
+    }    
+    
+    public static String header(String string){
+        int dashL = (BOX_WIDTH - string.length() - 4) / 2;
+        int dashR = BOX_WIDTH - dashL - string.length() - 4;
+        return "+" + "-".repeat(dashL) + " [" + string + "] " + "-".repeat(dashR) + "+ " + (lineno++);
+    }
+   
+    public static void line(Level level, String string){
+        LOGGER.log(level, line(string));
+    }
+    
+    public static String line(String string){
+        int len = BOX_WIDTH - string.length() - 2;
+        if (len < 0) len = 0;
+        return "| " + string + " ".repeat(len) + " | " + (lineno++);
+    }
+    
+    public static void tail(Level level){
+        LOGGER.log(level, tail());
+    }        
+    
+    public static String tail(){
+        return "+" + "-".repeat(BOX_WIDTH) + "+ " + (lineno++);
+    }    
 }
