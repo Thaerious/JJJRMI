@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>ca.frar</groupId>
     <artifactId>jjjrmi</artifactId>
@@ -10,7 +11,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <maven.test.skip>true</maven.test.skip>
+        <maven.test.skip>false</maven.test.skip>
     </properties>
 
     <dependencies>
@@ -98,7 +99,7 @@
                 <filtering>true</filtering>
             </resource>
         </resources>
-        
+
         <plugins>
 
             <plugin>
@@ -112,48 +113,48 @@
                 </configuration>
             </plugin>
 
-            <plugin>  
-                <groupId>org.codehaus.mojo</groupId>  
-                <artifactId>exec-maven-plugin</artifactId>  
-                <version>1.6.0</version>  
-                <executions>  
-                    
-                    <execution>  
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.6.0</version>
+                <executions>
+
+                    <execution>
                         <id>Generate-Test-Classes</id>
-                        <phase>test-compile</phase>  
-                        <goals>  
-                            <goal>java</goal>  
-                        </goals>  
-                        <configuration>  
-                            <mainClass>ca.frar.jjjrmi.CLI</mainClass>  
-                            <arguments>  
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>ca.frar.jjjrmi.CLI</mainClass>
+                            <arguments>
                                 <argument>-d=src/test/java/ca/frar/jjjrmi/translator/testclasses/</argument>
-                                <argument>-o=src/test/js/testclasses</argument>  
-                                <argument>-p</argument>  
-                            </arguments> 
+                                <argument>-o=src/test/js/testclasses</argument>
+                                <argument>-p</argument>
+                            </arguments>
                             <classpathScope>test</classpathScope>
                             <skip>${maven.test.skip}</skip>
-                        </configuration>  
-                    </execution>                     
-                    
-                    <execution>  
+                        </configuration>
+                    </execution>
+
+                    <execution>
                         <id>Generate-Socket-Test-Classes</id>
-                        <phase>test-compile</phase>  
-                        <goals>  
-                            <goal>java</goal>  
-                        </goals>  
-                        <configuration>  
-                            <mainClass>ca.frar.jjjrmi.CLI</mainClass>  
-                            <arguments>  
-                                <argument>-d=src/test/java/ca/frar/jjjrmi/socket/testclasses/</argument>  
-                                <argument>-o=src/test/js/socket-testclasses</argument>  
-                                <argument>-p</argument>  
-                            </arguments> 
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>ca.frar.jjjrmi.CLI</mainClass>
+                            <arguments>
+                                <argument>-d=src/test/java/ca/frar/jjjrmi/socket/testclasses/</argument>
+                                <argument>-o=src/test/js/socket-testclasses</argument>
+                                <argument>-p</argument>
+                            </arguments>
                             <classpathScope>test</classpathScope>
                             <skip>${maven.test.skip}</skip>
-                        </configuration>  
-                    </execution> 
-                    
+                        </configuration>
+                    </execution>
+
                     <execution>
                         <id>Generate-JS-data-file</id>
                         <phase>test-compile</phase>
@@ -166,23 +167,23 @@
                             <skip>${maven.test.skip}</skip>
                         </configuration>
                     </execution>
-                    
-                    <execution>  
+
+                    <execution>
                         <id>Generate-Java-data-file</id>
-                        <phase>test-compile</phase>  
-                        <goals>  
-                            <goal>java</goal>  
-                        </goals>  
-                        <configuration>  
-                            <mainClass>ca.frar.jjjrmi.translator.GenerateJSON</mainClass>  
-                            <arguments>  
-                                <argument>./target/test-data/from-java.json</argument>  
-                            </arguments> 
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>ca.frar.jjjrmi.translator.GenerateJSON</mainClass>
+                            <arguments>
+                                <argument>./target/test-data/from-java.json</argument>
+                            </arguments>
                             <classpathScope>test</classpathScope>
                             <skip>${maven.test.skip}</skip>
-                        </configuration>  
-                    </execution> 
-                     
+                        </configuration>
+                    </execution>
+
                     <execution>
                         <id>Run-JS-tests</id>
                         <phase>test</phase>
@@ -195,26 +196,26 @@
                             <skip>${maven.test.skip}</skip>
                         </configuration>
                     </execution>
-                     
-                    <execution>  
+
+                    <execution>
                         <id>Generate-JS-Runtime-Files</id>
-                        <phase>compile</phase>  
-                        <goals>  
-                            <goal>java</goal>  
-                        </goals>  
-                        <configuration>  
-                            <mainClass>ca.frar.jjjrmi.CLI</mainClass>  
-                            <arguments>  
-                                <argument>-d=src/main/java/ca/frar/jjjrmi/rmi</argument>  
-                                <argument>-o=src/main/js/generated</argument>  
-                                <argument>-p</argument>  
-                            </arguments> 
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>ca.frar.jjjrmi.CLI</mainClass>
+                            <arguments>
+                                <argument>-d=src/main/java/ca/frar/jjjrmi/rmi</argument>
+                                <argument>-o=src/main/js/generated</argument>
+                                <argument>-p</argument>
+                            </arguments>
                             <classpathScope>compile</classpathScope>
-                        </configuration>   
-                    </execution>                      
-                     
-                </executions>  
-            </plugin>  
+                        </configuration>
+                    </execution>
+
+                </executions>
+            </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -278,11 +279,11 @@
                         <fileset>
                             <directory>src/test/js/socket-testclasses/</directory>
                             <followSymlinks>false</followSymlinks>
-                        </fileset>    
+                        </fileset>
                         <fileset>
                             <directory>src/test/js/testclasses/</directory>
                             <followSymlinks>false</followSymlinks>
-                        </fileset>                                            
+                        </fileset>
                     </filesets>
                 </configuration>
             </plugin>
@@ -311,6 +312,21 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-plugin-plugin</artifactId>
                 <version>3.6.0</version>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
 
         </plugins>

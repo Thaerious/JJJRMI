@@ -19,7 +19,8 @@ import java.lang.reflect.Method;
 import org.json.JSONObject;
 
 /**
- *
+ * Generate JSON encoding from the Java classes, placing the result in a file.
+ * This get's called by the JS test
  * @author Ed Armstrong
  */
 public class GenerateJSON {

@@ -25,6 +25,6 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 echo ${CLASSPATH}
 
 CLASSPATH=$CLASSPATH:$ROOTPATH/target/dependency/*
-CLASSPATH=$CLASSPATH:$ROOTPATH/target/classes
+CLASSPATH=$CLASSPATH:$ROOTPATH/target/lib
 
 java -classpath $CLASSPATH ca.frar.jjjrmi.CLI "$@"
