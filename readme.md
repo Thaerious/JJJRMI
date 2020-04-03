@@ -3,7 +3,8 @@ Development Quick Setup
 ````
 > git clone git@github.com:Thaerious/JJJRMI.git rmi
 > cd rmi
-> mvn compile dependency:copy-dependencies
+> npm i
+> npm --prefix src/test/js i
 > source bin/setup
 ````
 

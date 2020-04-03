@@ -6,6 +6,13 @@
     <version>0.7.0</version>
     <packaging>maven-plugin</packaging>
 
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <maven.test.skip>true</maven.test.skip>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.reflections</groupId>
@@ -83,11 +90,6 @@
             <type>jar</type>
         </dependency>
     </dependencies>
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
-    </properties>
 
     <build>
         <resources>
@@ -130,7 +132,7 @@
                                 <argument>-p</argument>  
                             </arguments> 
                             <classpathScope>test</classpathScope>
-                            <skip>${skipTests}</skip>
+                            <skip>${maven.test.skip}</skip>
                         </configuration>  
                     </execution>                     
                     
@@ -148,7 +150,7 @@
                                 <argument>-p</argument>  
                             </arguments> 
                             <classpathScope>test</classpathScope>
-                            <skip>${skipTests}</skip>
+                            <skip>${maven.test.skip}</skip>
                         </configuration>  
                     </execution> 
                     
@@ -161,7 +163,7 @@
                         <configuration>
                             <executable>npm</executable>
                             <commandlineArgs>run test-setup</commandlineArgs>
-                            <skip>${skipTests}</skip>
+                            <skip>${maven.test.skip}</skip>
                         </configuration>
                     </execution>
                     
@@ -177,7 +179,7 @@
                                 <argument>./target/test-data/from-java.json</argument>  
                             </arguments> 
                             <classpathScope>test</classpathScope>
-                            <skip>${skipTests}</skip>
+                            <skip>${maven.test.skip}</skip>
                         </configuration>  
                     </execution> 
                      
@@ -190,7 +192,7 @@
                         <configuration>
                             <executable>npm</executable>
                             <commandlineArgs>run test</commandlineArgs>
-                            <skip>${skipTests}</skip>
+                            <skip>${maven.test.skip}</skip>
                         </configuration>
                     </execution>
                      
