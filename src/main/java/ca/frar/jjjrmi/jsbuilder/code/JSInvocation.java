@@ -1,4 +1,5 @@
 package ca.frar.jjjrmi.jsbuilder.code;
+import ca.frar.jjjrmi.Global;
 import ca.frar.jjjrmi.jsbuilder.JSCodeElement;
 import ca.frar.jjjrmi.jsbuilder.AbstractJSCodeElement;
 import ca.frar.jjjrmi.jsbuilder.JSElementList;
@@ -20,7 +21,6 @@ public class JSInvocation extends AbstractJSCodeElement {
     private final CtInvocation<?> ctInvocation;
 
     public JSInvocation(CtInvocation<?> ctInvocation) {
-        LOGGER.trace(this.getClass().getSimpleName());
         this.ctInvocation = ctInvocation;
         arguments = this.generateList(ctInvocation.getArguments());
         name = ctInvocation.getExecutable().getSimpleName();
@@ -86,7 +86,12 @@ public class JSInvocation extends AbstractJSCodeElement {
         CtExpression<?> ctTarget = ctInvocation.getTarget();
         if (ctTarget != null) {
             CtTypeReference<?> ctType = ctTarget.getType();
-            if (ctType.toString().equals("java.lang.String")) processSpecialCaseString(ctInvocation);
+            if (ctType != null) {
+                if (ctType.toString().equals("java.lang.String")) processSpecialCaseString(ctInvocation);
+            }
+            else {
+                LOGGER.warn(Global.line("null target " + ctTarget.toString()));
+            }
         }
     }
 
