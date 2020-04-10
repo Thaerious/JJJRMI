@@ -95,8 +95,6 @@ class JJJRMISocket {
         LOGGER.log("received+", JSON.stringify(JSON.parse(event.data), null, 2));
 
         let json = JSON.parse(event.data);
-        console.log(json["new-objects"]["S18"]);
-
         let rmiMessage = this.translator.decode(event.data).getRoot();
         LOGGER.log("received", rmiMessage);
 

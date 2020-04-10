@@ -206,7 +206,16 @@ class DecoderTest extends TestFramework{
         Assert.equals("ca.frar.jjjrmi.translator.testclasses.DoNotRetainAnno", object1.constructor.__getClass());
         Assert.equals("ca.frar.jjjrmi.translator.testclasses.DoNotRetainAnno", object2.constructor.__getClass());
         Assert.notEquals(object1, object2);
-    }    
+    }
+
+    test_has_after_decode(){
+        let translator = new Translator();
+        translator.registerPackage(PackageFile);
+        let text = JSON.stringify(this.json.hasAfterDecode, null, 2);
+        let object = translator.decode(text).getRoot();
+
+        Assert.equals(10, object.get());
+    }
 }
 
 module.exports = DecoderTest;

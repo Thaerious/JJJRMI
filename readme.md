@@ -26,6 +26,25 @@ Run JS tests manually.
 `> mvn test-compile`
 `> npm run test`
 
+Run a single test class.    
+`> mvn -Dtest=UsersServiceImplTest test` 
+
+Running Tests Manually
+------------------
+Setup CLI.  
+`source bin/setup`
+
+Generate JSON from Java.  
+`java ca.frar.jjjrmi.translator.GenerateJSON ./target/test-data/from-java.json`
+
+Generate JSON from JS.  
+`npm run test-setup`
+
+Generate JS test files from Java.  
+`jjjrmi -d src/test/java/ -o deleteme  
+
+`
+
 Command Line Interface
 ----------------------
 Copy dependencies to the target directory.  
@@ -63,21 +82,12 @@ Generate the packageFile.js file.
 -j | --json  
 Generate the package.json file.
 
-
 Print xml of generated files (for debugging)
 --xml
 
 Output verbosity options
 -s, -ss silent, really silent
 -v, -vv, -vvv, -vvvv verbose, very verbose, debug, trace
-
-Running Tests
--------------
-compile tests  
-`> mvn test-compile`  
-
-run a single test class  
-`> mvn -Dtest=UsersServiceImplTest test`  
 
 Dependent Version Management
 ----------------------------

@@ -107,7 +107,11 @@ class GenerateJSON {
     generate_transientField(){
         let translator = new Translator();
         return translator.encode(new packageFile.TransientField().set(9));
-    }      
+    }
+    generate_hasAfterDecode(){
+        let translator = new Translator();
+        return translator.encode(new packageFile.HasAfterDecode());
+    }
 }
 
 const filename = process.argv[2];

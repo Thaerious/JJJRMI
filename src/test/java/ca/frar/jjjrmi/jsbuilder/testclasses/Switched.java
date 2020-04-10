@@ -1,4 +1,5 @@
 package ca.frar.jjjrmi.jsbuilder.testclasses;
+import ca.frar.jjjrmi.annotations.AfterDecode;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.annotations.Transient;
 import ca.frar.jjjrmi.rmi.socket.JJJObject;
@@ -20,7 +21,18 @@ public class Switched extends JJJObject implements Serializable {
     public String[] domSubscribers(){
         return new String[0];
     }
-    
+
+    @NativeJS
+    @AfterDecode
+    public void afterDecode(){
+        this.notifyListeners();
+    }
+
+    @NativeJS
+    public void notifyListeners(){
+
+    }
+
     @NativeJS
     public Cardinality cardinality(String target) {
         long a = 1L;

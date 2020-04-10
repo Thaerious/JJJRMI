@@ -1,4 +1,5 @@
 package ca.frar.jjjrmi.translator;
+import ca.frar.jjjrmi.annotations.AfterDecode;
 import ca.frar.jjjrmi.annotations.Transient;
 import ca.frar.jjjrmi.exceptions.DecoderException;
 import ca.frar.jjjrmi.exceptions.MissingConstructorException;
@@ -8,6 +9,7 @@ import ca.frar.jjjrmi.utility.JJJOptionsHandler;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -67,7 +69,7 @@ class ObjectDecoder {
             throw new DecoderException(ex);
         } catch (NoSuchMethodException ex) {
             throw new MissingConstructorException(this.aClass);
-        }     
+        }
     }
 
     /**
@@ -87,6 +89,23 @@ class ObjectDecoder {
                 } catch (IllegalArgumentException | IllegalAccessException ex) {
                     throw new DecoderException(ex);
                 }
+            }
+        }
+    }
+
+    void afterDecode() throws InvocationTargetException, IllegalAccessException {
+        Object decoder;
+        if (HandlerFactory.getInstance().hasHandler(this.aClass)) {
+            decoder = this.handler;
+        } else {
+            decoder = this.result;
+        }
+
+        Method[] methods = decoder.getClass().getMethods();
+        for (Method method : methods){
+            AfterDecode annotation = method.getAnnotation(AfterDecode.class);
+            if (annotation != null){
+                method.invoke(decoder);
             }
         }
     }

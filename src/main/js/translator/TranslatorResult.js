@@ -23,6 +23,9 @@ class TranslatorResult {
         for (let decoder of list) {
             decoder.decode();
         }
+        for (let decoder of list) {
+            decoder.afterDecode();
+        }
         return this;
     }
     encodeFromObject(object) {

@@ -1,15 +1,7 @@
 package ca.frar.jjjrmi.translator;
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
-import ca.frar.jjjrmi.translator.testclasses.CircularRef;
-import ca.frar.jjjrmi.translator.testclasses.DoNotRetainAnno;
-import ca.frar.jjjrmi.translator.testclasses.DoNotRetainExtends;
-import ca.frar.jjjrmi.translator.testclasses.Has;
-import ca.frar.jjjrmi.translator.testclasses.HasHandler;
-import ca.frar.jjjrmi.translator.testclasses.None;
-import ca.frar.jjjrmi.translator.testclasses.Primitives;
-import ca.frar.jjjrmi.translator.testclasses.PrimitivesExtended;
-import ca.frar.jjjrmi.translator.testclasses.Simple;
-import ca.frar.jjjrmi.translator.testclasses.TransientField;
+import ca.frar.jjjrmi.translator.testclasses.*;
+
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -140,5 +132,10 @@ public class GenerateJSON {
     public TranslatorResult generate_transientField() throws JJJRMIException {
         Translator translator = new Translator();
         return translator.encode(new TransientField().set(9));
+    }
+
+    public TranslatorResult generate_hasAfterDecode() throws JJJRMIException {
+        Translator translator = new Translator();
+        return translator.encode(new HasAfterDecode());
     }
 }

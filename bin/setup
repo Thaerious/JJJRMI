@@ -2,8 +2,9 @@
 
 ROOTPATH=$( cd "$(dirname ./$BASH_SOURCE)"; cd .. ; pwd -P )
 
-export PATH=$PATH:$ROOTPATH/bin
-echo $ROOTPATH
+CLASSPATH=$ROOTPATH/target/test-classes
+CLASSPATH=$CLASSPATH:$ROOTPATH/target/classes
+CLASSPATH=$CLASSPATH:$ROOTPATH/target/lib/*
 
-cp bin/jjjrmi.template bin/jjjrmi
-sed -i "s|ROOTPATH=|ROOTPATH=$ROOTPATH|" "bin/jjjrmi"
+export CLASSHPATH=$CLASSPATH
+export PATH=$PATH:$ROOTPATH/bin

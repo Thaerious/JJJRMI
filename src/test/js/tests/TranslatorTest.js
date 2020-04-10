@@ -74,7 +74,8 @@ class TranslatorTest extends TestFramework{
         let decoded = translator.decode(encoded.toString()).getRoot();
         Assert.equals(decoded.getTransientField(), object.getTransientField());
         Assert.equals(decoded.getNonTransientField(), object.getNonTransientField());
-    }    
+    }
+
 };
 
 module.exports = TranslatorTest;

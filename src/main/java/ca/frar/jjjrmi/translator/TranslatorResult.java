@@ -81,6 +81,13 @@ public class TranslatorResult {
         for (ObjectDecoder decoder : list) {
             decoder.decode();
         }
+        for (ObjectDecoder decoder : list) {
+            try {
+                decoder.afterDecode();
+            } catch (InvocationTargetException | IllegalAccessException e) {
+                throw new DecoderException(e);
+            }
+        }
 
         return this;
     }

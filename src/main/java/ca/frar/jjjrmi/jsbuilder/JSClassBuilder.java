@@ -4,13 +4,8 @@ import ca.frar.jjjrmi.Global;
 import static ca.frar.jjjrmi.Global.LOGGER;
 import static ca.frar.jjjrmi.Global.VERBOSE;
 import static ca.frar.jjjrmi.Global.VERY_VERBOSE;
-import ca.frar.jjjrmi.annotations.InvokeSuper;
-import ca.frar.jjjrmi.annotations.JJJ;
-import ca.frar.jjjrmi.annotations.JSPrequel;
-import ca.frar.jjjrmi.annotations.JSRequire;
-import ca.frar.jjjrmi.annotations.NativeJS;
-import ca.frar.jjjrmi.annotations.ServerSide;
-import ca.frar.jjjrmi.annotations.Transient;
+
+import ca.frar.jjjrmi.annotations.*;
 import ca.frar.jjjrmi.exceptions.TypeDeclarationNotFoundWarning;
 import ca.frar.jjjrmi.jsbuilder.code.JSCodeSnippet;
 import ca.frar.jjjrmi.jsbuilder.code.JSFieldDeclaration;
@@ -80,6 +75,7 @@ public class JSClassBuilder<T> {
         this.header.setName(jjjOptions.getName());
         
         this.addJJJMethods();
+        this.addAfterDecode();
         this.buildExtendsSuper();
         this.buildInitMethod();
         this.buildConstructor();
@@ -129,6 +125,32 @@ public class JSClassBuilder<T> {
                 LOGGER.log(VERY_VERBOSE, Global.line( "skipping method: " + ctMethod.getSimpleName()));;
             }
         }
+    }
+
+    /* process all the methods */
+    protected void addAfterDecode() {
+        CtMethod ctMethod = findAfterDecode();
+        if (ctMethod != null) doAddAfterDecode(ctMethod);
+    }
+
+    private CtMethod findAfterDecode(){
+        boolean afterDecode = false;
+        Set<CtMethod<?>> allMethods = ctClass.getMethods();
+        for (CtMethod<?> ctMethod : allMethods) {
+            if (ctMethod.getAnnotation(AfterDecode.class) != null) return ctMethod;
+        }
+        return null;
+    }
+
+    private void doAddAfterDecode(CtMethod ctMethod){
+        NativeJS nativeJSAnno = ctMethod.getAnnotation(NativeJS.class);
+        String name = ctMethod.getSimpleName();
+        if (nativeJSAnno != null) name = nativeJSAnno.value();
+
+        JSMethodBuilder jsGetClassMethod = new JSMethodBuilder();
+        jsGetClassMethod.setName("__afterDecode");
+        jsGetClassMethod.getBody().add(new JSCodeSnippet("return this." + ctMethod.getSimpleName() + "();"));
+        addMethod(jsGetClassMethod);
     }
 
     protected void buildExtendsSuper() {
@@ -249,6 +271,7 @@ public class JSClassBuilder<T> {
 
     protected void addJJJMethods() {
         if (!jjjOptions.insertJJJMethods()) return;
+
         JSMethodBuilder jsTransMethod = new JSMethodBuilder();
         jsTransMethod.setStatic(true);
         jsTransMethod.setName("__isRetained");
