@@ -41,15 +41,15 @@ public class HandlerFactory {
         Reflections reflections = new Reflections("", subTypesScanner, typeAnnotationsScanner);
         Set<Class<?>> classes = reflections.getTypesAnnotatedWith(Handles.class);
 
-        Global.header(VERBOSE, "Handlers");
+        LOGGER.log(VERBOSE, Global.header( "Handlers"));
         for (Class<?> aClass : classes) {
             LOGGER.debug(aClass);
             Handles handles = aClass.getAnnotation(Handles.class);
             if (AHandler.class.isAssignableFrom(aClass)) {
-                Global.line(VERBOSE, aClass.getName() + " : " + handles.value());
+                LOGGER.log(VERBOSE, Global.line( aClass.getName() + " : " + handles.value()));
                 classMap.put(handles.value(), (Class<? extends AHandler<?>>) aClass);
             } else {
-                Global.line(VERY_VERBOSE, aClass.getName() + " does not extend AHander");
+                LOGGER.log(VERY_VERBOSE, Global.line( aClass.getName() + " does not extend AHander"));
             }
         }
         Global.tail(VERBOSE);
@@ -62,7 +62,7 @@ public class HandlerFactory {
         Reflections reflections = new Reflections(urlClassLoader);
         Set<Class<?>> classes = reflections.getTypesAnnotatedWith(Handles.class);
 
-        Global.header(VERBOSE, "Handlers: " + file.getPath());
+        LOGGER.log(VERBOSE, Global.header( "Handlers: " + file.getPath()));
         for (Class<?> aClass : classes) {
             Handles handles = aClass.getAnnotation(Handles.class);
             if (AHandler.class.isAssignableFrom(aClass)) {
@@ -75,7 +75,7 @@ public class HandlerFactory {
     }
 
     public void addClasspath(File file) throws MalformedURLException, ClassNotFoundException, IOException {
-        Global.header(VERBOSE, "Handlers: " + file.getPath());
+        LOGGER.log(VERBOSE, Global.header( "Handlers: " + file.getPath()));
 
         URL[] urls = new URL[]{file.toURI().toURL()};
         URLClassLoader urlClassLoader = new URLClassLoader(urls, this.getClass().getClassLoader());

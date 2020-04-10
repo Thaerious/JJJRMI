@@ -40,7 +40,7 @@ public class MOJO extends AbstractMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
             Base base = new Base();
-            Global.header(INFO, "JJJRMI MOJO");            
+            LOGGER.info(Global.header( "JJJRMI MOJO"));
             fillArguments(base);            
             base.run();
             base.output();
