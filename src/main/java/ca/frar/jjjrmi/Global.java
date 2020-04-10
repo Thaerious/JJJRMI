@@ -32,21 +32,13 @@ public class Global {
             Logger.getLogger(Global.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
     }
-    
-    public static void header(Level level, String string){
-        LOGGER.log(level, header(string));
-    }    
-    
+
     public static String header(String string){
         int dashL = (BOX_WIDTH - string.length() - 4) / 2;
         int dashR = BOX_WIDTH - dashL - string.length() - 4;
         return "+" + "-".repeat(dashL) + " [" + string + "] " + "-".repeat(dashR) + "+ " + (lineno++);
     }
    
-    public static void line(Level level, String string){
-        LOGGER.log(level, line(string));
-    }
-    
     public static String line(String string){
         int len = BOX_WIDTH - string.length() - 2;
         if (len < 0) len = 0;

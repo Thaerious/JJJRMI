@@ -222,20 +222,20 @@ public class Base {
      * @throws JSBuilderException
      */
     public void output() throws FileNotFoundException, JSBuilderException, IOException {        
-        Global.header(VERBOSE, "Skipping");
+        LOGGER.log(VERBOSE, Global.header("Skipping"));
         for(String s : jsParser.getSkippedClasses()){
-            Global.line(VERBOSE, s);
-            Global.line(VERY_VERBOSE, " - " + jsParser.getSkippedReason(s));
+            LOGGER.log(VERBOSE, Global.line(s));
+            LOGGER.log(VERY_VERBOSE, Global.line(" - " + jsParser.getSkippedReason(s)));
         }
-        Global.tail(VERBOSE);        
-        
-        Global.header(INFO, "Generating output");
+        Global.tail(VERBOSE);
 
-        Global.line(VERBOSE, "Root Path: " + destination);
+        LOGGER.log(INFO, Global.header("Generating output"));
+
+        LOGGER.log(VERBOSE, Global.line("Root Path: " + destination));
         new File(destination).mkdirs();
 
         for (JSClassBuilder<?> jsClassBuilder : jsParser.jsClassBuilders()) {
-            Global.line(INFO, jsClassBuilder.getSimpleName() + ".js");
+            LOGGER.log(INFO, Global.line(jsClassBuilder.getSimpleName() + ".js"));
             Base.writeClass(jsClassBuilder, destination);
 
             if (this.printXML) {
@@ -244,17 +244,17 @@ public class Base {
         }
 
         if (this.generatePackage == true) {
-            Global.line(INFO, "Creating packageFile.js file.");
+            LOGGER.log(INFO, Global.line("Creating packageFile.js file."));
             this.buildPackageJS();
         } else {
-            Global.line(VERY_VERBOSE, "Skipping package js file.");
+            LOGGER.log(VERY_VERBOSE, Global.line("Skipping package js file."));
         }
 
         if (this.generateJSON == true) {
-            Global.line(INFO, "Creating package.json file.");
+            LOGGER.log(INFO, Global.line("Creating package.json file."));
             this.copyPackageJSON();
         } else {
-            Global.line(VERY_VERBOSE, "Skipping package json file.");
+            LOGGER.log(VERY_VERBOSE, Global.line("Skipping package json file."));
         }
         
         Global.tail(INFO);

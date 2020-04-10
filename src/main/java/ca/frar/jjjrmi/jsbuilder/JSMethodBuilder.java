@@ -2,6 +2,8 @@ package ca.frar.jjjrmi.jsbuilder;
 
 import ca.frar.jjjrmi.jsbuilder.code.JSParameter;
 import ca.frar.jjjrmi.Global;
+
+import static ca.frar.jjjrmi.Global.LOGGER;
 import static ca.frar.jjjrmi.Global.VERY_VERBOSE;
 import ca.frar.jjjrmi.exceptions.UnknownParameterException;
 import ca.frar.jjjrmi.exceptions.TypeDeclarationNotFoundWarning;
@@ -27,7 +29,7 @@ public class JSMethodBuilder {
     private boolean isGetter;
 
     public JSMethodBuilder(String name) {
-        Global.line(VERY_VERBOSE, "building method: " + name);
+        LOGGER.log(VERY_VERBOSE, Global.line( "building method: " + name));;
         this.name = name;
     }
 
@@ -66,12 +68,9 @@ public class JSMethodBuilder {
      * Replace or add parameter to this method, with values set from
      * 'annotation'. The order of parameters is not affected if the parameter is
      * already set.
-     *
-     * @param name
-     * @return
      */
     public JSMethodBuilder addParameter(JSParameter jsParameter) {
-        Global.line(VERY_VERBOSE, "setting initialized parameter: " + jsParameter.getName() + " = " + jsParameter.getInitializer());
+        LOGGER.log(VERY_VERBOSE, Global.line( "setting initialized parameter: " + jsParameter.getName() + " = " + jsParameter.getInitializer()));;
         parameters.put(jsParameter.getName(), jsParameter);
         return this;
     }
@@ -85,7 +84,7 @@ public class JSMethodBuilder {
      * @return
      */
     public JSMethodBuilder addParameter(String name) {
-        Global.line(VERY_VERBOSE, "setting blank parameter: " + name);
+        LOGGER.log(VERY_VERBOSE, Global.line( "setting blank parameter: " + name));;
         JSParameter jsParameter = new JSParameter(name, "");
         parameters.put(name, jsParameter);
         return this;

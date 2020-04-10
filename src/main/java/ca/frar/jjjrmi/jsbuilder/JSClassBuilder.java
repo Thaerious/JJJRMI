@@ -365,9 +365,9 @@ public class JSClassBuilder<T> {
                 this.requireSet.add(requireRecord);
             }
             else if (anImport.getTypeDeclaration() == null) {
-                Global.line(WARN, "Warning - unknown type required: " + anImport.getQualifiedName());
+                LOGGER.log(WARN, Global.line( "Warning - unknown type required: " + anImport.getQualifiedName()));;
             } else if (!isSubtype && !hasAnno) {
-                Global.line(WARN, "Warning - non-transpiled type required: " + anImport.getQualifiedName());
+                LOGGER.log(WARN, Global.line( "Warning - non-transpiled type required: " + anImport.getQualifiedName()));;
             } else {
                 LOGGER.log(VERY_VERBOSE, Global.line( String.format("Generating require for %s", anImport.getQualifiedName())));;
                 JJJOptionsHandler jjjOptionsHandler = new JJJOptionsHandler(anImport);
@@ -577,7 +577,7 @@ public class JSClassBuilder<T> {
 
             JSFieldDeclaration jsFieldDeclaration = new JSFieldDeclaration(ctFieldRef.getDeclaration());
             if (!jsFieldDeclaration.isStatic()) {
-                Global.line(Level.forName("VERBOSE", 450), "local field: " + ctField.getSimpleName());
+                LOGGER.log(VERBOSE, Global.line("local field: " + ctField.getSimpleName()));
                 jsElementList.add(jsFieldDeclaration);
             } else {
                 LOGGER.log(VERY_VERBOSE, Global.line( "field is static: " + ctField.getSimpleName()));;

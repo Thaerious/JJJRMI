@@ -2,13 +2,16 @@
 ROOTPATH=/mnt/d/project/trunk/jjj/rmi
 POSITIONAL=()
 
+CP=$ROOTPATH/target/classes
+CP=$CP:$ROOTPATH/target/lib/*
+
 while [[ $# -gt 0 ]] 
 do
     key="$1"
 
     case $key in
         -cp|-classpath)
-            CLASSPATH="$2"
+            CP=$CP:"$2"
             shift
             shift
         ;;
@@ -21,7 +24,5 @@ done
 
 set -- "${POSITIONAL[@]}" # restore positional parameters
 
-CP=$ROOTPATH/target/classes
-CP=$CP:$ROOTPATH/target/lib/*
 echo $CP
 java -classpath $CP ca.frar.jjjrmi.CLI "$@"

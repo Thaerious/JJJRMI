@@ -28,7 +28,7 @@ public class CLI {
             CLI cli = new CLI();
             Base base = new Base();
             cli.parseArgs(base, args);
-            Global.header(INFO, "JJJRMI CLI");
+            LOGGER.info(Global.header("JJJRMI CLI"));
             base.run();
             base.output();
         } catch (IOException | ClassNotFoundException ex) {

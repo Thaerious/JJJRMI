@@ -53,9 +53,6 @@ public class JSInvocation extends AbstractJSCodeElement {
     /**
      * Return true if this invocation should be processed. Return false to not
      * process this invocation.
-     *
-     * @param ctInvocation
-     * @return
      */
     private boolean checkInvocation() {
         if (ctInvocation.getTarget() == null) return true; // super(...)
