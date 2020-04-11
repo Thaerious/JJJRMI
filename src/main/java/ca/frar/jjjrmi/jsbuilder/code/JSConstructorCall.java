@@ -21,6 +21,8 @@ public class JSConstructorCall extends AbstractJSCodeElement {
         this.ctConstructorCall = ctConstructorCall;
         arguments = new JSElementList(ctConstructorCall.getArguments());
         name = ctConstructorCall.getType().getSimpleName();
+
+        this.setAttr("name", this.name);
     }
     
     @Override

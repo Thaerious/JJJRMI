@@ -91,6 +91,10 @@ public class Base {
         }
     }
 
+    public List<String> getSourceDirectories(){
+        return (List<String>) this.inputDirectories.clone();
+    }
+
     /**
      * @param packageFileName the packageFileName to set
      */
@@ -157,8 +161,12 @@ public class Base {
     }
     
     public void run() throws FileNotFoundException, IOException {
+        this.run(getFiles());
+    }
+
+    public void run(Iterable<Path> files) throws FileNotFoundException, IOException {
         Launcher launcher = new Launcher();
-        getFiles().forEach(f -> launcher.addInputResource(f.toString()));
+        files.forEach(f -> launcher.addInputResource(f.toString()));
         jsParser = new JSParser();
         jsParser.setPackageFileName(packageFileName);
         launcher.buildModel();
@@ -167,7 +175,7 @@ public class Base {
     }
 
     private List<Path> getFiles() throws IOException{
-        List<Path> filePaths = new ArrayList<Path>();
+        List<Path> filePaths = new ArrayList<>();
         for (String s : this.inputDirectories){
             this.getFiles(s, filePaths);
         }
@@ -185,18 +193,18 @@ public class Base {
         files.filter((f) -> {
             return f.toString().endsWith(".java");
         })
-            .filter((f) -> {
-                if (includes.isEmpty()) return true;
-                int index = f.toString().lastIndexOf("/");
-                String filename = f.toString().substring(index + 1);
-                return this.includes.contains(filename);
-            })
-            .filter((f) -> {
-                int index = f.toString().lastIndexOf("/");
-                String filename = f.toString().substring(index + 1);
-                return !this.excludes.contains(filename);
-            })
-            .forEach((p) -> filePaths.add(p));
+        .filter((f) -> {
+            if (includes.isEmpty()) return true;
+            int index = f.toString().lastIndexOf("/");
+            String filename = f.toString().substring(index + 1);
+            return this.includes.contains(filename);
+        })
+        .filter((f) -> {
+            int index = f.toString().lastIndexOf("/");
+            String filename = f.toString().substring(index + 1);
+            return !this.excludes.contains(filename);
+        })
+        .forEach((p) -> filePaths.add(p));
     }
 
     private static void writeClass(JSClassBuilder<?> jsClassBuilder, String rootPath) throws FileNotFoundException {

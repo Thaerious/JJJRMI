@@ -14,11 +14,13 @@ public class JSLocalVariable extends AbstractJSCodeElement{
         this.ctLocalVariable = ctLocalVariable;
         this.lhs = new JSLocalVariableReference(ctLocalVariable.getReference());
         this.rhs = this.generate(ctLocalVariable.getAssignment());
+
+        this.setAttr("name", this.lhs);
     }
 
     @Override
     public String toString(){
-        if (rhs.noChildren()) return "let " + lhs.toString();
+        if (this.noChildren()) return "let " + lhs.toString();
         else return "let " + lhs.toString() + " = " + rhs.toString();
     }
 }

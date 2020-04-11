@@ -77,6 +77,12 @@ public class ModelElement extends JJJObject  implements Serializable{
                 }
             }
         }*/
-    }    
+    }
+
+    @NativeJS
+    public ModelElement clone(){
+        ModelElement that = new ModelElement();
+        return that;
+    }
     
 }

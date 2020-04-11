@@ -23,7 +23,7 @@ import org.apache.maven.plugin.MojoFailureException;
  */
 public class CLI {
 
-    public static void main(String... args) {
+    public static void main(String... args) throws IOException, ClassNotFoundException {
         try {
             CLI cli = new CLI();
             Base base = new Base();
