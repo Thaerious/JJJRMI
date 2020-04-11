@@ -49,6 +49,7 @@ public class Base {
     private HashSet<String> includes = new HashSet<>();
     private HashSet<String> excludes = new HashSet<>();
     private JSParser jsParser;
+    private boolean deliminatingComments = false;
 
     public void addHandler(String path) throws MalformedURLException, ClassNotFoundException, IOException{        
         if (path.endsWith(".jar")){
@@ -91,8 +92,12 @@ public class Base {
         }
     }
 
-    public List<String> getSourceDirectories(){
-        return (List<String>) this.inputDirectories.clone();
+    public List<Path> getSourceDirectories(){
+        ArrayList<Path> paths = new ArrayList<>();
+        for (String s : this.inputDirectories){
+            paths.add(new File(s).toPath());
+        }
+        return paths;
     }
 
     /**
@@ -207,7 +212,9 @@ public class Base {
         .forEach((p) -> filePaths.add(p));
     }
 
-    private static void writeClass(JSClassBuilder<?> jsClassBuilder, String rootPath) throws FileNotFoundException {
+    private void writeClass(JSClassBuilder<?> jsClassBuilder, String rootPath) throws FileNotFoundException {
+        if (this.deliminatingComments) jsClassBuilder.addDeliminatingComments();
+
         String outPath = String.format("%s/%s.js", rootPath, jsClassBuilder.getSimpleName());
         File outFile = new File(outPath);
         FileOutputStream fos = new FileOutputStream(outFile);
@@ -244,7 +251,7 @@ public class Base {
 
         for (JSClassBuilder<?> jsClassBuilder : jsParser.jsClassBuilders()) {
             LOGGER.log(INFO, Global.line(jsClassBuilder.getSimpleName() + ".js"));
-            Base.writeClass(jsClassBuilder, destination);
+            writeClass(jsClassBuilder, destination);
 
             if (this.printXML) {
                 System.out.println(jsClassBuilder.toXML(0));
@@ -324,5 +331,9 @@ public class Base {
         }
 
         fileWriter.close();
+    }
+
+    public void addDeliminatingComments() {
+        this.deliminatingComments = true;
     }
 }

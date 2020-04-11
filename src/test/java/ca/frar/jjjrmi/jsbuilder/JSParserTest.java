@@ -9,7 +9,12 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import static org.junit.jupiter.api.Assertions.*;
+
+import com.sun.source.tree.AssertTree;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -34,7 +39,7 @@ public class JSParserTest {
             }
         }
     }
-    
+
     public JSParserTest() {
         try {
             File dir = new File(OUT_DIR);
@@ -46,11 +51,30 @@ public class JSParserTest {
                 dir.delete();
             }
 
-            CLI.main("-s", "-d", IN_DIR, "-o", OUT_DIR);
-        } catch (JSBuilderException ex) {
+            CLI.main("-s", "-d", IN_DIR, "-o", OUT_DIR, "--dc");
+        } catch (IOException | ClassNotFoundException |JSBuilderException ex) {
             Logger.getLogger(JSParserTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
+    /**
+     * Retrieve method text.  Must be generated with --dc flag
+     * @param classString
+     * @param methodName
+     * @return
+     */
+    public String getMethod(String classString, String methodName){
+        String startString = "/* start " + methodName + " */\n";
+        String endString = "/* end " + methodName + " */";
+
+        int startIndex = classString.indexOf(startString);
+        int endIndex = classString.indexOf(endString);
+
+        if (startIndex == -1 || endIndex == -1) return null;
+
+        return classString.substring(startIndex + startString.length(), endIndex);
+    }
+
 
     /**
      * File will generate because Simple extends JJJObject.
@@ -270,7 +294,19 @@ public class JSParserTest {
         String className = ExtendSwitched.class.getSimpleName();
         String contents = new String(Files.readAllBytes(Paths.get(OUT_DIR + "/" + className + ".js")));
         contents = contents.replaceAll("[ \t\r\n]+", " ");
-        System.out.println(contents);
         assertTrue(contents.contains("domSubscribers() { return [\"a\", \"b\"]; }"));
-    }     
+    }
+
+    /*
+     * A constructor for the given class will generate new CLASSNAME(args).
+     */
+    @Test
+    public void test_this_constructor() throws JJJRMIException, JSBuilderException, IOException {
+        String className = ModelElement.class.getSimpleName();
+        String contents = new String(Files.readAllBytes(Paths.get(OUT_DIR + "/" + className + ".js")));
+
+        String method = getMethod(contents, "clone");
+        assertTrue(method.contains("let that = new ModelElement();"));
+        System.out.println(method);
+    }
 }

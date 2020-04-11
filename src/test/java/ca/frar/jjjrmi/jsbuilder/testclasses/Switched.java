@@ -30,7 +30,6 @@ public class Switched extends JJJObject implements Serializable {
 
     @NativeJS
     public void notifyListeners(){
-
     }
 
     @NativeJS

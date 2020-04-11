@@ -36,6 +36,8 @@ public class Global {
     public static String header(String string){
         int dashL = (BOX_WIDTH - string.length() - 4) / 2;
         int dashR = BOX_WIDTH - dashL - string.length() - 4;
+        if (dashL < 0) dashL = 0;
+        if (dashR < 0) dashR = 0;
         return "+" + "-".repeat(dashL) + " [" + string + "] " + "-".repeat(dashR) + "+ " + (lineno++);
     }
    

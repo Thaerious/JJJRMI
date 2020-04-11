@@ -4,7 +4,6 @@
  * and open the template in the editor.
  */
 package ca.frar.jjjrmi.translator.testclasses;
-
 import ca.frar.jjjrmi.annotations.JJJ;
 
 /**

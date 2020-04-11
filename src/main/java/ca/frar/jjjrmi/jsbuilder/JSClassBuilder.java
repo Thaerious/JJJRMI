@@ -46,11 +46,16 @@ public class JSClassBuilder<T> {
     protected HashSet<RequireRecord> requireSet = new HashSet<>(); // js require statements
     protected HashSet<CtTypeReference> classRequires = new HashSet<>(); // js require statements
     protected ArrayList<JSClassBuilder> nested = new ArrayList<>();
-    
+    protected boolean delCom = false; // add deliminating comments
+
     /* locally defined classes and enums (not fully implemented) */
     JSClassBuilder(CtClass<T> ctClass) {
         this.ctClass = ctClass;
         this.jjjOptions = new JJJOptionsHandler(ctClass);
+    }
+
+    public void addDeliminatingComments(){
+        this.delCom = true;
     }
 
     public JJJOptionsHandler getOptions() {
@@ -466,9 +471,15 @@ public class JSClassBuilder<T> {
     public String bodyString() throws JSBuilderException {
         StringBuilder builder = new StringBuilder();
         builder.append(" {\n");
+
+        if (this.delCom) builder.append("/* start constructor */\n");
         builder.append(constructor.fullString()).append("\n");
+        if (this.delCom) builder.append("/* end constructor */\n");
+
         for (JSMethodBuilder method : methods) {
+            if (this.delCom) builder.append("/* start ").append(method.getName()).append(" */\n");
             builder.append(method.fullString()).append("\n");
+            if (this.delCom) builder.append("/* end ").append(method.getName()).append(" */\n");
         }
         builder.append("};\n");
         builder.append(sequelString());

@@ -3,7 +3,9 @@ package ca.frar.jjjrmi;
 import static ca.frar.jjjrmi.Global.LOGGER;
 import static ca.frar.jjjrmi.Global.VERBOSE;
 import static ca.frar.jjjrmi.Global.VERY_VERBOSE;
+
 import ca.frar.jjjrmi.jsbuilder.JSBuilderException;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -11,7 +13,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import static org.apache.logging.log4j.Level.*;
+
 import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -127,6 +131,9 @@ public class CLI {
                 break;
             case "--xml":
                 base.setPrintXML(true);
+                break;
+            case "--dc":
+                base.addDeliminatingComments();
                 break;
             case "-s":
                 Configurator.setRootLevel(ERROR);
