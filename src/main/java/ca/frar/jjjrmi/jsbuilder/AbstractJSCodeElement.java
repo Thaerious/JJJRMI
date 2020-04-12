@@ -11,6 +11,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
+
+import ca.frar.jjjrmi.jsbuilder.code.JSEmptyElement;
 import spoon.reflect.code.CtCodeElement;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.reference.CtTypeReference;
@@ -65,6 +67,7 @@ public class AbstractJSCodeElement implements JSCodeElement {
      */
     public JSCodeElement generate(CtElement ctCodeElement) {
         JSCodeElement generated = CodeFactory.generate(ctCodeElement).get();
+        if (generated instanceof JSEmptyElement) return generated;
         this.childElements.add(generated);
         return generated;
     }
