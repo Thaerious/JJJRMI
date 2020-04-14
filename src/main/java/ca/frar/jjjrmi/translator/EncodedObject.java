@@ -29,7 +29,7 @@ class EncodedObject {
         this.object = object;
         this.json = new JSONObject();
         this.encodedResult = encodedResult;        
-        
+
         this.json.put(Constants.KeyParam, encodedResult.getTranslator().allocReference(object, retain));
         this.json.put(Constants.TypeParam, object.getClass().getName());
         this.json.put(Constants.FieldsParam, new JSONObject());

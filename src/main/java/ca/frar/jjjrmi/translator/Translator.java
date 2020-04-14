@@ -28,6 +28,20 @@ public class Translator {
     private final ArrayList<String> tempReferences = new ArrayList<>();
     private int nextKey = 0;
 
+    private ClassLoader classLoader = this.getClass().getClassLoader();
+
+    /**
+     * Specify the class loader to be used to create new class instances.
+     * @param classLoader
+     */
+    public void setClassLoader(ClassLoader classLoader){
+        this.classLoader = classLoader;
+    }
+
+    public ClassLoader getClassLoader(){
+        return this.classLoader;
+    }
+
     /**
      * Add a reference that will be removed when this round of
      * encoding/decoding.<br>

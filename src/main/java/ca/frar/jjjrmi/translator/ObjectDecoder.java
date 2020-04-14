@@ -15,7 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 import org.json.JSONObject;
 
-class ObjectDecoder {
+public class ObjectDecoder {
     final static org.apache.logging.log4j.Logger LOGGER = org.apache.logging.log4j.LogManager.getLogger("Decoder");
     private Class<?> aClass;
     private final TranslatorResult encodedResult;
@@ -40,7 +40,9 @@ class ObjectDecoder {
         LOGGER.trace(this.json.toString(2));
         try {
             boolean retain = true;
-            this.aClass = Class.forName(json.getString(Constants.TypeParam));
+
+            this.aClass = Class.forName(json.getString(Constants.TypeParam), true, this.translator.getClassLoader());
+
             if (this.aClass == null) {
                 throw new UnknownClassException(json.getString(Constants.TypeParam));
             }

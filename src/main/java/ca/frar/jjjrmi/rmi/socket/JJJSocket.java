@@ -36,6 +36,7 @@ public abstract class JJJSocket<T> extends Endpoint  {
         synchronized (this) {
             try {
                 MsgHandler msgHandler = new MsgHandler(session);
+                msgHandler.getTranslator().setClassLoader(this.getClass().getClassLoader());
                 handlerMap.put(session, msgHandler);
                 session.addMessageHandler(String.class, msgHandler);
                 ReadyMessage<T> readyMessage = new ReadyMessage<>(this.getRoot());
