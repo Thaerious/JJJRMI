@@ -111,7 +111,6 @@ class MsgHandler implements MessageHandler.Whole<String>, InvokesMethods, Consum
     }
 
     private void onMethodRequest(MethodRequest request) {
-        LOGGER.log(VERBOSE, request.toString());
         Object object;
 
         try {

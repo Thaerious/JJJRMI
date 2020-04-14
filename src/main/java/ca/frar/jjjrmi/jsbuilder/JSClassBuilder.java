@@ -435,7 +435,7 @@ public class JSClassBuilder<T> {
     }
 
     private void appendExport(StringBuilder builder) {
-        builder.append("\nif (typeof module !== \"undefined\") module.exports = ");
+        builder.append("\nmodule.exports = ");
         builder.append(this.getSimpleName());
         builder.append(";\n");
     }
