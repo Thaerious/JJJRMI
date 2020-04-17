@@ -34,7 +34,7 @@ class Decoder {
         } else if (json.has(Constants.EnumParam)) {
             try {
                 Class<? extends Enum> aClass;
-                aClass = (Class<? extends Enum>) this.getClass().getClassLoader().loadClass((String) json.get(Constants.EnumParam));
+                aClass = (Class<? extends Enum>) this.translator.getClassLoader().loadClass((String) json.get(Constants.EnumParam));
                 String value = json.get(Constants.ValueParam).toString();
                 Enum valueOf = Enum.valueOf(aClass, value);
                 return valueOf;

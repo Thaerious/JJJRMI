@@ -139,6 +139,8 @@ class MsgHandler implements MessageHandler.Whole<String>, InvokesMethods, Consum
             Class<?>[] parameterTypes = method.getParameterTypes();
             for (Class<?> parameterType : parameterTypes) {
                 LOGGER.error(parameterType.getCanonicalName() + " " + parameterType.hashCode());
+                LOGGER.error("classloader " + parameterType.getClassLoader().hashCode());
+                LOGGER.error(parameterType.getClassLoader());
             }
 
             int i = 0;
@@ -146,7 +148,12 @@ class MsgHandler implements MessageHandler.Whole<String>, InvokesMethods, Consum
             for (Object methodArgument : request.methodArguments) {
                 LOGGER.error(methodArgument.getClass().getCanonicalName() + " " + methodArgument.getClass().hashCode());
                 LOGGER.error(parameterTypes[i] == request.methodArguments[i].getClass());
+                LOGGER.error("classloader " + request.methodArguments[i].getClass().getClassLoader().hashCode());
+                LOGGER.error(request.methodArguments[i].getClass().getClassLoader());
             }
+
+            LOGGER.error("Translator declared classloader: " + this.translator.getClassLoader().hashCode());
+            LOGGER.error(this.translator.getClassLoader());
 
             var sse = new ServerSideExceptionMessage(request.uid, request.objectPTR, request.methodName, e);
             this.sendException(sse);
