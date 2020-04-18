@@ -1,41 +1,55 @@
 package ca.frar.jjjrmi.jsbuilder.testclasses;
+
 import ca.frar.jjjrmi.annotations.AfterDecode;
+import ca.frar.jjjrmi.annotations.JSRequire;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.annotations.Transient;
 import ca.frar.jjjrmi.rmi.socket.JJJObject;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/*
+    Comment outside a class.
+*/
+@JSRequire(name="AClass", value="sub/aclass", postfix="TheClass")
 public class Switched extends JJJObject implements Serializable {
     private static final long serialVersionUID = 1L;
     public static String value = "a";
     private final ArrayList<String> list;
-    
+
     @NativeJS
-    public Switched(){
+    public Switched() {
         this.list = new ArrayList<String>();
     }
-    
+
     @NativeJS
-    public String[] domSubscribers(){
+    public String[] domSubscribers() {
         return new String[0];
     }
 
     @NativeJS
     @AfterDecode
-    public void afterDecode(){
+    public void afterDecode() {
         this.notifyListeners();
     }
 
     @NativeJS
-    public void notifyListeners(){
+    public void notifyListeners() {
     }
 
+    /*
+        Comment between a class.
+    */
+
+    /*
+    Comment before a class.
+     */
     @NativeJS
     public Cardinality cardinality(String target) {
         long a = 1L;
-        
+
         switch (target) {
             case "-0.5 -1.0 0.0":
                 return Cardinality.S;
@@ -47,4 +61,14 @@ public class Switched extends JJJObject implements Serializable {
                 return null;
         }
     }
+
+    /*JS{
+        methodLiteral(){
+            console.log("I am literally a method");
+        }
+    }*/
+
+    /*
+        Comment after a class 2.
+    */
 }

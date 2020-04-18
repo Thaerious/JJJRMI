@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Set;
 import org.apache.logging.log4j.Level;
 import static org.apache.logging.log4j.Level.WARN;
+
+import spoon.reflect.code.CtComment;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
@@ -40,6 +42,7 @@ public class JSClassBuilder<T> {
     protected final CtClass<T> ctClass;
     protected final JJJOptionsHandler jjjOptions;
     protected Set<JSMethodBuilder> methods = new HashSet<>();
+    protected List<String> methodLiterals = new ArrayList<>(); // methods inserted as comments outside of method declaration (put after java methods)
     protected List<JSFieldDeclaration> staticFields = new ArrayList<>();
     protected List<JSCodeElement> sequel = new ArrayList<>();
     protected JSClassBuilder<?> container = null;
@@ -85,6 +88,7 @@ public class JSClassBuilder<T> {
         this.buildInitMethod();
         this.buildConstructor();
         this.buildAllMethods();
+        this.parseComments();
         this.buildInnerTypes();
         this.constructStaticFields();
         this.reportReferences();
@@ -128,6 +132,20 @@ public class JSClassBuilder<T> {
                 this.classRequires.addAll(jsMethodBuilder.getRequires());
             } else {
                 LOGGER.log(VERY_VERBOSE, Global.line( "skipping method: " + ctMethod.getSimpleName()));;
+            }
+        }
+    }
+
+    protected void parseComments(){
+        List<CtComment> comments = ctClass.getComments();
+
+        for (CtComment ctComment : comments){
+            String content = ctComment.getContent().trim();
+            if (content.startsWith("JS{") && content.endsWith("}")){
+                int endOffset = 1;
+                if (content.charAt(content.length() - 1) == ';') endOffset = 2;
+                String outputString = content.substring(3, content.length() - 1);
+                this.methodLiterals.add(outputString);
             }
         }
     }
@@ -481,6 +499,11 @@ public class JSClassBuilder<T> {
             builder.append(method.fullString()).append("\n");
             if (this.delCom) builder.append("/* end ").append(method.getName()).append(" */\n");
         }
+
+        for (String methodLiteral : methodLiterals){
+            builder.append(methodLiteral).append("\n");
+        }
+
         builder.append("};\n");
         builder.append(sequelString());
         return builder.toString();

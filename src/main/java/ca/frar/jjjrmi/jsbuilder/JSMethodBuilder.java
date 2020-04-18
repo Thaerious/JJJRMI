@@ -36,8 +36,6 @@ public class JSMethodBuilder {
     public JSMethodBuilder() {
     }
 
-
-
     /**
      * Retrieve all js 'requires' from and all methods.
      *
