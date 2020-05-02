@@ -7,6 +7,7 @@ package ca.frar.jjjrmi.rmi.socket;
 
 import static ca.frar.jjjrmi.Global.VERBOSE;
 
+import ca.frar.jjjrmi.Global;
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
 import ca.frar.jjjrmi.exceptions.ParameterCountException;
 import ca.frar.jjjrmi.rmi.ClientMessage;
@@ -167,15 +168,25 @@ class MsgHandler implements MessageHandler.Whole<String>, InvokesMethods, Consum
             ServerSideExceptionMessage.LOGGER.error(msg.getMessage());
         } else {
             ServerSideExceptionMessage.LOGGER.error(throwable.getMessage());
-            for (StackTraceElement ste : throwable.getStackTrace()) {
-                ServerSideExceptionMessage.LOGGER.error(ste);
-            }
+            this.printStackTrace(throwable);
         }
 
         try {
             this.sendObject(msg);
         } catch (IOException | JJJRMIException | InvalidJJJSessionException e) {
             LOGGER.catching(e);
+        }
+    }
+
+    private void printStackTrace(Throwable throwable){
+        ServerSideExceptionMessage.LOGGER.error(Global.header(throwable.getClass().getSimpleName()));
+        ServerSideExceptionMessage.LOGGER.error(throwable.getMessage());
+        for (StackTraceElement ste : throwable.getStackTrace()) {
+            ServerSideExceptionMessage.LOGGER.error(ste);
+        }
+
+        if(throwable.getCause() != null){
+            printStackTrace(throwable.getCause());
         }
     }
 

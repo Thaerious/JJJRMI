@@ -35,7 +35,8 @@ Logger.flags = {
     SENT: false, /* show the send object, versbose shows the json text as well */
     RECEIVED: false, /* show all received server objects, verbose shows the json text as well */
     ONREGISTER: false, /* report classes as they are registered */
-    WARN: true /* report classes as they are registered */
+    WARN: true, /* report classes as they are registered */
+    TRANSLATOR: false /* report translator decisions */
 };
 
 module.exports = Logger;

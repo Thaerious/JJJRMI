@@ -2,8 +2,8 @@
 
 class BiMap {
     constructor() {
-        this.objectMap = new Map();
-        this.reverseMap = new Map();
+        this.objectMap = new Map(); // key:value pairs
+        this.reverseMap = new Map(); // value:key pairs
     }
     removeByKey(key) {
         let obj = this.objectMap.get(key);

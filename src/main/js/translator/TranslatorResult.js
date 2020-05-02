@@ -2,6 +2,7 @@
 const Constants = require("./Constants");
 const EncodedObject = require("./Encoder").EncodedObject;
 const ObjectDecoder = require("./ObjectDecoder");
+const LOGGER = require("./Logger");
 
 class TranslatorResult {
     constructor(translator) {
@@ -29,17 +30,21 @@ class TranslatorResult {
         return this;
     }
     encodeFromObject(object) {
+        LOGGER.log("translator", `encodeFromObject(${object.constructor.name})`);
         let handlerRegistry = this.translator.handlerRegistry;
 
         this.json = {};
         this.json[Constants.NewObjects] = {};
         if (this.translator.hasReferredObject(object)){
+            LOGGER.log("translator", `hasReferredObject : ${this.translator.getReference(object)}`);
             this.setRoot(this.translator.getReference(object));
         }
         else if (object.constructor.__getClass && handlerRegistry.hasClass(object.constructor.__getClass())){
+            LOGGER.log("translator", `encodeHandled`);
             this.encodeHandled(object);
         }
         else{
+            LOGGER.log("translator", `encodeUnhandled`);
             this.encodeUnhandled(object);
         }
         

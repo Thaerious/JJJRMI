@@ -3,6 +3,7 @@ const TranslatorResult = require("./TranslatorResult");
 const ClassRegistry = require("./ClassRegistry");
 const HandlerRegistry = require("./HandlerRegistry");
 const BiMap = require("./BiMap");
+const LOGGER = require("./Logger");
 
 class Translator {
     constructor() {
@@ -40,6 +41,7 @@ class Translator {
     }
     allocReference(object, retain = true) {
         let key = Translator.referencePrequel + this.nextKey++;
+        LOGGER.log("translator", `allocReference(${object.constructor.name}, ${retain}) : ${key}`);
         if (retain){
             this.addReference(key, object);
         } else {
@@ -53,6 +55,7 @@ class Translator {
     }
     clearTempReferences() {
         for (let ref of this.tempReferences) {
+            LOGGER.log(`Clearing Temp Ref ${ref}`);
             this.objectMap.removeByKey(ref);
         }
         this.tempReferences = [];
