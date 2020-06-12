@@ -3,7 +3,7 @@ ROOTPATH=/mnt/d/project/trunk/jjj/rmi
 POSITIONAL=()
 
 CP=$ROOTPATH/target/classes
-CP=$CP:$ROOTPATH/target/lib/*
+CP=$CP:$ROOTPATH/target/dependency/*
 
 while [[ $# -gt 0 ]] 
 do

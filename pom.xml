@@ -11,7 +11,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <maven.test.skip>true</maven.test.skip>
+        <maven.test.skip>false</maven.test.skip>
     </properties>
 
     <dependencies>
@@ -119,100 +119,100 @@
                 <version>1.6.0</version>
                 <executions>
 
-                    <execution>
-                        <id>Generate-Test-Classes</id>
-                        <phase>test-compile</phase>
-                        <goals>
-                            <goal>java</goal>
-                        </goals>
-                        <configuration>
-                            <mainClass>ca.frar.jjjrmi.CLI</mainClass>
-                            <arguments>
-                                <argument>-d=${basedir}/src/test/java/ca/frar/jjjrmi/translator/testclasses/</argument>
-                                <argument>-o=${basedir}/src/test/js/testclasses</argument>
-                                <argument>-p</argument>
-                            </arguments>
-                            <classpathScope>test</classpathScope>
-                            <skip>${maven.test.skip}</skip>
-                        </configuration>
-                    </execution>
+<!--                    <execution>-->
+<!--                        <id>Generate-Test-Classes</id>-->
+<!--                        <phase>test-compile</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>java</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <mainClass>ca.frar.jjjrmi.CLI</mainClass>-->
+<!--                            <arguments>-->
+<!--                                <argument>-d=${basedir}/src/test/java/ca/frar/jjjrmi/translator/testclasses/</argument>-->
+<!--                                <argument>-o=${basedir}/src/test/js/testclasses</argument>-->
+<!--                                <argument>-p</argument>-->
+<!--                            </arguments>-->
+<!--                            <classpathScope>test</classpathScope>-->
+<!--                            <skip>${maven.test.skip}</skip>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
 
-                    <execution>
-                        <id>Generate-Socket-Test-Classes</id>
-                        <phase>test-compile</phase>
-                        <goals>
-                            <goal>java</goal>
-                        </goals>
-                        <configuration>
-                            <mainClass>ca.frar.jjjrmi.CLI</mainClass>
-                            <arguments>
-                                <argument>-d=${basedir}/src/test/java/ca/frar/jjjrmi/socket/testclasses/</argument>
-                                <argument>-o=${basedir}/src/test/js/socket-testclasses</argument>
-                                <argument>-p</argument>
-                            </arguments>
-                            <classpathScope>test</classpathScope>
-                            <skip>${maven.test.skip}</skip>
-                        </configuration>
-                    </execution>
+<!--                    <execution>-->
+<!--                        <id>Generate-Socket-Test-Classes</id>-->
+<!--                        <phase>test-compile</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>java</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <mainClass>ca.frar.jjjrmi.CLI</mainClass>-->
+<!--                            <arguments>-->
+<!--                                <argument>-d=${basedir}/src/test/java/ca/frar/jjjrmi/socket/testclasses/</argument>-->
+<!--                                <argument>-o=${basedir}/src/test/js/socket-testclasses</argument>-->
+<!--                                <argument>-p</argument>-->
+<!--                            </arguments>-->
+<!--                            <classpathScope>test</classpathScope>-->
+<!--                            <skip>${maven.test.skip}</skip>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
 
-                    <execution>
-                        <id>Generate-JS-data-file</id>
-                        <phase>test-compile</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>npm</executable>
-                            <commandlineArgs>run test-setup</commandlineArgs>
-                            <skip>${maven.test.skip}</skip>
-                        </configuration>
-                    </execution>
+<!--                    <execution>-->
+<!--                        <id>Generate-JS-data-file</id>-->
+<!--                        <phase>test-compile</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>exec</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <executable>npm</executable>-->
+<!--                            <commandlineArgs>run test-setup</commandlineArgs>-->
+<!--                            <skip>${maven.test.skip}</skip>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
 
-                    <execution>
-                        <id>Generate-Java-data-file</id>
-                        <phase>test-compile</phase>
-                        <goals>
-                            <goal>java</goal>
-                        </goals>
-                        <configuration>
-                            <mainClass>ca.frar.jjjrmi.translator.GenerateJSON</mainClass>
-                            <arguments>
-                                <argument>${basedir}/target/test-data/from-java.json</argument>
-                            </arguments>
-                            <classpathScope>test</classpathScope>
-                            <skip>${maven.test.skip}</skip>
-                        </configuration>
-                    </execution>
+<!--                    <execution>-->
+<!--                        <id>Generate-Java-data-file</id>-->
+<!--                        <phase>test-compile</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>java</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <mainClass>ca.frar.jjjrmi.translator.GenerateJSON</mainClass>-->
+<!--                            <arguments>-->
+<!--                                <argument>${basedir}/target/test-data/from-java.json</argument>-->
+<!--                            </arguments>-->
+<!--                            <classpathScope>test</classpathScope>-->
+<!--                            <skip>${maven.test.skip}</skip>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
 
-                    <execution>
-                        <id>Run-JS-tests</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>npm</executable>
-                            <commandlineArgs>run test</commandlineArgs>
-                            <skip>${maven.test.skip}</skip>
-                        </configuration>
-                    </execution>
+<!--                    <execution>-->
+<!--                        <id>Run-JS-tests</id>-->
+<!--                        <phase>test</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>exec</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <executable>npm</executable>-->
+<!--                            <commandlineArgs>run test</commandlineArgs>-->
+<!--                            <skip>${maven.test.skip}</skip>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
 
-                    <execution>
-                        <id>Generate-JS-Runtime-Files</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>java</goal>
-                        </goals>
-                        <configuration>
-                            <mainClass>ca.frar.jjjrmi.CLI</mainClass>
-                            <arguments>
-                                <argument>-d=${basedir}/src/main/java/ca/frar/jjjrmi/rmi</argument>
-                                <argument>-o=${basedir}/src/main/js/generated</argument>
-                                <argument>-p</argument>
-                            </arguments>
-                            <classpathScope>compile</classpathScope>
-                        </configuration>
-                    </execution>
+<!--                    <execution>-->
+<!--                        <id>Generate-JS-Runtime-Files</id>-->
+<!--                        <phase>compile</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>java</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <mainClass>ca.frar.jjjrmi.CLI</mainClass>-->
+<!--                            <arguments>-->
+<!--                                <argument>-d=${basedir}/src/main/java/ca/frar/jjjrmi/rmi</argument>-->
+<!--                                <argument>-o=${basedir}/src/main/js/generated</argument>-->
+<!--                                <argument>-p</argument>-->
+<!--                            </arguments>-->
+<!--                            <classpathScope>compile</classpathScope>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
 
                 </executions>
             </plugin>

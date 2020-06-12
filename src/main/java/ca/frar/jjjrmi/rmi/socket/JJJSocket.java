@@ -30,9 +30,9 @@ public abstract class JJJSocket<T> extends Endpoint  {
     private HashMap<Session, MsgHandler> handlerMap = new HashMap<>();
 
     public abstract T getRoot();
-    
+
     @Override
-    public final void onOpen(Session session, EndpointConfig ec) {
+    public void onOpen(Session session, EndpointConfig ec) {
         synchronized (this) {
             try {
                 MsgHandler msgHandler = new MsgHandler(session);

@@ -23,7 +23,6 @@ public class EncoderSanityTest {
 
     /**
      * A single object in a new empty translator.
-     * @throws EncoderException
      */
     @Test
     public void test_simple_class() throws JJJRMIException{
@@ -36,7 +35,6 @@ public class EncoderSanityTest {
     /**
      * Same class encoded twice doesn't return a new object.
      * It will have the same reference both times.
-     * @throws EncoderException
      */
     @Test
     public void test_simple_class_same() throws JJJRMIException{
@@ -67,7 +65,6 @@ public class EncoderSanityTest {
 
     /**
      * The root object must be a non-null object.
-     * @throws EncoderException
      */
     @Test
     public void test_root_is_null_throws_exception() throws JJJRMIException{

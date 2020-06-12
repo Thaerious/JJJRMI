@@ -4,7 +4,7 @@ ROOTPATH=$( cd "$(dirname ./$BASH_SOURCE)"; cd .. ; pwd -P )
 
 CLASSPATH=$ROOTPATH/target/test-classes
 CLASSPATH=$CLASSPATH:$ROOTPATH/target/classes
-CLASSPATH=$CLASSPATH:$ROOTPATH/target/lib/*
+CLASSPATH=$CLASSPATH:$ROOTPATH/target/dependency/*
 
-export CLASSHPATH=$CLASSPATH
+export CLASSPATH=$CLASSPATH
 export PATH=$PATH:$ROOTPATH/bin

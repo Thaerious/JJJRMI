@@ -307,6 +307,5 @@ public class JSParserTest {
 
         String method = getMethod(contents, "clone");
         assertTrue(method.contains("let that = new ModelElement();"));
-        System.out.println(method);
     }
 }
