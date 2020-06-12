@@ -22,6 +22,7 @@ class GenerateJSON {
         let methods = getAllMethodNames(this);
         for (let method of methods) {
             if (!method.startsWith("generate_")) continue;
+            console.log(method);
             let r = this[method]();
             if (r) this.json[method.substring(9)] = r;
         }
@@ -40,6 +41,9 @@ class GenerateJSON {
         let translator = new Translator();
         let has = new packageFile.Has(null);
 
+        // the first encoding will generate the encoded object
+        // the second encoding will use a reference of the first
+        // the third will have a field that references the first
         this.json['hasRoot'] = translator.encode(has).toJSON();
         this.json['hasRef'] = translator.encode(has).toJSON();
         this.json['hasField'] = translator.encode(new packageFile.Has(has)).toJSON();
@@ -114,8 +118,8 @@ class GenerateJSON {
     }
 }
 
-const filename = process.argv[2];
-const method = process.argv[3];
+const filename = process.argv[2]; // output filename
+const method = process.argv[3]; // specific method to run, omit to run all
 
 if (filename.indexOf("/" !== -1)){
     let index = filename.lastIndexOf("/");

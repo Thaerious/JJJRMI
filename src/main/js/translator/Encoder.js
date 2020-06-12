@@ -80,7 +80,7 @@ class EncodedObject {
 
 class Encoder {
     constructor(object, translatorResult) {
-        LOGGER.log("translator", `new Encoder(${object.constructor.name})`);
+        LOGGER.log("translator", `new Encoder(${object==null ? "null" : object.constructor.name})`);
         this.object = object;
         this.translatorResult = translatorResult;
     }

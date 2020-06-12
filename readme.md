@@ -34,6 +34,9 @@ Running Tests Manually
 <b>Setup CLI.</b>  
 `source bin/setup`
 
+<b>Add link to simulate JJJRMI installed package</b>
+`ln -s ../target/jjjrmi/jjjrmi/ node_modules/jjjrmi`
+
 <b>Compile Source Code</b>  
 `mvn clean compile`
 
@@ -53,9 +56,7 @@ Ensure that the Translator is working.
 `mvn -Dtest=TranslatorTest test`  
 
 <b>Generate JSON from Java.</b>  
-```
-java -cp target/test-classes/:target/classes/:target/dependency/* ca.frar.jjjrmi.translator.GenerateJSON ./target/test-data/from-java.json
-```
+`java -cp target/test-classes/:target/classes/:target/dependency/* ca.frar.jjjrmi.translator.GenerateJSON ./target/test-data/from-java.json`
  
 <b>Generate JSON from JS.</b>  
 `node src/test/js/GenerateJSON.js target/test-data/from-js.json`
