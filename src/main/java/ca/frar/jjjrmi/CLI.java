@@ -31,10 +31,15 @@ public class CLI {
         try {
             CLI cli = new CLI();
             Base base = new Base();
-            cli.parseArgs(base, args);
-            LOGGER.info(Global.header("JJJRMI CLI"));
-            base.run();
-            base.output();
+
+            if (args.length == 0){
+                printhelp();
+            } else {
+                cli.parseArgs(base, args);
+                LOGGER.info(Global.header("JJJRMI CLI"));
+                base.run();
+                base.output();
+            }
         } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(CLI.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -58,8 +63,8 @@ public class CLI {
     public List<String> prepArgs(String... args) {
         /* put args together then reseperate them with spaces */
         StringBuilder builder = new StringBuilder();
-        for (String s : args) builder.append(s).append(" ");
-        String[] split = builder.toString().split("[= \t]+");
+        for (String s : args) builder.append(s).append(" "); // create a space delimited string of all arguments.
+//        String[] split = builder.toString().split("[= \t]+");
 
         List<String> argList = new LinkedList<>();
         for (String s : args) {
@@ -84,10 +89,50 @@ public class CLI {
         return argList;
     }
 
+    public static void printhelp(){
+        System.out.println("NAME");
+        System.out.println("\tjjjrmi - java to js code transpiler\n");
+        System.out.println("SYNOPSIS");
+        System.out.println("\tjjjrmi [OPTION]...\n");
+        System.out.println("DESCRIPTION");
+        System.out.println("\tFlags are in lower case. Arguments are in upper case.  The space between the flag and the argument can be any number of spaces, equals(=) or tabs");
+        System.out.println("\tOptional arguments are enclosed in square brackets.");
+        System.out.println("\n");
+        System.out.println("\t-j, --json");
+        System.out.println("\t\tgenerate package.json file");
+        System.out.println("\n");
+        System.out.println("\t-p, --package");
+        System.out.println("\t\tgenerate packageFile.js");
+        System.out.println("\n");
+        System.out.println("\t-n NAME, --name NAME");
+        System.out.println("\t\tset package name, defaults to 'package'");
+        System.out.println("\n");
+        System.out.println("\t-h [JAR|CLASS]..., --handlers [JAR|CLASS]...");
+        System.out.println("\t\tspecify .jar or .class files find handlers");
+        System.out.println("\n");
+        System.out.println("\t-i [CLASSNAME]..., --include [CLASSNAME]");
+        System.out.println("\t\ta list of classes to process, if omitted process all, has precedence over exclude");
+        System.out.println("\n");
+        System.out.println("\t-e [CLASSNAME]..., --exclude [CLASSNAME]...");
+        System.out.println("\t\ta list of classes to skip, if omitted skip none");
+        System.out.println("\n");
+        System.out.println("\t-d [PATH]..., --directory [PATH]...");
+        System.out.println("\t\tdirectories in which to search for class files");
+        System.out.println("\n");
+        System.out.println("\t-o PATH, --output PATH");
+        System.out.println("\t\tpath to write js files to, defaults to target/jjjrmi/PACKAGENAME");
+        System.out.println("\n");
+        System.out.println("\t--help");
+        System.out.println("\t\tdisplay help (this)");
+    }
+
     public void parse(Base base, List<String> argList) throws MalformedURLException, ClassNotFoundException, IOException {
         String s = argList.remove(0);
 
         switch (s) {
+            case "--help":
+                printhelp();
+                break;
             case "-j":
             case "--json":
                 base.setGenerateJSON(true);
@@ -129,6 +174,8 @@ public class CLI {
                 /* this will override the default destination */
                 base.setDestination(argList.remove(0));
                 break;
+
+            // debug flags, not docuemented
             case "--xml":
                 base.setPrintXML(true);
                 break;

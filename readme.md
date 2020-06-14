@@ -48,12 +48,10 @@ code constructs create the appropriate JS code construct.
 <b>Test Java Translator</b>  
 Check the basic functionality of the Java to JS encoder. Works by encoding
 Java classes and doing a cursory check of the resulting JSON.  
-`mvn -Dtest=EncoderSanityTest test`
-
-<b>Translator Clear Test</b>
-Ensure that the Translator is working.  
-`mvn -Dtest=TranslatorClearTest test`  
+`mvn -Dtest=EncoderSanityTest test`    
+`mvn -Dtest=TranslatorClearTest test`    
 `mvn -Dtest=TranslatorTest test`  
+`mvn -Dtest=HandlerTest test`   
 
 <b>Generate JSON from Java.</b>  
 `java -cp target/test-classes/:target/classes/:target/dependency/* ca.frar.jjjrmi.translator.GenerateJSON ./target/test-data/from-java.json`

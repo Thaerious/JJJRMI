@@ -16,12 +16,15 @@ import ca.frar.jjjrmi.translator.testclasses.Primitives;
 import ca.frar.jjjrmi.translator.testclasses.PrimitivesExtended;
 import ca.frar.jjjrmi.translator.testclasses.Simple;
 import ca.frar.jjjrmi.translator.testclasses.TransientField;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -33,8 +36,6 @@ public class TranslatorTest {
 
     /**
      * The same translator can decode the json it created.
-     *
-     * @throws EncoderException
      */
     @Test
     public void test_simple() throws JJJRMIException {
@@ -61,8 +62,6 @@ public class TranslatorTest {
 
     /**
      * Changing the local copies values will be maintained.
-     *
-     * @throws EncoderException
      */
     @Test
     public void test_simple_retain_values() throws JJJRMIException {
@@ -80,8 +79,6 @@ public class TranslatorTest {
     /**
      * Object from the another translator will be a different object with the
      * same values.
-     *
-     * @throws EncoderException
      */
     @Test
     public void test_simple_2() throws JJJRMIException {
@@ -355,10 +352,12 @@ public class TranslatorTest {
         public void accept(Object t) {
             accepted = t;
         }
-    };
+    }
+
+    ;
 
     /*
-     * Any encoding that creates a reference (w/o @Transient) will trigger the 
+     * Any encoding that creates a reference (w/o @Transient) will trigger the
      * references listeners.
      */
     @Test
@@ -417,15 +416,15 @@ public class TranslatorTest {
         Translator translator = new Translator();
         TransientField object = new TransientField();
         object.set(9);
-        TranslatorResult encoded = translator.encode(object);        
+        TranslatorResult encoded = translator.encode(object);
         translator.clear();
         TransientField decoded = (TransientField) translator.decode(encoded.toString()).getRoot();
         assertNotEquals(decoded.getTransientField(), object.getTransientField());
         assertEquals(decoded.getNonTransientField(), object.getNonTransientField());
     }
-    
+
     /*
-     * The class uses a custom hash code. Sending a different object with the 
+     * The class uses a custom hash code. Sending a different object with the
      * same value will result in a reference being sent.  The decoding of which
      * will be the first object sent.
      */
@@ -438,26 +437,26 @@ public class TranslatorTest {
         customHash2.set(5);
         translator.encode(customHash1).toString();
         String encoded = translator.encode(customHash1).toString();
-        
+
         CustomHash<Integer> decoded = (CustomHash<Integer>) translator.decode(encoded).getRoot();
         assertEquals(System.identityHashCode(customHash1), System.identityHashCode(decoded));
     }
-    
+
     /*
-     * The class uses a custom hash code. Sending the same object with a 
+     * The class uses a custom hash code. Sending the same object with a
      * different value will not result in a new encoding.
      */
     @SuppressWarnings("unchecked")
     public void test_custom_hash_code_new_value() throws JJJRMIException {
         Translator translator = new Translator();
         CustomHash<Integer> customHash = new CustomHash<>();
-        customHash.set(5);        
+        customHash.set(5);
         String encoded1 = translator.encode(customHash).toString();
         customHash.set(6);
         String encoded2 = translator.encode(customHash).toString();
-        
+
         CustomHash<Integer> decoded1 = (CustomHash<Integer>) translator.decode(encoded1).getRoot();
         CustomHash<Integer> decoded2 = (CustomHash<Integer>) translator.decode(encoded2).getRoot();
         assertEquals(System.identityHashCode(decoded1), System.identityHashCode(decoded2));
-    }    
+    }
 }
