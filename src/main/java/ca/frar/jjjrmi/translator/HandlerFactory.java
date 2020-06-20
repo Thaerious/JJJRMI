@@ -6,18 +6,21 @@ import static ca.frar.jjjrmi.Global.VERBOSE;
 import static ca.frar.jjjrmi.Global.VERY_VERBOSE;
 import ca.frar.jjjrmi.annotations.Handles;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
@@ -35,69 +38,19 @@ public class HandlerFactory {
         return instance;
     }
 
-    private HandlerFactory() {
-        SubTypesScanner subTypesScanner = new SubTypesScanner(false);
-        TypeAnnotationsScanner typeAnnotationsScanner = new TypeAnnotationsScanner();
-        Reflections reflections = new Reflections("", subTypesScanner, typeAnnotationsScanner);
-        Set<Class<?>> classes = reflections.getTypesAnnotatedWith(Handles.class);
-
-        LOGGER.log(VERBOSE, Global.header( "Handlers"));
-        for (Class<?> aClass : classes) {
-            LOGGER.debug(aClass);
-            Handles handles = aClass.getAnnotation(Handles.class);
-            if (AHandler.class.isAssignableFrom(aClass)) {
-                LOGGER.log(VERBOSE, Global.line( aClass.getName() + " : " + handles.value()));
-                classMap.put(handles.value(), (Class<? extends AHandler<?>>) aClass);
-            } else {
-                LOGGER.log(VERY_VERBOSE, Global.line( aClass.getName() + " does not extend AHander"));
-            }
-        }
-        Global.tail(VERBOSE);
+    public void addClass(Class<? extends AHandler> aClass){
+        Handles handles = aClass.getAnnotation(Handles.class);
+        if (handles == null) throw new RuntimeException("Class does not have Handles annotation");
+        classMap.put(handles.value(), (Class<? extends AHandler<?>>) aClass);
+        LOGGER.log(VERBOSE, Global.line( aClass.getName() + " : " + handles.value()));
     }
 
-    public void addJar(File file) throws MalformedURLException {
-        URL[] urls = new URL[]{file.toURI().toURL()};
-        URLClassLoader urlClassLoader = new URLClassLoader(urls, this.getClass().getClassLoader());
+    public void addJar(File file) throws IOException, ClassNotFoundException {
+        HandlerJarLoader jarLoader = new HandlerJarLoader(this.getClass().getClassLoader());
+        List<Class<? extends AHandler>> classes = jarLoader.load(file);
 
-        Reflections reflections = new Reflections(urlClassLoader);
-        Set<Class<?>> classes = reflections.getTypesAnnotatedWith(Handles.class);
-
-        LOGGER.log(VERBOSE, Global.header( "Handlers: " + file.getPath()));
-        for (Class<?> aClass : classes) {
-            Handles handles = aClass.getAnnotation(Handles.class);
-            if (AHandler.class.isAssignableFrom(aClass)) {
-                LOGGER.log(VERBOSE, Global.line(aClass.getName() + " : " + handles.value()));
-                classMap.put(handles.value(), (Class<? extends AHandler<?>>) aClass);
-            } else {
-                LOGGER.log(VERBOSE, Global.line(aClass.getName() + " does not extend AHander"));
-            }
-        }
-    }
-
-    public void addClasspath(File file) throws MalformedURLException, ClassNotFoundException, IOException {
-        LOGGER.log(VERBOSE, Global.header( "Handlers: " + file.getPath()));
-
-        URL[] urls = new URL[]{file.toURI().toURL()};
-        URLClassLoader urlClassLoader = new URLClassLoader(urls, this.getClass().getClassLoader());
-
-        List<String> classnames = Files.walk(file.toPath())
-                .filter(f -> f.toString().endsWith(".class"))
-                .map(Object::toString)
-                .map(s -> s.substring(file.toString().length() + 1))
-                .map(s -> s.substring(0, s.length() - 6))
-                .map(s -> s.replace("/", "."))
-                .collect(Collectors.toList());
-
-        for (String classname : classnames) {
-            Class<?> aClass = urlClassLoader.loadClass(classname);
-            Handles handles = aClass.getAnnotation(Handles.class);
-            if (handles == null) continue;
-            if (AHandler.class.isAssignableFrom(aClass)) {
-                LOGGER.log(VERBOSE, Global.line(aClass.getName() + " : " + handles.value()));
-                classMap.put(handles.value(), (Class<? extends AHandler<?>>) aClass);
-            } else {
-                LOGGER.log(VERBOSE, Global.line(aClass.getName() + " does not extend AHander"));
-            }
+        for (Class<? extends AHandler> aClass : classes){
+            this.addClass(aClass);
         }
     }
 

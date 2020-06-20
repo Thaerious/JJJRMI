@@ -29,20 +29,22 @@ public class CLI {
 
     public static void main(String... args) throws IOException, ClassNotFoundException {
         try {
-            CLI cli = new CLI();
-            Base base = new Base();
-
             if (args.length == 0){
                 printhelp();
             } else {
-                cli.parseArgs(base, args);
-                LOGGER.info(Global.header("JJJRMI CLI"));
-                base.run();
-                base.output();
+                CLI cli = new CLI();
+                cli.run(args);
             }
         } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(CLI.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    public void run(String ... args) throws IOException, ClassNotFoundException {
+        Base base = new Base();
+        parseArgs(base, args);
+        base.run();
+        base.output();
     }
 
     public void parseArgs(Base base, String... args) throws IOException, MalformedURLException, ClassNotFoundException {
@@ -60,7 +62,7 @@ public class CLI {
      * @param args
      * @return
      */
-    public List<String> prepArgs(String... args) {
+    List<String> prepArgs(String... args) {
         /* put args together then reseperate them with spaces */
         StringBuilder builder = new StringBuilder();
         for (String s : args) builder.append(s).append(" "); // create a space delimited string of all arguments.
@@ -117,7 +119,7 @@ public class CLI {
         System.out.println("\t\ta list of classes to skip, if omitted skip none");
         System.out.println("\n");
         System.out.println("\t-d [PATH]..., --directory [PATH]...");
-        System.out.println("\t\tdirectories in which to search for class files");
+        System.out.println("\t\tDirectories in which to search for class files.  All child directories will be searched recursively");
         System.out.println("\n");
         System.out.println("\t-o PATH, --output PATH");
         System.out.println("\t\tpath to write js files to, defaults to target/jjjrmi/PACKAGENAME");
@@ -126,7 +128,7 @@ public class CLI {
         System.out.println("\t\tdisplay help (this)");
     }
 
-    public void parse(Base base, List<String> argList) throws MalformedURLException, ClassNotFoundException, IOException {
+    void parse(Base base, List<String> argList) throws MalformedURLException, ClassNotFoundException, IOException {
         String s = argList.remove(0);
 
         switch (s) {

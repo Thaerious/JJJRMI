@@ -1,4 +1,4 @@
-package ca.frar.jjjrmi.translator.testclasses.handler;
+package ca.frar.jjjrmi.targetted.handler;
 import ca.frar.jjjrmi.annotations.JJJ;
 import ca.frar.jjjrmi.rmi.socket.JJJObject;
 import org.json.JSONObject;

@@ -1,6 +1,8 @@
-package ca.frar.jjjrmi.translator;
+package ca.frar.jjjrmi.targetted.handler;
 
 import ca.frar.jjjrmi.exceptions.JJJRMIException;
+import ca.frar.jjjrmi.translator.Translator;
+import ca.frar.jjjrmi.translator.TranslatorResult;
 import ca.frar.jjjrmi.translator.testclasses.HasHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,8 +27,14 @@ public class HandlerTest {
         assertEquals(7, decoded.z);
     }
 
+    /**
+     * Encode the 'Games' class, which has an arraylist.
+     * @throws JJJRMIException
+     */
     public void test_arrayList_handler() throws JJJRMIException{
-
+        Translator translator = new Translator();
+        TranslatorResult encoded = translator.encode(new Games());
+        System.out.println(encoded.toString(2));
     }
 
 }

@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ca.frar</groupId>
     <artifactId>jjjrmi</artifactId>
-    <version>0.7.0</version>
+    <version>0.7.1</version>
     <packaging>maven-plugin</packaging>
 
     <properties>
@@ -15,6 +15,11 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>ca.frar</groupId>
+            <artifactId>jjjrmi-ext</artifactId>
+            <version>0.7.0</version>
+        </dependency>
         <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
@@ -197,22 +202,22 @@
 <!--                        </configuration>-->
 <!--                    </execution>-->
 
-<!--                    <execution>-->
-<!--                        <id>Generate-JS-Runtime-Files</id>-->
-<!--                        <phase>compile</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>java</goal>-->
-<!--                        </goals>-->
-<!--                        <configuration>-->
-<!--                            <mainClass>ca.frar.jjjrmi.CLI</mainClass>-->
-<!--                            <arguments>-->
-<!--                                <argument>-d=${basedir}/src/main/java/ca/frar/jjjrmi/rmi</argument>-->
-<!--                                <argument>-o=${basedir}/src/main/js/generated</argument>-->
-<!--                                <argument>-p</argument>-->
-<!--                            </arguments>-->
-<!--                            <classpathScope>compile</classpathScope>-->
-<!--                        </configuration>-->
-<!--                    </execution>-->
+                    <execution>
+                        <id>Generate-JS-Runtime-Files</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>ca.frar.jjjrmi.CLI</mainClass>
+                            <arguments>
+                                <argument>-d=${basedir}/src/main/java/ca/frar/jjjrmi/rmi</argument>
+                                <argument>-o=${basedir}/src/main/js/generated</argument>
+                                <argument>-p</argument>
+                            </arguments>
+                            <classpathScope>compile</classpathScope>
+                        </configuration>
+                    </execution>
 
                 </executions>
             </plugin>

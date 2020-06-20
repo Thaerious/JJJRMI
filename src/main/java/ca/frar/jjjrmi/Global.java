@@ -19,7 +19,7 @@ public class Global {
     final public static Level VERBOSE = Level.forName("VERBOSE", 450);
     final public static Level VERY_VERBOSE = Level.forName("VERY_VERBOSE", 450);
     public static String FILE_STAMP;
-    private static final int BOX_WIDTH = 70;
+    private static final int BOX_WIDTH = 90;
     private static int lineno = 0;
     
     static{

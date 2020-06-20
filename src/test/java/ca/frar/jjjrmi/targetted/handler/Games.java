@@ -1,13 +1,25 @@
-package ca.frar.jjjrmi.translator.testclasses.handler;
+package ca.frar.jjjrmi.targetted.handler;
 import ca.frar.jjjrmi.annotations.NativeJS;
 import ca.frar.jjjrmi.annotations.Transient;
+import ca.frar.jjjrmi.exceptions.JJJRMIException;
 import ca.frar.jjjrmi.rmi.socket.JJJObject;
+import ca.frar.jjjrmi.translator.HandlerFactory;
+import ca.frar.jjjrmi.translator.Translator;
+import ca.frar.jjjrmi.translator.TranslatorResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.File;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 
 public class Games extends JJJObject {
+    @Transient private static final Logger LOGGER = LogManager.getLogger(Games.class);
+
+    public static void main(String[] args) throws MalformedURLException {
+//        HandlerFactory.getInstance().addJar(new File("target/lib/jjjrmi-ext-0.7.0.jar"));
+    }
+
     private ArrayList<Game> list = new ArrayList<>();
     @Transient private int nextID = 0;
 

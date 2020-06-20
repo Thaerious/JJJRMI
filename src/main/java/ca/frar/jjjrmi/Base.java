@@ -40,7 +40,7 @@ import spoon.reflect.CtModel;
 public class Base {
     private ArrayList<String> inputDirectories = new ArrayList<>();
     private String packageFileName = "packageFile.js";
-    private String destination = "target/jjjrmi";
+    private String destination = "";
     private String packageName = "package";
     private String version = "0.0.0";
     private boolean printXML = false;
@@ -246,9 +246,9 @@ public class Base {
 
         LOGGER.log(INFO, Global.header("Generating output"));
 
-        LOGGER.log(VERBOSE, Global.line("Root Path: " + destination));
         if (destination.isBlank()) destination = "target/jjjrmi/" + this.packageName;
         new File(destination).mkdirs();
+        LOGGER.log(VERBOSE, Global.line("Root Path: " + destination));
 
         for (JSClassBuilder<?> jsClassBuilder : jsParser.jsClassBuilders()) {
             LOGGER.log(INFO, Global.line(jsClassBuilder.getSimpleName() + ".js"));
