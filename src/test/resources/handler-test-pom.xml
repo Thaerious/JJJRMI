@@ -49,6 +49,12 @@
                             target/dependency/jjjrmi-ext-0.7.0.jar
                         </handler>
                     </handlers>
+                    <source>
+                        src/test/java/ca/frar/jjjrmi/targetted/handler/
+                    </source>
+                    <destination>
+                        deleteme/
+                    </destination>
                 </configuration>
                 <executions>
                     <execution>
