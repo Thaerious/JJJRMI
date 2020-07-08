@@ -23,7 +23,8 @@ class ArrayDecoder {
         int[] dims = new int[1];
         dims[0] = jsonArray.length();        
         this.result = Array.newInstance(this.componentClass, dims);
-        translator.addTempReference(json.get(Constants.KeyParam).toString(), this.result);
+
+        translator.allocReference(this.result, true, json.get(Constants.KeyParam).toString());
 
         for (int i = 0; i < elements.length(); i++) {
             JSONObject element = elements.getJSONObject(i);

@@ -40,7 +40,7 @@
             <plugin>
                 <groupId>ca.frar</groupId>
                 <artifactId>jjjrmi</artifactId>
-                <version>0.7.0</version>
+                <version>0.7.1</version>
                 <configuration>
                     <packageName>frontierMC</packageName>
                     <version>0.0.0</version>

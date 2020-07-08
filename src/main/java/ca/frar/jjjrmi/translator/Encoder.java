@@ -34,8 +34,9 @@ class Encoder {
                 LOGGER.trace(" -- primitive");
                 return new EncodedPrimitive(object);
             } else if (encodedResult.getTranslator().hasReferredObject(object)) {
-                LOGGER.trace(" -- referred");
-                return new EncodedReference(encodedResult.getTranslator().getReference(object));
+                String reference = encodedResult.getTranslator().getReference(object);
+                LOGGER.trace(" -- referred : " + reference);
+                return new EncodedReference(reference);
             } else if (this.object.getClass().isArray()) {
                 LOGGER.trace(" -- array");
                 return new EncodedArray(object, encodedResult);

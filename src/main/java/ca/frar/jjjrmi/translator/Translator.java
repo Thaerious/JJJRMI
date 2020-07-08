@@ -1,10 +1,10 @@
 package ca.frar.jjjrmi.translator;
-import ca.frar.jjjrmi.exceptions.UntrackedObjectException;
-import ca.frar.jjjrmi.exceptions.DecoderException;
-import ca.frar.jjjrmi.exceptions.JJJRMIException;
-import ca.frar.jjjrmi.exceptions.UnknownReferenceException;
+import ca.frar.jjjrmi.annotations.Transient;
+import ca.frar.jjjrmi.exceptions.*;
 import ca.frar.jjjrmi.utility.BiMap;
 import ca.frar.jjjrmi.utility.JJJOptionsHandler;
+import org.apache.commons.lang3.ObjectUtils;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -27,8 +27,13 @@ public class Translator {
     private final BiMap<String, Object> objectMap = new BiMap<>();
     private final ArrayList<String> tempReferences = new ArrayList<>();
     private int nextKey = 0;
-
     private ClassLoader classLoader = this.getClass().getClassLoader();
+
+    private static Consumer<TranslatorResult> encodeCallback = null;
+
+    public static void setEncodeCallback(Consumer<TranslatorResult> consumer){
+        Translator.encodeCallback = consumer;
+    }
 
     /**
      * Specify the class loader to be used to create new class instances.
@@ -52,11 +57,16 @@ public class Translator {
      * @param reference
      * @param object
      */
-    void addTempReference(String reference, Object object) {
+    private void addTempReference(String reference, Object object) {
         this.objectMap.put(reference, object);
         this.tempReferences.add(reference);
     }
 
+    /**
+     * Set the alphanumeric identifier for references created by this translator.
+     * ie.  S for server, C for client
+     * @param referencePrequel
+     */
     public void setReferencePrequel(String referencePrequel){
         this.referencePrequel = referencePrequel;
     }
@@ -78,18 +88,20 @@ public class Translator {
      * @param object
      * @return
      */
-    String allocReference(Object object) {
+    String allocReference(Object object) throws JJJRMIKeyException {
         return this.allocReference(object, true);
     }
 
     /**
-     * Create a new reference with a new unique key.
-     *
+     * Create a new reference with a specified key which must be unique.
      * @param object
      * @return
      */
-    String allocReference(Object object, boolean isRetained) {
-        String key = referencePrequel + (nextKey++);
+    String allocReference(Object object, boolean isRetained, String key) throws JJJRMIKeyException {
+        if (this.hasReference(key)) throw new JJJRMIKeyException();
+        if (object == null) throw new NullPointerException("Can not reference a null object.");
+
+        LOGGER.trace("alloc " + (!isRetained ? "" : "temp ") + "reference " + key + " for " + object.getClass());
 
         if (new JJJOptionsHandler(object).retain()){
             this.addReference(key, object);
@@ -101,12 +113,23 @@ public class Translator {
     }
 
     /**
+     * Create a new reference with a new unique key.
+     * @param object
+     * @return
+     */
+    String allocReference(Object object, boolean isRetained) throws JJJRMIKeyException {
+        String key = referencePrequel + (nextKey++);
+        this.allocReference(object, isRetained, key);
+        return key;
+    }
+
+    /**
      * Add a reference to the this translator.
      *
      * @param reference
      * @param object
      */
-    void addReference(String reference, Object object) {
+    private void addReference(String reference, Object object) {
         this.objectMap.put(reference, object);
         for (Consumer<Object> lst : this.referenceListeners){
             lst.accept(object);
@@ -207,6 +230,9 @@ public class Translator {
         TranslatorResult encodeFromObject = new TranslatorResult(this).encodeFromObject(object);
         encodeFromObject.finalizeRoot();
         this.clearTempReferences();
+
+        if (Translator.encodeCallback != null) Translator.encodeCallback.accept(encodeFromObject);
+
         return encodeFromObject;
     }
 
@@ -214,7 +240,6 @@ public class Translator {
      * Translate a JSON encoded object to a POJO, returning the reference if it
      * has previously been stored.
      *
-     * @param encodedResult current encode context
      * @return a new object
      * @throws ca.frar.jjjrmi.exceptions.DecoderException
      */

@@ -61,11 +61,7 @@ public class ObjectDecoder {
                 retain = new JJJOptionsHandler(this.aClass).retain();
                 LOGGER.trace(" - object is retained");
             }
-            if (retain) {
-                translator.addReference(json.getString(Constants.KeyParam), this.result);
-            } else {
-                translator.addTempReference(json.getString(Constants.KeyParam), this.result);
-            }            
+            translator.allocReference(this.result, retain, json.get(Constants.KeyParam).toString());
             LOGGER.trace(" key: " + json.getString(Constants.KeyParam));
         } catch (SecurityException | ClassNotFoundException | InvocationTargetException | InstantiationException | IllegalAccessException ex) {
             throw new DecoderException(ex);

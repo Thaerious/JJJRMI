@@ -64,9 +64,9 @@ class EncodedObject {
     
     void setFieldData(String name, JSONObject json) throws EncoderException, IllegalArgumentException, IllegalAccessException {
         LOGGER.trace("EncodedObject.setFieldData() : ");
-        LOGGER.trace(" - " + name);
-        LOGGER.trace(" - " + json.getClass().getCanonicalName());
-        LOGGER.trace(" - " + json.toString());
+        LOGGER.trace(" - field: " + name);
+        LOGGER.trace(" - type: " + json.getClass().getCanonicalName());
+        LOGGER.trace(" - value: " + json.toString());
         this.json.getJSONObject(Constants.FieldsParam).put(name, json);
     }    
     

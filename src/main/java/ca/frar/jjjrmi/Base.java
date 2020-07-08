@@ -54,9 +54,6 @@ public class Base {
     public void addHandler(String path) throws MalformedURLException, ClassNotFoundException, IOException{        
         if (path.endsWith(".jar")){
             HandlerFactory.getInstance().addJar(new File(path));
-        } 
-        else {
-            HandlerFactory.getInstance().addClasspath(new File(path));
         }
     }
     
