@@ -28,7 +28,6 @@ public class Translator {
     private final ArrayList<String> tempReferences = new ArrayList<>();
     private int nextKey = 0;
     private ClassLoader classLoader = this.getClass().getClassLoader();
-
     private static Consumer<TranslatorResult> encodeCallback = null;
 
     public static void setEncodeCallback(Consumer<TranslatorResult> consumer){
@@ -37,6 +36,7 @@ public class Translator {
 
     /**
      * Specify the class loader to be used to create new class instances.
+     * By default the class loader is from this classes classloader.
      * @param classLoader
      */
     public void setClassLoader(ClassLoader classLoader){

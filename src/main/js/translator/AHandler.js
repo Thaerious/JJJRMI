@@ -30,12 +30,13 @@ class AHandler {
     }
     doEncode(object) {
         this.encodedObject = new EncodedObject(object, this.translatorResult, this.isRetained());
-        this.encode(object);
+        this.encode(object); // abstract method call
+        this.encodedObject.setType(this.constructor.__getHandles());
         return this.encodedObject;
     }
     doDecode(t, json) {
         this.json = json;
-        this.decode(t);
+        this.decode(t); // abstract method call
         return t;
     }
     doGetInstance() {

@@ -47,6 +47,13 @@ class EncodedObject {
         this.json[Constants.TypeParam] = object.constructor.__getClass ? object.constructor.__getClass() : null;
         this.json[Constants.FieldsParam] = {};
     }
+
+
+     // Called by AHandler
+    setType(javaCononicalName){
+        this.json[Constants.TypeParam] = javaCononicalName;
+    }
+
     encode() {
         for (let field in this.object) {
             LOGGER.log("translator", ` -- field ${field}`);

@@ -13,9 +13,15 @@ class ClassRegistry {
      */
     registerPackage(pkg) {
         LOGGER.log("onregister+", "Class Registry Loading Package");
-        for (let aClass in pkg) this.registerClass(pkg[aClass]);
+        for (let aClass in pkg){
+            this.registerClass(pkg[aClass]);
+        }
     }
 
+    /**
+     * Register a class by the string returned by class name string.
+     * @param aClass
+     */
     registerClass(aClass) {
         if (!aClass.__isHandler) return;
         if (aClass.__isHandler()) return; 

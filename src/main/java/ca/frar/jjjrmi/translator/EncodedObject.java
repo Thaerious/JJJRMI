@@ -24,7 +24,7 @@ class EncodedObject {
     protected final JSONObject json;
     private final TranslatorResult encodedResult;
 
-    EncodedObject(Object object, TranslatorResult encodedResult, boolean retain) throws EncoderException {        
+    EncodedObject(Object object, TranslatorResult encodedResult, boolean retain) throws JJJRMIException {
         LOGGER.trace("new EncodedObject: " + object.getClass().getName());
         this.object = object;
         this.json = new JSONObject();

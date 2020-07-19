@@ -35,11 +35,17 @@ class TranslatorResult {
 
         this.json = {};
         this.json[Constants.NewObjects] = {};
+
         if (this.translator.hasReferredObject(object)){
+            // this instance has been translated previously
             LOGGER.log("translator", `hasReferredObject : ${this.translator.getReference(object)}`);
             this.setRoot(this.translator.getReference(object));
         }
         else if (object.constructor.__getClass && handlerRegistry.hasClass(object.constructor.__getClass())){
+            LOGGER.log("translator", `encodeHandled`);
+            this.encodeHandled(object);
+        }
+        else if (handlerRegistry.hasClass(object.constructor)){
             LOGGER.log("translator", `encodeHandled`);
             this.encodeHandled(object);
         }
@@ -52,7 +58,7 @@ class TranslatorResult {
     }
     encodeHandled(object) {
         let handlerRegistry = this.translator.handlerRegistry;
-        let handlerClass = handlerRegistry.getClass(object.constructor.__getClass());
+        let handlerClass = handlerRegistry.getClass(object.constructor);
         let handler = new handlerClass(this);
         let encodedObject = handler.doEncode(object);
         this.put(encodedObject);

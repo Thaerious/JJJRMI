@@ -22,6 +22,22 @@ public class TranslatorResult {
     private JSONObject json;
     private Object root;
 
+    /**
+     * For one off encodings.
+     * @param object
+     */
+    public static TranslatorResult fromObject(Object object) throws JJJRMIException {
+        return new Translator().encode(object);
+    }
+
+    /**
+     * For creating one off decodings.
+     * @param string
+     */
+    public static TranslatorResult fromString(String string) throws JJJRMIException {
+        return new Translator().decode(string);
+    }
+
     TranslatorResult(Translator translator) {
         this.translator = translator;
     }
